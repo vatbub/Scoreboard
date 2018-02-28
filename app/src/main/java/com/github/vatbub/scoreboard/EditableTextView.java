@@ -41,9 +41,9 @@ public class EditableTextView extends android.support.v7.widget.AppCompatTextVie
     }
 
     private void addOnClickListener() {
-        internalSetOnClickListener(new OnClickListener() {
+        internalSetOnLongClickListener(new OnLongClickListener() {
             @Override
-            public void onClick(View view) {
+            public boolean onLongClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(getEditAlertTitle());
 
@@ -73,17 +73,20 @@ public class EditableTextView extends android.support.v7.widget.AppCompatTextVie
                 });
 
                 builder.show();
+
+                return true;
             }
         });
     }
 
     @Override
-    public void setOnClickListener(@Nullable OnClickListener l) {
+    public void setOnTouchListener(@Nullable OnTouchListener onTouchListener) {
         throw new IllegalStateException("Custom on click listeners are not allowed");
     }
 
-    private void internalSetOnClickListener(@Nullable OnClickListener l) {
-        super.setOnClickListener(l);
+
+    private void internalSetOnLongClickListener(@Nullable OnLongClickListener l) {
+        super.setOnLongClickListener(l);
     }
 
     public String getEditAlertTitle() {

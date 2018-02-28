@@ -457,6 +457,15 @@ public class GameManager {
             triggerOnRedrawListeners();
         }
 
+        public void addEmptyScoreLine() {
+            List<Player> players = getPlayers();
+            List<Integer> scores = new ArrayList<>(players.size());
+            for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+                scores.add(0);
+            }
+            addScoreLine(scores);
+        }
+
         /**
          * Modifies the specified score line
          *

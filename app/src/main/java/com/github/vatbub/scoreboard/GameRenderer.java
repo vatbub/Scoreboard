@@ -1,13 +1,14 @@
 package com.github.vatbub.scoreboard;
 
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,10 +49,12 @@ public class GameRenderer implements GameManager.OnRedrawListener {
         redraw();
     }
 
-    private void setTableCellProperties(View tableCell) {
+    private void setTableCellProperties(View tableCell, boolean isDummyRow) {
         TableRow.LayoutParams layoutParams = (TableRow.LayoutParams) tableCell.getLayoutParams();
         layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         layoutParams.weight = 1;
+        if (isDummyRow)
+            layoutParams.height = 0;
 
         if (tableCell instanceof EditableTextView)
             tableCell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
@@ -59,24 +62,31 @@ public class GameRenderer implements GameManager.OnRedrawListener {
         tableCell.setLayoutParams(layoutParams);
     }
 
-    private void renderHeaderRow(TableRow headerRow) {
+    private void renderHeaderRow(TableRow headerRow, boolean isDummyRow) {
         for (final GameManager.Game.Player player : getGameToRender().getPlayers()) {
-            EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
-            editableTextView.setText(player.getName());
+            EditText editText = new EditText(getRenderingLayout().getContext());
+            editText.setText(player.getName());
 
-            editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_player_name));
-            editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
-            editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
 
-            editableTextView.setOnChangedCallback(new EditableTextView.OnChangedCallback() {
+            editText.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void changed(String oldText, String newText) {
-                    player.setName(newText);
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                    player.setName(editable.toString());
                 }
             });
 
-            headerRow.addView(editableTextView);
-            setTableCellProperties(editableTextView);
+            headerRow.addView(editText);
+            setTableCellProperties(editText, isDummyRow);
         }
     }
 
@@ -86,7 +96,12 @@ public class GameRenderer implements GameManager.OnRedrawListener {
 
             // render the actual header
             getHeaderRow().removeAllViews();
-            renderHeaderRow(getHeaderRow());
+            renderHeaderRow(getHeaderRow(), false);
+
+            // render dummy row
+            TableRow dummyHeaderRow = new TableRow(getRenderingLayout().getContext());
+            renderHeaderRow(dummyHeaderRow, true);
+            getRenderingLayout().addView(dummyHeaderRow);
 
             // render scores
             for (int scoreLineIndex = 0; scoreLineIndex < getGameToRender().getScoreCount(); scoreLineIndex++) {
@@ -94,56 +109,41 @@ public class GameRenderer implements GameManager.OnRedrawListener {
                 final List<Integer> scoreLine = getGameToRender().getScoreLineAt(scoreLineIndex);
 
                 for (int playerIndex = 0; playerIndex < scoreLine.size(); playerIndex++) {
-                    EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
-                    editableTextView.setText(Integer.toString(scoreLine.get(playerIndex)));
-
-                    editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_score));
-                    editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
-                    editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
+                    EditText editText = new EditText(getRenderingLayout().getContext());
+                    editText.setText(Integer.toString(scoreLine.get(playerIndex)));
+                    editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
                     final int finalPlayerIndex = playerIndex;
                     final int finalScoreLineIndex = scoreLineIndex;
-                    editableTextView.setOnChangedCallback(new EditableTextView.OnChangedCallback() {
+                    editText.addTextChangedListener(new TextWatcher() {
                         @Override
-                        public void changed(String oldText, String newText) {
-                            scoreLine.set(finalPlayerIndex, Integer.parseInt(newText));
-                            getGameToRender().modifyScoreLineAt(finalScoreLineIndex, scoreLine);
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                            try {
+                                scoreLine.set(finalPlayerIndex, Integer.parseInt(editable.toString()));
+                                getGameToRender().modifyScoreLineAt(finalScoreLineIndex, scoreLine);
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
 
-                    scoreRow.addView(editableTextView);
-                    setTableCellProperties(editableTextView);
+                    scoreRow.addView(editText);
+                    setTableCellProperties(editText, false);
                 }
 
                 getRenderingLayout().addView(scoreRow);
             }
-
-            // render row to add scores
-            TableRow scoreInputRow = new TableRow(getRenderingLayout().getContext());
-            scoreInputTags = new ArrayList<>(getGameToRender().getScoreCount());
-            for (int playerIndex = 0; playerIndex < getGameToRender().getPlayers().size(); playerIndex++) {
-                String scoreInputTag = "scoreInput_" + playerIndex;
-                scoreInputTags.add(scoreInputTag);
-                EditText editText = new EditText(getRenderingLayout().getContext());
-                editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-                editText.setText("0");
-
-                editText.setTag(scoreInputTag);
-                scoreInputRow.addView(editText);
-                setTableCellProperties(editText);
-            }
-
-            getRenderingLayout().addView(scoreInputRow);
         }
-    }
-
-    public void applyNewScore() {
-        List<Integer> scores = new ArrayList<>(scoreInputTags.size());
-        for (String inputTag : scoreInputTags) {
-            EditText editText = getRenderingLayout().findViewWithTag(inputTag);
-            scores.add(Integer.parseInt(editText.getText().toString()));
-        }
-        getGameToRender().addScoreLine(scores);
     }
 
     @Override
