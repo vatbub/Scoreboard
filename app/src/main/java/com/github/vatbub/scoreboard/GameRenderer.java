@@ -1,6 +1,8 @@
 package com.github.vatbub.scoreboard;
 
 import android.text.InputType;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -14,11 +16,13 @@ import java.util.List;
 
 public class GameRenderer implements GameManager.OnRedrawListener {
     private TableLayout renderingLayout;
+    private TableRow headerRow;
     private GameManager.Game gameToRender;
     private List<String> scoreInputTags;
 
-    public GameRenderer(TableLayout renderingLayout, GameManager.Game gameToRender) {
+    public GameRenderer(TableLayout renderingLayout, TableRow headerRow, GameManager.Game gameToRender) {
         setRenderingLayout(renderingLayout);
+        setHeaderRow(headerRow);
         setGameToRender(gameToRender);
     }
 
@@ -44,32 +48,45 @@ public class GameRenderer implements GameManager.OnRedrawListener {
         redraw();
     }
 
+    private void setTableCellProperties(View tableCell) {
+        TableRow.LayoutParams layoutParams = (TableRow.LayoutParams) tableCell.getLayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.weight = 1;
+
+        if (tableCell instanceof EditableTextView)
+            tableCell.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
+        tableCell.setLayoutParams(layoutParams);
+    }
+
+    private void renderHeaderRow(TableRow headerRow) {
+        for (final GameManager.Game.Player player : getGameToRender().getPlayers()) {
+            EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
+            editableTextView.setText(player.getName());
+
+            editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_player_name));
+            editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
+            editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
+
+            editableTextView.setOnChangedCallback(new EditableTextView.OnChangedCallback() {
+                @Override
+                public void changed(String oldText, String newText) {
+                    player.setName(newText);
+                }
+            });
+
+            headerRow.addView(editableTextView);
+            setTableCellProperties(editableTextView);
+        }
+    }
+
     public void redraw() {
         synchronized (this) {
             getRenderingLayout().removeAllViews();
 
-            // Add the player names
-            TableRow namesRow = new TableRow(getRenderingLayout().getContext());
-
-            for (final GameManager.Game.Player player : getGameToRender().getPlayers()) {
-                EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
-                editableTextView.setText(player.getName());
-
-                editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_player_name));
-                editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
-                editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
-
-                editableTextView.setOnChangedCallback(new EditableTextView.OnChangedCallback() {
-                    @Override
-                    public void changed(String oldText, String newText) {
-                        player.setName(newText);
-                    }
-                });
-
-                namesRow.addView(editableTextView);
-            }
-
-            getRenderingLayout().addView(namesRow);
+            // render the actual header
+            getHeaderRow().removeAllViews();
+            renderHeaderRow(getHeaderRow());
 
             // render scores
             for (int scoreLineIndex = 0; scoreLineIndex < getGameToRender().getScoreCount(); scoreLineIndex++) {
@@ -95,6 +112,7 @@ public class GameRenderer implements GameManager.OnRedrawListener {
                     });
 
                     scoreRow.addView(editableTextView);
+                    setTableCellProperties(editableTextView);
                 }
 
                 getRenderingLayout().addView(scoreRow);
@@ -108,9 +126,11 @@ public class GameRenderer implements GameManager.OnRedrawListener {
                 scoreInputTags.add(scoreInputTag);
                 EditText editText = new EditText(getRenderingLayout().getContext());
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+                editText.setText("0");
 
                 editText.setTag(scoreInputTag);
                 scoreInputRow.addView(editText);
+                setTableCellProperties(editText);
             }
 
             getRenderingLayout().addView(scoreInputRow);
@@ -129,5 +149,13 @@ public class GameRenderer implements GameManager.OnRedrawListener {
     @Override
     public void onChangeApplied(GameManager.Game changedGame) {
         redraw();
+    }
+
+    public TableRow getHeaderRow() {
+        return headerRow;
+    }
+
+    public void setHeaderRow(TableRow headerRow) {
+        this.headerRow = headerRow;
     }
 }

@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TableLayout;
+import android.widget.TableRow;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +35,8 @@ public class MainActivity extends AppCompatActivity
 
         GameManager.getInstance(this).activateGame(GameManager.getInstance(this).listGames().get(0));
         TableLayout renderingLayout = findViewById(R.id.game_rendering_layout);
-        gameRenderer = new GameRenderer(renderingLayout, GameManager.getInstance(this).getCurrentlyActiveGame());
+        TableRow headerRow = findViewById(R.id.header_row);
+        gameRenderer = new GameRenderer(renderingLayout, headerRow, GameManager.getInstance(this).getCurrentlyActiveGame());
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
