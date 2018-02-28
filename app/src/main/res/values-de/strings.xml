@@ -3,7 +3,7 @@
     <string name="app_name">Scoreboard</string>
     <string name="navigation_drawer_open">Sidebar öffnen</string>
     <string name="navigation_drawer_close">Sidebar schließen</string>
-    <string name="action_settings">Einstellungen</string>
+    <string name="action_add_player">Spieler hinzufügen</string>
     <string name="edit_player_name">Spielernamen bearbeiten</string>
     <string name="edit_score">Spielstand bearbeiten</string>
     <string name="dialog_ok">OK</string>

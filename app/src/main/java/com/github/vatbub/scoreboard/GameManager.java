@@ -281,11 +281,10 @@ public class GameManager {
             List<Integer> playerIDs = getPlayerIDs();
             if (!playerIDs.contains(player.getId())) {
                 playerIDs.add(player.getId());
+                setPlayerIDs(playerIDs);
 
                 triggerOnRedrawListeners();
             }
-
-            setPlayerIDs(playerIDs);
         }
 
         public void deletePlayer(Player playerToDelete) {
@@ -363,6 +362,7 @@ public class GameManager {
         }
 
         public int getScoreCount() {
+            if (getPlayers().isEmpty()) return 0;
             return getPlayers().get(0).getScores().size();
         }
 
@@ -405,7 +405,7 @@ public class GameManager {
             }
 
             public List<Integer> getScores() {
-                String scores = getPrefs().getString(generateGamePrefKey(Keys.PlayerKeys.SCORES_PREF_KEY), "");
+                String scores = getPrefs().getString(generatePlayerPrefKey(Keys.PlayerKeys.SCORES_PREF_KEY), "");
                 if (scores.isEmpty())
                     return new ArrayList<>();
                 List<Integer> res = new ArrayList<>();
@@ -423,7 +423,7 @@ public class GameManager {
                         scoresStringBuilder.append(Keys.PlayerKeys.SCORES_DELIMITER);
                 }
 
-                getPrefs().edit().putString(generateGamePrefKey(Keys.PlayerKeys.SCORES_PREF_KEY), scoresStringBuilder.toString()).apply();
+                getPrefs().edit().putString(generatePlayerPrefKey(Keys.PlayerKeys.SCORES_PREF_KEY), scoresStringBuilder.toString()).apply();
             }
 
             private void deleteScores() {

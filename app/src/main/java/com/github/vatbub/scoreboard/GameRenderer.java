@@ -36,10 +36,12 @@ public class GameRenderer implements GameManager.OnRedrawListener {
 
     public void setGameToRender(GameManager.Game gameToRender) {
         // remove listener from old game
-        getGameToRender().getOnRedrawListeners().remove(this);
+        if (getGameToRender() != null)
+            getGameToRender().getOnRedrawListeners().remove(this);
 
         this.gameToRender = gameToRender;
         getGameToRender().getOnRedrawListeners().add(this);
+        redraw();
     }
 
     public void redraw() {
@@ -52,6 +54,10 @@ public class GameRenderer implements GameManager.OnRedrawListener {
             for (final GameManager.Game.Player player : getGameToRender().getPlayers()) {
                 EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
                 editableTextView.setText(player.getName());
+
+                editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_player_name));
+                editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
+                editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
 
                 editableTextView.setOnChangedCallback(new EditableTextView.OnChangedCallback() {
                     @Override
@@ -72,7 +78,11 @@ public class GameRenderer implements GameManager.OnRedrawListener {
 
                 for (int playerIndex = 0; playerIndex < scoreLine.size(); playerIndex++) {
                     EditableTextView editableTextView = new EditableTextView(getRenderingLayout().getContext());
-                    editableTextView.setText(scoreLine.get(playerIndex));
+                    editableTextView.setText(Integer.toString(scoreLine.get(playerIndex)));
+
+                    editableTextView.setEditAlertTitle(getRenderingLayout().getContext().getString(R.string.edit_score));
+                    editableTextView.setOkButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_ok));
+                    editableTextView.setCancelButtonCaption(getRenderingLayout().getContext().getString(R.string.dialog_cancel));
 
                     final int finalPlayerIndex = playerIndex;
                     final int finalScoreLineIndex = scoreLineIndex;
@@ -93,8 +103,8 @@ public class GameRenderer implements GameManager.OnRedrawListener {
             // render row to add scores
             TableRow scoreInputRow = new TableRow(getRenderingLayout().getContext());
             scoreInputTags = new ArrayList<>(getGameToRender().getScoreCount());
-            for (int scoreLineIndex = 0; scoreLineIndex < getGameToRender().getScoreCount(); scoreLineIndex++) {
-                String scoreInputTag = "scoreInput_" + scoreLineIndex;
+            for (int playerIndex = 0; playerIndex < getGameToRender().getPlayers().size(); playerIndex++) {
+                String scoreInputTag = "scoreInput_" + playerIndex;
                 scoreInputTags.add(scoreInputTag);
                 EditText editText = new EditText(getRenderingLayout().getContext());
                 editText.setInputType(InputType.TYPE_CLASS_NUMBER);
@@ -102,6 +112,8 @@ public class GameRenderer implements GameManager.OnRedrawListener {
                 editText.setTag(scoreInputTag);
                 scoreInputRow.addView(editText);
             }
+
+            getRenderingLayout().addView(scoreInputRow);
         }
     }
 
