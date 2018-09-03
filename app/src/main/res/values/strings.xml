@@ -13,4 +13,5 @@
     <string name="main_table_row_number_template">%d.</string>
     <string name="main_table_score_template">%d</string>
     <string name="max_input_length_reached_toast">Maximum input length reached</string>
+    <string name="sidebar_email_address">scoreboard@fredplus10.me</string>
 </resources>
