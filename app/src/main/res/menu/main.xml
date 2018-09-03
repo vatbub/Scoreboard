@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add_player"
+        android:contentDescription="@string/action_add_player"
+        android:icon="@drawable/ic_add_user"
         android:orderInCategory="100"
         android:title="@string/action_add_player"
-        app:showAsAction="never" />
+        app:showAsAction="never|ifRoom" />
 </menu>
