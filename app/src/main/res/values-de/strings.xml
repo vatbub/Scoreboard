@@ -13,4 +13,9 @@
     <string name="main_table_score_template">%d</string>
     <string name="max_input_length_reached_toast">Maximale Länge erreicht</string>
     <string name="sidebar_email_address">scoreboard@fredplus10.me</string>
+    <string name="sidebar_share">App teilen</string>
+    <string name="sidebar_github">GitHub</string>
+    <string name="sidebar_instagram">Instagram</string>
+    <string name="sidebar_website">Website</string>
+    <string name="sidebar_imprint">Impressum &amp; Datenschutz</string>
 </resources>

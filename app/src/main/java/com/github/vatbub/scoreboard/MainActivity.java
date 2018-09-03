@@ -1,6 +1,8 @@
 package com.github.vatbub.scoreboard;
 
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -128,23 +130,27 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
+        if (id == R.id.nav_imprint) {
+            // TODO: Imprint
+        } else if (id == R.id.nav_website) {
+            startURLIntent(AppConfig.getInstance().getWebsiteURL());
+        } else if (id == R.id.nav_instagram) {
+            startURLIntent(AppConfig.getInstance().getInstagramURL());
         } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            // TODO: Share
+        } else if (id == R.id.nav_github) {
+            startURLIntent(AppConfig.getInstance().getGithubURL());
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void startURLIntent(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        startActivity(intent);
     }
 
     public RecyclerView getMainTable() {
