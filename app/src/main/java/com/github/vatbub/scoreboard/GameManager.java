@@ -445,11 +445,11 @@ public class GameManager {
          *
          * @param scores The list of scores to add. This list must contain exactly one score per player and an IllegalStateException is thrown if this is not the case.
          */
-        public void addScoreLine(@NonNull List<Integer> scores) {
+        public void addScoreLine(@NonNull List<Long> scores) {
             assertScoreListLength(scores);
             List<Player> players = getPlayers();
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-                List<Integer> playerScores = players.get(playerIndex).getScores();
+                List<Long> playerScores = players.get(playerIndex).getScores();
                 playerScores.add(scores.get(playerIndex));
                 players.get(playerIndex).setScores(playerScores);
             }
@@ -459,9 +459,9 @@ public class GameManager {
 
         public void addEmptyScoreLine() {
             List<Player> players = getPlayers();
-            List<Integer> scores = new ArrayList<>(players.size());
+            List<Long> scores = new ArrayList<>(players.size());
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-                scores.add(0);
+                scores.add(0L);
             }
             addScoreLine(scores);
         }
@@ -472,11 +472,11 @@ public class GameManager {
          * @param index  The index of the score line to modify
          * @param scores The list of scores to be set. This list must contain exactly one score per player and an IllegalStateException is thrown if this is not the case.
          */
-        public void modifyScoreLineAt(int index, @NonNull List<Integer> scores) {
+        public void modifyScoreLineAt(int index, @NonNull List<Long> scores) {
             assertScoreListLength(scores);
             List<Player> players = getPlayers();
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-                List<Integer> playerScores = players.get(playerIndex).getScores();
+                List<Long> playerScores = players.get(playerIndex).getScores();
                 playerScores.set(index, scores.get(playerIndex));
                 players.get(playerIndex).setScores(playerScores);
             }
@@ -484,7 +484,7 @@ public class GameManager {
             triggerOnRedrawListeners();
         }
 
-        private void assertScoreListLength(List<Integer> scores) {
+        private void assertScoreListLength(List<Long> scores) {
             if (scores.size() != getPlayerIDs().size())
                 throw new IllegalArgumentException("The size of the submitted score list must match the size of the player list! (Score list size was: " + scores.size() + ", player list size was: " + getPlayerIDs().size() + ")");
         }
@@ -497,7 +497,7 @@ public class GameManager {
         public void removeScoreLineAt(int index) {
             List<Player> players = getPlayers();
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-                List<Integer> playerScores = players.get(playerIndex).getScores();
+                List<Long> playerScores = players.get(playerIndex).getScores();
                 playerScores.remove(index);
                 players.get(playerIndex).setScores(playerScores);
             }
@@ -512,11 +512,11 @@ public class GameManager {
          * @return The score line at the specified index
          */
         @NonNull
-        public List<Integer> getScoreLineAt(int index) {
+        public List<Long> getScoreLineAt(int index) {
             List<Player> players = getPlayers();
-            List<Integer> res = new ArrayList<>(players.size());
+            List<Long> res = new ArrayList<>(players.size());
             for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
-                List<Integer> playerScores = players.get(playerIndex).getScores();
+                List<Long> playerScores = players.get(playerIndex).getScores();
                 res.add(playerScores.get(index));
             }
 
@@ -568,9 +568,9 @@ public class GameManager {
             }
 
             private void initScores() {
-                List<Integer> scores = getScores();
+                List<Long> scores = getScores();
                 while (scores.size() < getScoreCount())
-                    scores.add(0);
+                    scores.add(0L);
                 setScores(scores);
             }
 
@@ -592,18 +592,18 @@ public class GameManager {
             }
 
             @NonNull
-            public List<Integer> getScores() {
+            public List<Long> getScores() {
                 String scores = getPrefs().getString(generatePlayerPrefKey(Keys.PlayerKeys.SCORES_PREF_KEY), "");
                 if (scores.isEmpty())
                     return new ArrayList<>();
-                List<Integer> res = new ArrayList<>();
+                List<Long> res = new ArrayList<>();
                 for (String score : scores.split(Keys.PlayerKeys.SCORES_DELIMITER))
-                    res.add(Integer.parseInt(score));
+                    res.add(Long.parseLong(score));
 
                 return res;
             }
 
-            private void setScores(@NonNull List<Integer> scores) {
+            private void setScores(@NonNull List<Long> scores) {
                 StringBuilder scoresStringBuilder = new StringBuilder();
                 for (int i = 0; i < scores.size(); i++) {
                     scoresStringBuilder.append(scores.get(i));

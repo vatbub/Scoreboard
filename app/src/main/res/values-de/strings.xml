@@ -8,4 +8,8 @@
     <string name="edit_score">Spielstand bearbeiten</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Abbrechen</string>
+    <string name="main_table_delete_button_content_description_template">Zeile %d löschen</string>
+    <string name="main_table_row_number_template">%d.</string>
+    <string name="main_table_score_template">%d</string>
+    <string name="max_input_length_reached_toast">Maximale Länge erreicht</string>
 </resources>

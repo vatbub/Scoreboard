@@ -9,4 +9,8 @@
     <string name="edit_score">Edit score</string>
     <string name="dialog_ok">OK</string>
     <string name="dialog_cancel">Cancel</string>
+    <string name="main_table_delete_button_content_description_template">Delete row number %d</string>
+    <string name="main_table_row_number_template">%d.</string>
+    <string name="main_table_score_template">%d</string>
+    <string name="max_input_length_reached_toast">Maximum input length reached</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.github.vatbub.scoreboard;
 
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +63,7 @@ public class GameRenderer implements GameManager.OnRedrawListener {
 
     private void renderHeaderRow(TableRow headerRow, boolean isDummyRow) {
         for (final GameManager.Game.Player player : getGameToRender().getPlayers()) {
-            EditText editText = new EditText(getRenderingLayout().getContext());
+            EditText editText = new EditText(getHeaderRow().getContext());
             editText.setText(player.getName());
 
 
@@ -92,19 +91,19 @@ public class GameRenderer implements GameManager.OnRedrawListener {
 
     public void redraw() {
         synchronized (this) {
-            getRenderingLayout().removeAllViews();
+            // getRenderingLayout().removeAllViews();
 
             // render the actual header
             getHeaderRow().removeAllViews();
             renderHeaderRow(getHeaderRow(), false);
 
             // render dummy row
-            TableRow dummyHeaderRow = new TableRow(getRenderingLayout().getContext());
+            /*TableRow dummyHeaderRow = new TableRow(getRenderingLayout().getContext());
             renderHeaderRow(dummyHeaderRow, true);
-            getRenderingLayout().addView(dummyHeaderRow);
+            getRenderingLayout().addView(dummyHeaderRow);*/
 
             // render scores
-            for (int scoreLineIndex = 0; scoreLineIndex < getGameToRender().getScoreCount(); scoreLineIndex++) {
+            /*for (int scoreLineIndex = 0; scoreLineIndex < getGameToRender().getScoreCount(); scoreLineIndex++) {
                 TableRow scoreRow = new TableRow(getRenderingLayout().getContext());
                 final List<Integer> scoreLine = getGameToRender().getScoreLineAt(scoreLineIndex);
 
@@ -142,7 +141,7 @@ public class GameRenderer implements GameManager.OnRedrawListener {
                 }
 
                 getRenderingLayout().addView(scoreRow);
-            }
+            }*/
         }
     }
 

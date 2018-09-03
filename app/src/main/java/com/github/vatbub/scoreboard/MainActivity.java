@@ -9,51 +9,61 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private GameRenderer gameRenderer;
+    private RecyclerView mainTable;
+    private GameTableRecyclerViewAdapter mainTableAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if (GameManager.getInstance(this).listGames().isEmpty())
             GameManager.getInstance(this).createGame("dummyGame");
 
         GameManager.getInstance(this).activateGame(GameManager.getInstance(this).listGames().get(0));
-        TableLayout renderingLayout = findViewById(R.id.game_rendering_layout);
+        // TableLayout renderingLayout = findViewById(R.id.game_rendering_layout);
         TableRow headerRow = findViewById(R.id.header_row);
-        gameRenderer = new GameRenderer(renderingLayout, headerRow, GameManager.getInstance(this).getCurrentlyActiveGame());
+        gameRenderer = new GameRenderer(null, headerRow, GameManager.getInstance(this).getCurrentlyActiveGame());
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 gameRenderer.getGameToRender().addEmptyScoreLine();
+                mainTableAdapter.notifyDataSetChanged();
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-            this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        mainTable = findViewById(R.id.main_table_recycler_view);
+        mainTable.setLayoutManager(new LinearLayoutManager(this));
+        mainTableAdapter = new GameTableRecyclerViewAdapter(mainTable, GameManager.getInstance(this).getCurrentlyActiveGame());
+        mainTable.setAdapter(mainTableAdapter);
+        mainTableAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -135,5 +145,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public RecyclerView getMainTable() {
+        return mainTable;
     }
 }
