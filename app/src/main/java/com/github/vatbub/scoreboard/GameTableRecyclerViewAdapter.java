@@ -66,6 +66,7 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         holder.getDeleteRowButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
                 getGame().removeScoreLineAt(holder.getAdapterPosition());
                 notifyItemRemoved(holder.getAdapterPosition());
             }
