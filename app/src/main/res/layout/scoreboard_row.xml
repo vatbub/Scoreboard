@@ -26,11 +26,14 @@
 
     <ImageButton
         android:id="@+id/main_table_delete_row_button"
+        style="@android:style/Widget.Material.Light.ImageButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/main_table_delete_button_content_description_template"
-        app:srcCompat="@android:drawable/ic_delete" />
+        android:padding="16dp"
+        app:srcCompat="@drawable/ic_delete_button" />
 
 
 </android.widget.LinearLayout>
