@@ -114,6 +114,7 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
 
                         scoreLine.set(finalI, newScore);
                         getGame().modifyScoreLineAt(holder.getAdapterPosition(), scoreLine);
+                        getMainActivity().renderSumRow();
                     } catch (NumberFormatException e) {
                         Toast.makeText(holder.getView().getContext(), R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show();
                         s.delete(s.length() - 1, s.length());

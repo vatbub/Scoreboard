@@ -3,6 +3,7 @@ package com.github.vatbub.scoreboard;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -23,6 +24,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -45,8 +47,8 @@ public class MainActivity extends AppCompatActivity
 
         GameManager.getInstance(this).activateGame(GameManager.getInstance(this).listGames().get(0));
         renderHeaderRow();
+        renderSumRow();
         getHeaderRowViewHolder().getLineNumberTextView().addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> mainTableAdapter.updateColumnWidths(getHeaderRowViewHolder().getLineNumberTextView().getWidth()));
-        // getHeaderRowViewHolder().getLineNumberTextView().getViewTreeObserver().addOnGlobalLayoutListener(() -> mainTableAdapter.updateColumnWidths());
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
@@ -123,6 +125,7 @@ public class MainActivity extends AppCompatActivity
                 game.createPlayer(input.getText().toString());
 
                 renderHeaderRow();
+                renderSumRow();
                 mainTableAdapter.notifyDataSetChanged();
             });
             builder.setNegativeButton(R.string.dialog_cancel, (dialog, which) -> dialog.cancel());
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -184,7 +187,9 @@ public class MainActivity extends AppCompatActivity
 
     public void updateLineNumberWidth() {
         headerRowUpdateLineNumber();
+        sumRowUpdateLineNumber();
         getHeaderRowViewHolder().getLineNumberTextView().requestLayout();
+        getSumRowViewHolder().getLineNumberTextView().requestLayout();
     }
 
     private void renderHeaderRow() {
@@ -235,5 +240,57 @@ public class MainActivity extends AppCompatActivity
 
             viewHolder.getScoreHolderLayout().addView(editText);
         }
+    }
+
+    public LinearLayout getSumRow() {
+        return findViewById(R.id.sum_row);
+    }
+
+    public GameTableViewHolder getSumRowViewHolder() {
+        return new GameTableViewHolder(getSumRow());
+    }
+
+    public void sumRowUpdateLineNumber() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        if (game == null) return;
+        GameTableViewHolder viewHolder = getHeaderRowViewHolder();
+        viewHolder.setLineNumber(game.getScoreCount());
+    }
+
+    public void renderSumRow() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        GameTableViewHolder viewHolder = getSumRowViewHolder();
+        sumRowUpdateLineNumber();
+        viewHolder.getLineNumberTextView().setVisibility(View.INVISIBLE);
+        viewHolder.getDeleteRowButton().setVisibility(View.INVISIBLE);
+
+        if (game == null) {
+            viewHolder.getScoreHolderLayout().removeAllViews();
+            return;
+        }
+
+        final List<GameManager.Game.Player> players = game.getPlayers();
+        viewHolder.getScoreHolderLayout().removeAllViews();
+
+        for (GameManager.Game.Player player : players) {
+            final TextView textView = new TextView(viewHolder.getView().getContext());
+            long sum = sumOfList(player.getScores());
+            textView.setText(String.format(textView.getContext().getString(R.string.main_table_score_template), sum));
+            // textView.setEnabled(false);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            textView.setLayoutParams(layoutParams);
+
+            viewHolder.getScoreHolderLayout().addView(textView);
+        }
+    }
+
+    private long sumOfList(List<Long> list) {
+        long sum = 0;
+
+        for (long item : list)
+            sum += item;
+
+        return sum;
     }
 }
