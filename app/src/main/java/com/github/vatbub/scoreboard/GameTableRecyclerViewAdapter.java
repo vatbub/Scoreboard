@@ -81,7 +81,10 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         holder.getDeleteRowButton().setOnClickListener(v -> {
             if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
             getGame().removeScoreLineAt(holder.getAdapterPosition());
-            getMainActivity().updateLineNumberWidth();
+            if (getMainActivity() != null) {
+                getMainActivity().updateLineNumberWidth();
+                getMainActivity().renderSumRow();
+            }
             notifyItemRemoved(holder.getAdapterPosition());
         });
 
@@ -92,7 +95,10 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
             final long score = scoreLine.get(i);
             final EditText editText = new EditText(holder.getView().getContext());
             editText.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
-            editText.setText(String.format(editText.getContext().getString(R.string.main_table_score_template), score));
+            editText.setHint(String.format(editText.getContext().getString(R.string.main_table_score_template), 0));
+            String scoreString = String.format(editText.getContext().getString(R.string.main_table_score_template), score);
+            if (score != 0) editText.setText(scoreString);
+
             final int finalI = i;
             editText.addTextChangedListener(new TextWatcher() {
                 @Override
