@@ -31,4 +31,8 @@ public class AppConfig {
     public String getInstagramURL() {
         return instagramURL;
     }
+
+    public int getMaxLinesForEnterText() {
+        return 5;
+    }
 }

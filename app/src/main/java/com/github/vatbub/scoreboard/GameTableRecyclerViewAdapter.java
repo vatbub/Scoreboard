@@ -94,8 +94,14 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         for (int i = 0; i < scoreLine.size(); i++) {
             final long score = scoreLine.get(i);
             final EditText editText = new EditText(holder.getView().getContext());
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            editText.setLayoutParams(layoutParams);
+
             editText.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
             editText.setHint(String.format(editText.getContext().getString(R.string.main_table_score_template), 0));
+            editText.setHorizontallyScrolling(false);
+            editText.setMaxLines(AppConfig.getInstance().getMaxLinesForEnterText());
             String scoreString = String.format(editText.getContext().getString(R.string.main_table_score_template), score);
             if (score != 0) editText.setText(scoreString);
 
@@ -127,9 +133,6 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
                     }
                 }
             });
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            editText.setLayoutParams(layoutParams);
 
             holder.getScoreHolderLayout().addView(editText);
         }

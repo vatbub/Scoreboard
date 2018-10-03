@@ -210,7 +210,13 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < players.size(); i++) {
             final GameManager.Game.Player player = players.get(i);
             final EditText editText = new EditText(viewHolder.getView().getContext());
-            editText.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            editText.setLayoutParams(layoutParams);
+
+            editText.setInputType(EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES);
+            editText.setHorizontallyScrolling(false);
+            editText.setMaxLines(AppConfig.getInstance().getMaxLinesForEnterText());
             editText.setText(player.getName());
             final int finalI = i;
             editText.addTextChangedListener(new TextWatcher() {
@@ -234,9 +240,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
             });
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-            editText.setLayoutParams(layoutParams);
 
             viewHolder.getScoreHolderLayout().addView(editText);
         }
