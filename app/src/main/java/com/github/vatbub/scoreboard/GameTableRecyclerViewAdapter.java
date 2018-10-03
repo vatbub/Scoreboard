@@ -67,7 +67,7 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
     @Override
     public GameTableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowView = LayoutInflater.from(parent.getContext()).inflate(R.layout.scoreboard_row, parent, false);
-        return new GameTableViewHolder(rowView);
+        return new GameTableViewHolder(rowView, true);
     }
 
     @Override

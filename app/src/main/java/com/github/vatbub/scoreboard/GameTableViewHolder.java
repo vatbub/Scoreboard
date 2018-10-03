@@ -11,10 +11,12 @@ public class GameTableViewHolder extends RecyclerView.ViewHolder {
     private final TextView lineNumberTextView;
     private View view;
     private ImageButton deleteRowButton;
+    private boolean shouldLineColorBeSet;
 
-    public GameTableViewHolder(View itemView) {
+    public GameTableViewHolder(View itemView, boolean shouldLineColorBeSet) {
         super(itemView);
         view = itemView;
+        setShouldLineColorBeSet(shouldLineColorBeSet);
         scoreHolderLayout = getView().findViewById(R.id.main_table_text_view_holder);
         lineNumberTextView = getView().findViewById(R.id.main_table_line_number);
         deleteRowButton = getView().findViewById(R.id.main_table_delete_row_button);
@@ -39,5 +41,25 @@ public class GameTableViewHolder extends RecyclerView.ViewHolder {
     public void setLineNumber(int lineNumber) {
         getLineNumberTextView().setText(String.format(getView().getContext().getString(R.string.main_table_row_number_template), lineNumber));
         getDeleteRowButton().setContentDescription(String.format(getView().getContext().getString(R.string.main_table_delete_button_content_description_template), lineNumber));
+
+        if (!isShouldLineColorBeSet()) return;
+
+        if (isOdd(lineNumber))
+            getView().setBackgroundColor(getView().getResources().getColor(R.color.oddLineColor));
+        else
+            getView().setBackgroundColor(getView().getResources().getColor(R.color.evenLineColor));
+
+    }
+
+    public boolean isShouldLineColorBeSet() {
+        return shouldLineColorBeSet;
+    }
+
+    public void setShouldLineColorBeSet(boolean shouldLineColorBeSet) {
+        this.shouldLineColorBeSet = shouldLineColorBeSet;
+    }
+
+    private boolean isOdd(int i) {
+        return i % 2 == 1;
     }
 }

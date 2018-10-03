@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public GameTableViewHolder getHeaderRowViewHolder() {
-        return new GameTableViewHolder(getHeaderRow());
+        return new GameTableViewHolder(getHeaderRow(), false);
     }
 
     public void headerRowUpdateLineNumber() {
@@ -247,7 +247,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public GameTableViewHolder getSumRowViewHolder() {
-        return new GameTableViewHolder(getSumRow());
+        return new GameTableViewHolder(getSumRow(), false);
     }
 
     public void sumRowUpdateLineNumber() {
