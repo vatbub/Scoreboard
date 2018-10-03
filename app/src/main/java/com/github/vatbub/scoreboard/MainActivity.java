@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -185,6 +186,13 @@ public class MainActivity extends AppCompatActivity
         viewHolder.setLineNumber(game.getScoreCount());
     }
 
+    public void sumRowUpdateLineNumber() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        if (game == null) return;
+        GameTableViewHolderWithPlaceholders viewHolder = getSumRowViewHolder();
+        viewHolder.setLineNumber(game.getScoreCount());
+    }
+
     public void updateLineNumberWidth() {
         headerRowUpdateLineNumber();
         sumRowUpdateLineNumber();
@@ -249,23 +257,14 @@ public class MainActivity extends AppCompatActivity
         return findViewById(R.id.sum_row);
     }
 
-    public GameTableViewHolder getSumRowViewHolder() {
-        return new GameTableViewHolder(getSumRow(), false);
-    }
-
-    public void sumRowUpdateLineNumber() {
-        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
-        if (game == null) return;
-        GameTableViewHolder viewHolder = getHeaderRowViewHolder();
-        viewHolder.setLineNumber(game.getScoreCount());
+    public GameTableViewHolderWithPlaceholders getSumRowViewHolder() {
+        return new GameTableViewHolderWithPlaceholders(getSumRow());
     }
 
     public void renderSumRow() {
         GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
-        GameTableViewHolder viewHolder = getSumRowViewHolder();
-        sumRowUpdateLineNumber();
+        GameTableViewHolderWithPlaceholders viewHolder = getSumRowViewHolder();
         viewHolder.getLineNumberTextView().setVisibility(View.INVISIBLE);
-        viewHolder.getDeleteRowButton().setVisibility(View.INVISIBLE);
 
         if (game == null) {
             viewHolder.getScoreHolderLayout().removeAllViews();
@@ -273,27 +272,27 @@ public class MainActivity extends AppCompatActivity
         }
 
         final List<GameManager.Game.Player> players = game.getPlayers();
+        List<Integer> winnerIndices = game.getWinners();
+        List<Integer> looserIndices = game.getLoosers();
         viewHolder.getScoreHolderLayout().removeAllViews();
 
-        for (GameManager.Game.Player player : players) {
+        for (int i = 0; i < players.size(); i++) {
+            GameManager.Game.Player player = players.get(i);
             final TextView textView = new TextView(viewHolder.getView().getContext());
-            long sum = sumOfList(player.getScores());
+            long sum = player.getTotalScore();
             textView.setText(String.format(textView.getContext().getString(R.string.main_table_score_template), sum));
-            // textView.setEnabled(false);
+            textView.setGravity(Gravity.CENTER);
+            textView.setPadding(0, 15, 0, 15);
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            if (winnerIndices.contains(i))
+                textView.setBackgroundColor(getResources().getColor(R.color.winnerColor));
+            else if (looserIndices.contains(i))
+                textView.setBackgroundColor(getResources().getColor(R.color.looserColor));
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1);
             textView.setLayoutParams(layoutParams);
 
             viewHolder.getScoreHolderLayout().addView(textView);
         }
-    }
-
-    private long sumOfList(List<Long> list) {
-        long sum = 0;
-
-        for (long item : list)
-            sum += item;
-
-        return sum;
     }
 }

@@ -222,6 +222,10 @@ public class GameManager {
         return Collections.max(ids) + 1;
     }
 
+    public enum GameMode {
+        HIGH_SCORE, LOW_SCORE
+    }
+
     /**
      * Implement this interface to listen for changes in a game.
      */
@@ -243,6 +247,7 @@ public class GameManager {
 
         private static class GameKeys {
             static final String GAME_NAME_PREF_KEY = "gameName";
+            static final String GAME_MODE_PREF_KEY = "gameMode";
             static final String PLAYER_IDS_PREF_KEY = "playerIDs";
             static final String IDS_DELIMITER = ";";
         }
@@ -325,6 +330,19 @@ public class GameManager {
             getPrefs().edit().remove(generateGamePrefKey(Keys.GameKeys.GAME_NAME_PREF_KEY)).apply();
         }
 
+        public GameMode getMode() {
+            return GameMode.valueOf(getPrefs().getString(generateGamePrefKey(Keys.GameKeys.GAME_MODE_PREF_KEY), GameMode.HIGH_SCORE.toString()));
+        }
+
+        public void setMode(GameMode mode) {
+            getPrefs().edit().putString(generateGamePrefKey(Keys.GameKeys.GAME_MODE_PREF_KEY), mode.toString()).apply();
+            triggerOnRedrawListeners();
+        }
+
+        private void deleteGameModeSetting() {
+            getPrefs().edit().remove(generateGamePrefKey(Keys.GameKeys.GAME_MODE_PREF_KEY)).apply();
+        }
+
         public int getId() {
             return id;
         }
@@ -345,6 +363,7 @@ public class GameManager {
          */
         private void delete() {
             deleteGameNameSetting();
+            deleteGameModeSetting();
             for (Player player : getPlayers())
                 deletePlayer(player);
             deletePlayerList();
@@ -533,6 +552,96 @@ public class GameManager {
             return getPlayers().get(0).getScores().size();
         }
 
+        public List<Integer> getWinners() {
+            List<Player> players = getPlayers();
+            List<Integer> bestIs = new ArrayList<>();
+            GameMode gameMode = getMode();
+
+            long bestScore;
+            switch (gameMode) {
+                case HIGH_SCORE:
+                    bestScore = Long.MIN_VALUE;
+                    break;
+                case LOW_SCORE:
+                    bestScore = Long.MAX_VALUE;
+                    break;
+                default:
+                    bestScore = 0;
+            }
+
+            for (int i = 0; i < players.size(); i++) {
+                long score = players.get(i).getTotalScore();
+                if (score == bestScore) {
+                    bestIs.add(i);
+                    continue;
+                }
+
+                switch (gameMode) {
+                    case HIGH_SCORE:
+                        if (score > bestScore) {
+                            bestIs.clear();
+                            bestScore = score;
+                            bestIs.add(i);
+                        }
+                        break;
+                    case LOW_SCORE:
+                        if (score < bestScore) {
+                            bestIs.clear();
+                            bestScore = score;
+                            bestIs.add(i);
+                        }
+                        break;
+                }
+            }
+
+            return bestIs;
+        }
+
+        public List<Integer> getLoosers() {
+            List<Player> players = getPlayers();
+            List<Integer> worstIs = new ArrayList<>();
+            GameMode gameMode = getMode();
+
+            long worstScore;
+            switch (gameMode) {
+                case HIGH_SCORE:
+                    worstScore = Long.MAX_VALUE;
+                    break;
+                case LOW_SCORE:
+                    worstScore = Long.MIN_VALUE;
+                    break;
+                default:
+                    worstScore = 0;
+            }
+
+            for (int i = 0; i < players.size(); i++) {
+                long score = players.get(i).getTotalScore();
+                if (score == worstScore) {
+                    worstIs.add(i);
+                    continue;
+                }
+
+                switch (gameMode) {
+                    case HIGH_SCORE:
+                        if (score < worstScore) {
+                            worstIs.clear();
+                            worstScore = score;
+                            worstIs.add(i);
+                        }
+                        break;
+                    case LOW_SCORE:
+                        if (score > worstScore) {
+                            worstIs.clear();
+                            worstScore = score;
+                            worstIs.add(i);
+                        }
+                        break;
+                }
+            }
+
+            return worstIs;
+        }
+
         @Nullable
         public List<OnRedrawListener> getOnRedrawListeners() {
             return onRedrawListeners;
@@ -546,7 +655,7 @@ public class GameManager {
             private int id;
 
             /**
-             * Creates a new PLayer in this game. For internal use only
+             * Creates a new Player in this game. For internal use only
              *
              * @param name The name of the player to create
              * @see #createPlayer(String)
@@ -629,6 +738,19 @@ public class GameManager {
             private void delete() {
                 deleteScores();
                 deletePlayerNameSetting();
+            }
+
+            public long getSubTotalAt(int index) {
+                long sum = 0;
+                List<Long> scores = getScores();
+                for (int i = 0; i <= index; i++)
+                    sum = sum + scores.get(i);
+
+                return sum;
+            }
+
+            public long getTotalScore() {
+                return getSubTotalAt(getScoreCount() - 1);
             }
 
             @Override

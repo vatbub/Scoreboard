@@ -155,7 +155,6 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         lastLineColumnWidth = columnWidth;
         for (GameTableViewHolder holder : getAllBoundViewHolders()) {
             holder.getLineNumberTextView().setWidth(columnWidth);
-            // holder.getLineNumberTextView().requestLayout();
         }
     }
 

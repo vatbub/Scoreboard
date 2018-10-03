@@ -7,4 +7,7 @@
 
     <color name="evenLineColor">#eeeeee</color>
     <color name="oddLineColor">@android:color/transparent</color>
+
+    <color name="winnerColor">#76ff03</color>
+    <color name="looserColor">#d50000</color>
 </resources>
