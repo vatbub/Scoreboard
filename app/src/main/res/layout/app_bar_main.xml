@@ -29,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
+        android:scaleType="centerCrop"
         app:backgroundTint="@color/colorPrimary"
-        app:srcCompat="@drawable/ic_add" />
+        app:srcCompat="@drawable/ic_fab_plus_icon" />
 
 </android.support.design.widget.CoordinatorLayout>
