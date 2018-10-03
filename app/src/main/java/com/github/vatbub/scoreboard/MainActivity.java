@@ -113,7 +113,18 @@ public class MainActivity extends AppCompatActivity
             builder.setView(input);
 
             // Set up the buttons
-            builder.setPositiveButton(R.string.dialog_ok, (dialog, which) -> GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame().createPlayer(input.getText().toString()));
+            builder.setPositiveButton(R.string.dialog_ok, (dialog, which) -> {
+                GameManager.Game game = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
+                if (game == null) {
+                    Toast.makeText(this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                game.createPlayer(input.getText().toString());
+
+                renderHeaderRow();
+                mainTableAdapter.notifyDataSetChanged();
+            });
             builder.setNegativeButton(R.string.dialog_cancel, (dialog, which) -> dialog.cancel());
 
             builder.show();
