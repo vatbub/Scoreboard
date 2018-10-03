@@ -1,6 +1,5 @@
 package com.github.vatbub.scoreboard;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,17 +13,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.TableRow;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private GameRenderer gameRenderer;
     private RecyclerView mainTable;
     private GameTableRecyclerViewAdapter mainTableAdapter;
 
@@ -39,17 +44,21 @@ public class MainActivity extends AppCompatActivity
             GameManager.getInstance(this).createGame("dummyGame");
 
         GameManager.getInstance(this).activateGame(GameManager.getInstance(this).listGames().get(0));
-        // TableLayout renderingLayout = findViewById(R.id.game_rendering_layout);
-        TableRow headerRow = findViewById(R.id.header_row);
-        gameRenderer = new GameRenderer(null, headerRow, GameManager.getInstance(this).getCurrentlyActiveGame());
+        renderHeaderRow();
+        getHeaderRowViewHolder().getLineNumberTextView().addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> mainTableAdapter.updateColumnWidths(getHeaderRowViewHolder().getLineNumberTextView().getWidth()));
+        // getHeaderRowViewHolder().getLineNumberTextView().getViewTreeObserver().addOnGlobalLayoutListener(() -> mainTableAdapter.updateColumnWidths());
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gameRenderer.getGameToRender().addEmptyScoreLine();
-                mainTableAdapter.notifyDataSetChanged();
+        fab.setOnClickListener(view -> {
+            GameManager.Game game = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
+            if (game == null) {
+                Toast.makeText(this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show();
+                return;
             }
+
+            game.addEmptyScoreLine();
+            updateLineNumberWidth();
+            mainTableAdapter.notifyItemInserted(game.getScoreCount());
         });
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -62,15 +71,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         mainTable = findViewById(R.id.main_table_recycler_view);
-        mainTable.setLayoutManager(new LinearLayoutManager(this));
-        mainTableAdapter = new GameTableRecyclerViewAdapter(mainTable, GameManager.getInstance(this).getCurrentlyActiveGame());
-        mainTable.setAdapter(mainTableAdapter);
+        getMainTable().setLayoutManager(new LinearLayoutManager(this));
+        mainTableAdapter = new GameTableRecyclerViewAdapter(getMainTable(), GameManager.getInstance(this).getCurrentlyActiveGame(), this);
+        getMainTable().setAdapter(mainTableAdapter);
         mainTableAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -104,18 +113,8 @@ public class MainActivity extends AppCompatActivity
             builder.setView(input);
 
             // Set up the buttons
-            builder.setPositiveButton(R.string.dialog_ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    gameRenderer.getGameToRender().createPlayer(input.getText().toString());
-                }
-            });
-            builder.setNegativeButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+            builder.setPositiveButton(R.string.dialog_ok, (dialog, which) -> GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame().createPlayer(input.getText().toString()));
+            builder.setNegativeButton(R.string.dialog_cancel, (dialog, which) -> dialog.cancel());
 
             builder.show();
             return true;
@@ -155,5 +154,75 @@ public class MainActivity extends AppCompatActivity
 
     public RecyclerView getMainTable() {
         return mainTable;
+    }
+
+    public LinearLayout getHeaderRow() {
+        return findViewById(R.id.header_row);
+    }
+
+    public GameTableViewHolder getHeaderRowViewHolder() {
+        return new GameTableViewHolder(getHeaderRow());
+    }
+
+    public void headerRowUpdateLineNumber() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        if (game == null) return;
+        GameTableViewHolder viewHolder = getHeaderRowViewHolder();
+        viewHolder.setLineNumber(game.getScoreCount());
+    }
+
+    public void updateLineNumberWidth() {
+        headerRowUpdateLineNumber();
+        getHeaderRowViewHolder().getLineNumberTextView().requestLayout();
+    }
+
+    private void renderHeaderRow() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        GameTableViewHolder viewHolder = getHeaderRowViewHolder();
+        headerRowUpdateLineNumber();
+        viewHolder.getLineNumberTextView().setVisibility(View.INVISIBLE);
+        viewHolder.getDeleteRowButton().setVisibility(View.INVISIBLE);
+
+        if (game == null) {
+            viewHolder.getScoreHolderLayout().removeAllViews();
+            return;
+        }
+
+        final List<GameManager.Game.Player> players = game.getPlayers();
+        viewHolder.getScoreHolderLayout().removeAllViews();
+
+        for (int i = 0; i < players.size(); i++) {
+            final GameManager.Game.Player player = players.get(i);
+            final EditText editText = new EditText(viewHolder.getView().getContext());
+            editText.setInputType(EditorInfo.TYPE_CLASS_TEXT);
+            editText.setText(player.getName());
+            final int finalI = i;
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    try {
+                        players.get(finalI).setName(s.toString());
+                    } catch (NumberFormatException e) {
+                        Toast.makeText(viewHolder.getView().getContext(), R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show();
+                        s.delete(s.length() - 1, s.length());
+                    }
+                }
+            });
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
+            editText.setLayoutParams(layoutParams);
+
+            viewHolder.getScoreHolderLayout().addView(editText);
+        }
     }
 }

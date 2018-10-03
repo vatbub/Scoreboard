@@ -11,15 +11,22 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTableViewHolder> {
     private GameManager.Game game;
     private RecyclerView parent;
+    private Set<GameTableViewHolder> mBoundViewHolders = new HashSet<>();
+    private int lastLineColumnWidth;
+    private MainActivity mainActivity;
 
-    public GameTableRecyclerViewAdapter(RecyclerView parent, GameManager.Game game) {
+    public GameTableRecyclerViewAdapter(RecyclerView parent, GameManager.Game game, MainActivity mainActivity) {
         this.game = game;
         this.parent = parent;
+        setMainActivity(mainActivity);
         registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onItemRangeChanged(int positionStart, int itemCount) {
@@ -53,6 +60,10 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         });
     }
 
+    public Set<GameTableViewHolder> getAllBoundViewHolders() {
+        return Collections.unmodifiableSet(mBoundViewHolders);
+    }
+
     @Override
     public GameTableViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View rowView = LayoutInflater.from(parent.getContext()).inflate(R.layout.scoreboard_row, parent, false);
@@ -61,15 +72,17 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
 
     @Override
     public void onBindViewHolder(final GameTableViewHolder holder, int position) {
-        holder.setLineNumber(holder.getAdapterPosition() + 1);
+        mBoundViewHolders.add(holder);
 
-        holder.getDeleteRowButton().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
-                getGame().removeScoreLineAt(holder.getAdapterPosition());
-                notifyItemRemoved(holder.getAdapterPosition());
-            }
+        holder.setLineNumber(holder.getAdapterPosition() + 1);
+        if (lastLineColumnWidth != 0)
+            holder.getLineNumberTextView().setWidth(lastLineColumnWidth);
+
+        holder.getDeleteRowButton().setOnClickListener(v -> {
+            if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
+            getGame().removeScoreLineAt(holder.getAdapterPosition());
+            getMainActivity().updateLineNumberWidth();
+            notifyItemRemoved(holder.getAdapterPosition());
         });
 
         final List<Long> scoreLine = getGame().getScoreLineAt(holder.getAdapterPosition());
@@ -115,11 +128,24 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
         }
     }
 
+    @Override
+    public void onViewRecycled(GameTableViewHolder holder) {
+        mBoundViewHolders.remove(holder);
+    }
+
     public void updateLineNumbers() {
         for (int childCount = getParent().getChildCount(), i = 0; i < childCount; ++i) {
             GameTableViewHolder holder = (GameTableViewHolder) getParent().getChildViewHolder(getParent().getChildAt(i));
             if (holder.getAdapterPosition() != RecyclerView.NO_POSITION)
                 holder.setLineNumber(holder.getAdapterPosition() + 1);
+        }
+    }
+
+    public void updateColumnWidths(int columnWidth) {
+        lastLineColumnWidth = columnWidth;
+        for (GameTableViewHolder holder : getAllBoundViewHolders()) {
+            holder.getLineNumberTextView().setWidth(columnWidth);
+            // holder.getLineNumberTextView().requestLayout();
         }
     }
 
@@ -135,5 +161,13 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
 
     public RecyclerView getParent() {
         return parent;
+    }
+
+    public MainActivity getMainActivity() {
+        return mainActivity;
+    }
+
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
     }
 }

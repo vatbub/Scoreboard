@@ -18,4 +18,5 @@
     <string name="sidebar_instagram">Instagram</string>
     <string name="sidebar_website">Website</string>
     <string name="sidebar_imprint">Impressum &amp; Datenschutz</string>
+    <string name="no_game_active_toast">Bitte aktivieren Sie ein Spiel</string>
 </resources>

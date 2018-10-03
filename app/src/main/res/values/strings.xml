@@ -19,4 +19,5 @@
     <string name="sidebar_instagram">Instagram</string>
     <string name="sidebar_website">Website</string>
     <string name="sidebar_imprint">Imprint &amp; Privacy Policy</string>
+    <string name="no_game_active_toast">No game active at the moment</string>
 </resources>

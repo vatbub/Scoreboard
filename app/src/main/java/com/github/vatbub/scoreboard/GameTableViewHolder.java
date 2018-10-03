@@ -7,11 +7,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class GameTableViewHolder extends RecyclerView.ViewHolder {
+    private final LinearLayout scoreHolderLayout;
+    private final TextView lineNumberTextView;
     private View view;
+    private ImageButton deleteRowButton;
 
     public GameTableViewHolder(View itemView) {
         super(itemView);
         view = itemView;
+        scoreHolderLayout = getView().findViewById(R.id.main_table_text_view_holder);
+        lineNumberTextView = getView().findViewById(R.id.main_table_line_number);
+        deleteRowButton = getView().findViewById(R.id.main_table_delete_row_button);
     }
 
     public View getView() {
@@ -19,15 +25,15 @@ public class GameTableViewHolder extends RecyclerView.ViewHolder {
     }
 
     public LinearLayout getScoreHolderLayout() {
-        return getView().findViewById(R.id.main_table_text_view_holder);
+        return scoreHolderLayout;
     }
 
     public TextView getLineNumberTextView() {
-        return getView().findViewById(R.id.main_table_line_number);
+        return lineNumberTextView;
     }
 
     public ImageButton getDeleteRowButton() {
-        return getView().findViewById(R.id.main_table_delete_row_button);
+        return deleteRowButton;
     }
 
     public void setLineNumber(int lineNumber) {

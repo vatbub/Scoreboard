@@ -10,16 +10,11 @@
     tools:context="com.github.vatbub.scoreboard.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <TableLayout
+    <include
+        android:id="@+id/header_row"
+        layout="@layout/scoreboard_row"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TableRow
-            android:id="@+id/header_row"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </TableLayout>
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/main_table_recycler_view"
