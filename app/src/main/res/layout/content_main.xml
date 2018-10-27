@@ -30,7 +30,7 @@
 
     <include
         android:id="@+id/sum_row"
-        layout="@layout/sum_row"
+        layout="@layout/sum_row_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent" />
