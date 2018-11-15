@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Common.useAndroidImplementation(this);
+        Common.getInstance().setAppName(BuildConfig.APPLICATION_ID);
         AppConfig.initialize(this);
 
         setContentView(R.layout.activity_main);
