@@ -5,6 +5,11 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_add_player">Add player</string>
+    <string name="action_remove_player">Remove player</string>
+    <string name="action_switch_mode">Switch mode</string>
+    <string name="action_save_game">Save game</string>
+    <string name="action_load_game">Load game</string>
+    <string name="action_manage_saved_games">Manage saved games</string>
     <string name="edit_player_name">Edit player name</string>
     <string name="edit_score">Edit score</string>
     <string name="dialog_ok">OK</string>
@@ -21,4 +26,9 @@
     <string name="sidebar_imprint">Imprint &amp; Privacy Policy</string>
     <string name="no_game_active_toast">No game active at the moment</string>
     <string name="app_icon_content_description">App icon</string>
+    <string name="switch_mode_title">Switch mode</string>
+    <string name="switch_mode_lowscore">Lowscore</string>
+    <string name="switch_mode_highscore">Highscore</string>
+    <string name="save_game_dialog_title">Save the current game</string>
+    <string name="save_game_dialog_hint">type a name</string>
 </resources>

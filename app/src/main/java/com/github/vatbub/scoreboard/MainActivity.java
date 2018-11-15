@@ -1,9 +1,13 @@
 package com.github.vatbub.scoreboard;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,6 +39,49 @@ public class MainActivity extends AppCompatActivity
 
     private RecyclerView mainTable;
     private GameTableRecyclerViewAdapter mainTableAdapter;
+
+    public static void createStringPrompt(Context context, @StringRes int title, @StringRes int okText, @StringRes int cancelText, StringPromptResultHandler resultHandler) {
+        createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), resultHandler);
+    }
+
+    public static void createStringPrompt(Context context, @StringRes int title, @StringRes int okText, @StringRes int cancelText, @Nullable String defaultText, StringPromptResultHandler resultHandler) {
+        createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), defaultText, resultHandler);
+    }
+
+    public static void createStringPrompt(Context context, @StringRes int title, @StringRes int okText, @StringRes int cancelText, @Nullable String defaultText, @Nullable String defaultHint, StringPromptResultHandler resultHandler) {
+        createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), defaultText, defaultHint, resultHandler);
+    }
+
+    public static void createStringPrompt(Context context, CharSequence title, CharSequence okText, CharSequence cancelText, StringPromptResultHandler resultHandler) {
+        createStringPrompt(context, title, okText, cancelText, null, resultHandler);
+    }
+
+    public static void createStringPrompt(Context context, CharSequence title, CharSequence okText, CharSequence cancelText, @Nullable String defaultText, StringPromptResultHandler resultHandler) {
+        createStringPrompt(context, title, okText, cancelText, defaultText, null, resultHandler);
+    }
+
+    public static void createStringPrompt(Context context, CharSequence title, CharSequence okText, CharSequence cancelText, @Nullable String defaultText, @Nullable String defaultHint, StringPromptResultHandler resultHandler) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(title);
+// R.string.edit_player_name
+
+        final EditText input = new EditText(context);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        if (defaultText != null)
+            input.setText(defaultText);
+        if (defaultHint != null)
+            input.setHint(defaultHint);
+        builder.setView(input);
+
+        // R.string.dialog_ok
+        builder.setPositiveButton(okText, (dialog, which) -> resultHandler.onOk(input.getText().toString()));
+        builder.setNegativeButton(cancelText, (dialog, which) -> {
+            dialog.cancel();
+            resultHandler.onCancel();
+        });
+
+        builder.show();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,33 +153,90 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add_player) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle(R.string.edit_player_name);
+            createStringPrompt(this, R.string.edit_player_name, R.string.dialog_ok, R.string.dialog_cancel, new StringPromptResultHandler() {
+                @Override
+                public void onOk(String result) {
+                    GameManager.Game game = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
+                    if (game == null) {
+                        Toast.makeText(MainActivity.this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show();
+                        return;
+                    }
 
-            // Set up the input
-            final EditText input = new EditText(this);
-            // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-            input.setInputType(InputType.TYPE_CLASS_TEXT);
-            builder.setView(input);
+                    game.createPlayer(result);
 
-            // Set up the buttons
-            builder.setPositiveButton(R.string.dialog_ok, (dialog, which) -> {
-                GameManager.Game game = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
-                if (game == null) {
-                    Toast.makeText(this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show();
-                    return;
+                    renderHeaderRow();
+                    renderSumRow();
+                    mainTableAdapter.notifyDataSetChanged();
                 }
 
-                game.createPlayer(input.getText().toString());
-
-                renderHeaderRow();
-                renderSumRow();
-                mainTableAdapter.notifyDataSetChanged();
+                @Override
+                public void onCancel() {
+                }
             });
-            builder.setNegativeButton(R.string.dialog_cancel, (dialog, which) -> dialog.cancel());
-
-            builder.show();
             return true;
+        } else if (id == R.id.action_remove_player) {
+
+        } else if (id == R.id.action_switch_mode) {
+            GameManager.Game currentGame = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
+            int inputSelection = 0;
+            if (currentGame != null) {
+                switch (currentGame.getMode()) {
+                    case HIGH_SCORE:
+                        inputSelection = 0;
+                        break;
+                    case LOW_SCORE:
+                        inputSelection = 1;
+                        break;
+                }
+            }
+
+            final CharSequence[] items = {getString(R.string.switch_mode_highscore), getString(R.string.switch_mode_lowscore)};
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.switch_mode_title);
+
+            builder.setSingleChoiceItems(items, inputSelection,
+                    (dialogInterface, selectedItem) -> {
+                        if (currentGame == null)
+                            return;
+
+                        if (selectedItem == 0)
+                            currentGame.setMode(GameManager.GameMode.HIGH_SCORE);
+                        else if (selectedItem == 1)
+                            currentGame.setMode(GameManager.GameMode.LOW_SCORE);
+                        dialogInterface.dismiss();
+                        renderSumRow();
+                    });
+            Dialog levelDialog = builder.create();
+            levelDialog.show();
+
+            return true;
+        } else if (id == R.id.action_save_game) {
+            GameManager.Game game = GameManager.getInstance(MainActivity.this).getCurrentlyActiveGame();
+            String currentName = null;
+            if (game != null && !game.getName().equals(""))
+                currentName = game.getName();
+
+            createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, currentName, getString(R.string.save_game_dialog_hint), new StringPromptResultHandler() {
+                @Override
+                public void onOk(String result) {
+                    if (game == null) {
+                        Toast.makeText(MainActivity.this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    game.setName(result);
+                }
+
+                @Override
+                public void onCancel() {
+                }
+            });
+            return true;
+        } else if (id == R.id.action_load_game) {
+
+        } else if (id == R.id.action_manage_saved_games) {
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -294,5 +398,11 @@ public class MainActivity extends AppCompatActivity
 
             viewHolder.getScoreHolderLayout().addView(textView);
         }
+    }
+
+    public interface StringPromptResultHandler {
+        void onOk(String result);
+
+        void onCancel();
     }
 }

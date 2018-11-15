@@ -4,6 +4,11 @@
     <string name="navigation_drawer_open">Sidebar öffnen</string>
     <string name="navigation_drawer_close">Sidebar schließen</string>
     <string name="action_add_player">Spieler hinzufügen</string>
+    <string name="action_remove_player">Spieler entfernen</string>
+    <string name="action_switch_mode">Modus wechseln</string>
+    <string name="action_save_game">Spielstand speichern</string>
+    <string name="action_load_game">Spielstand laden</string>
+    <string name="action_manage_saved_games">Spielstände verwalten</string>
     <string name="edit_player_name">Spielernamen bearbeiten</string>
     <string name="edit_score">Spielstand bearbeiten</string>
     <string name="dialog_ok">OK</string>
@@ -20,4 +25,9 @@
     <string name="sidebar_imprint">Impressum &amp;  Datenschutz</string>
     <string name="no_game_active_toast">Bitte aktivieren Sie ein Spiel</string>
     <string name="app_icon_content_description">App icon</string>
+    <string name="switch_mode_title">Modus wechseln</string>
+    <string name="switch_mode_lowscore">Lowscore</string>
+    <string name="switch_mode_highscore">Highscore</string>
+    <string name="save_game_dialog_title">Aktuelles Spiel speichern</string>
+    <string name="save_game_dialog_hint">Namen eingeben</string>
 </resources>
