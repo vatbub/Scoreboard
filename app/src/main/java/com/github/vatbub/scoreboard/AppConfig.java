@@ -7,10 +7,7 @@ public class AppConfig {
     private final String githubURL;
     private final String instagramURL;
 
-    public AppConfig() {
-        websiteURL = "https://fredplus10.me";
-        githubURL = "https://github.com/vatbub/Scoreboard";
-        instagramURL = "https://www.instagram.com/vatbub/";
+    private AppConfig() {
     }
 
     public static AppConfig getInstance() {
