@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -30,6 +31,8 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +41,7 @@ import com.github.vatbub.common.core.Common;
 import net.steamcrafted.materialiconlib.MaterialMenuInflater;
 
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -104,7 +108,9 @@ public class MainActivity extends AppCompatActivity
 
         GameManager.getInstance(this).activateGame(GameManager.getInstance(this).listGames().get(0));
         renderHeaderRow();
+        setSumBottomSheetUp();
         renderSumRow();
+        renderLeaderboard();
         getHeaderRowViewHolder().getLineNumberTextView().addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> mainTableAdapter.updateColumnWidths(getHeaderRowViewHolder().getLineNumberTextView().getWidth()));
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -134,6 +140,12 @@ public class MainActivity extends AppCompatActivity
         mainTableAdapter = new GameTableRecyclerViewAdapter(getMainTable(), GameManager.getInstance(this).getCurrentlyActiveGame(), this);
         getMainTable().setAdapter(mainTableAdapter);
         mainTableAdapter.notifyDataSetChanged();
+    }
+
+    private void setSumBottomSheetUp() {
+        BottomSheetBehavior mBottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.sum_bottom_sheet));
+        mBottomSheetBehavior.setPeekHeight(111);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
     }
 
     @Override
@@ -177,6 +189,7 @@ public class MainActivity extends AppCompatActivity
 
                     renderHeaderRow();
                     renderSumRow();
+                    renderLeaderboard();
                     mainTableAdapter.notifyDataSetChanged();
                 }
 
@@ -217,6 +230,7 @@ public class MainActivity extends AppCompatActivity
                             currentGame.setMode(GameManager.GameMode.LOW_SCORE);
                         dialogInterface.dismiss();
                         renderSumRow();
+                        renderLeaderboard();
                     });
             Dialog levelDialog = builder.create();
             levelDialog.show();
@@ -357,6 +371,7 @@ public class MainActivity extends AppCompatActivity
                 public void afterTextChanged(Editable s) {
                     try {
                         players.get(finalI).setName(s.toString());
+                        renderLeaderboard();
                     } catch (NumberFormatException e) {
                         Toast.makeText(viewHolder.getView().getContext(), R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show();
                         s.delete(s.length() - 1, s.length());
@@ -408,6 +423,37 @@ public class MainActivity extends AppCompatActivity
             textView.setLayoutParams(layoutParams);
 
             viewHolder.getScoreHolderLayout().addView(textView);
+        }
+    }
+
+    private TableLayout getLeaderboardView() {
+        return findViewById(R.id.leaderboard_table);
+    }
+
+    public void renderLeaderboard() {
+        GameManager.Game game = GameManager.getInstance(this).getCurrentlyActiveGame();
+        TableLayout leaderboardTable = getLeaderboardView();
+        leaderboardTable.removeAllViews();
+
+        if (game == null) {
+            TableRow emptyRow = new TableRow(this);
+            TextView emptyLabel = new TextView(this);
+            emptyLabel.setText(R.string.leaderboard_empty);
+            emptyRow.addView(emptyLabel);
+            leaderboardTable.addView(emptyRow);
+            return;
+        }
+
+        final Map<GameManager.Game.Player, Long> ranking = game.getRanking();
+        int i = 0;
+
+        for (Map.Entry<GameManager.Game.Player, Long> score : ranking.entrySet()) {
+            TableRow row = new TableRow(this);
+            TextView textView = new TextView(this);
+            textView.setText(getString(R.string.leaderboard_template, i + 1, score.getKey().getName(), score.getValue()));
+            row.addView(textView);
+            leaderboardTable.addView(row);
+            i++;
         }
     }
 

@@ -642,6 +642,29 @@ public class GameManager {
             return worstIs;
         }
 
+        public Map<Player, Long> getRanking() {
+            List<Player> players = getPlayers();
+
+            GameMode gameMode = getMode();
+            Map<Player, Long> sortedScores;
+
+            switch (gameMode) {
+                default:
+                case HIGH_SCORE:
+                    sortedScores = new ValueSortedMap<>(false);
+                    break;
+                case LOW_SCORE:
+                    sortedScores = new ValueSortedMap<>(true);
+                    break;
+            }
+
+            for (Player player : players) {
+                sortedScores.put(player, player.getTotalScore());
+            }
+
+            return sortedScores;
+        }
+
         @Nullable
         public List<OnRedrawListener> getOnRedrawListeners() {
             return onRedrawListeners;

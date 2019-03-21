@@ -30,4 +30,7 @@
     <string name="switch_mode_highscore">Highscore</string>
     <string name="save_game_dialog_title">Aktuelles Spiel speichern</string>
     <string name="save_game_dialog_hint">Namen eingeben</string>
+    <string name="leaderboard_title">Rangliste:</string>
+    <string name="leaderboard_empty">Hier gibt\'s noch nichts zu sehen. Tragen Sie Punkte ein, um die Rangliste zu sehen.</string>
+    <string name="leaderboard_template">%d. %s (%d)</string>
 </resources>

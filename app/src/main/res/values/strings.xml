@@ -31,4 +31,7 @@
     <string name="switch_mode_highscore">Highscore</string>
     <string name="save_game_dialog_title">Save the current game</string>
     <string name="save_game_dialog_hint">type a name</string>
+    <string name="leaderboard_title">Leaderboard:</string>
+    <string name="leaderboard_empty">Nothing here yet. Start playing to see the leaderboard.</string>
+    <string name="leaderboard_template">%d. %s (%d)</string>
 </resources>
