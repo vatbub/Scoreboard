@@ -3,6 +3,7 @@ package com.github.vatbub.scoreboard;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +34,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.vatbub.common.core.Common;
+
+import net.steamcrafted.materialiconlib.MaterialMenuInflater;
 
 import java.util.List;
 
@@ -145,8 +148,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        // getMenuInflater().inflate(R.menu.main, menu);
+        MaterialMenuInflater.with(this)
+                .setDefaultColor(Color.WHITE)
+                .inflate(R.menu.main, menu);
         return true;
     }
 

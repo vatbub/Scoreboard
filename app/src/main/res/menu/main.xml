@@ -4,30 +4,30 @@
     <item
         android:id="@+id/action_add_player"
         android:contentDescription="@string/action_add_player"
-        android:icon="@drawable/ic_add_user"
+        app:materialIcon="account_plus"
         android:orderInCategory="100"
         android:title="@string/action_add_player"
-        app:showAsAction="never|ifRoom" />
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_remove_player"
         android:contentDescription="@string/action_remove_player"
-        android:icon="@drawable/ic_remove_user"
+        app:materialIcon="account_minus"
         android:orderInCategory="100"
         android:title="@string/action_remove_player"
-        app:showAsAction="never|ifRoom" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_switch_mode"
         android:contentDescription="@string/action_switch_mode"
-        android:icon="@drawable/ic_remove_user"
+        app:materialIcon="loop"
         android:orderInCategory="100"
         android:title="@string/action_switch_mode"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_save_game"
         android:contentDescription="@string/action_save_game"
-        android:icon="@drawable/ic_remove_user"
+        app:materialIcon="content_save"
         android:orderInCategory="100"
         android:title="@string/action_save_game"
         app:showAsAction="never" />
@@ -35,7 +35,7 @@
     <item
         android:id="@+id/action_load_game"
         android:contentDescription="@string/action_load_game"
-        android:icon="@drawable/ic_remove_user"
+        app:materialIcon="folder_outline"
         android:orderInCategory="100"
         android:title="@string/action_load_game"
         app:showAsAction="never" />
@@ -43,7 +43,7 @@
     <item
         android:id="@+id/action_manage_saved_games"
         android:contentDescription="@string/action_manage_saved_games"
-        android:icon="@drawable/ic_remove_user"
+        app:materialIcon="pencil"
         android:orderInCategory="100"
         android:title="@string/action_manage_saved_games"
         app:showAsAction="never" />
