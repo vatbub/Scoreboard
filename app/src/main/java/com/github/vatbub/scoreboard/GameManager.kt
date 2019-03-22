@@ -8,7 +8,7 @@ import java.util.*
  * Manages game states
  */
 
-class GameManager private constructor(private val callingContext: Context) {
+class GameManager private constructor(callingContext: Context) {
     /**
      * Returns the game that is currently active or `null` if no game is active.
      *
@@ -26,8 +26,8 @@ class GameManager private constructor(private val callingContext: Context) {
         get() {
             val ids = prefs.getString(Keys.GameManagerKeys.IDS_PREF_KEY, "")
             if (ids!!.isEmpty())
-                return ArrayList()
-            val res = ArrayList<Int>()
+                return mutableListOf()
+            val res = mutableListOf<Int>()
             for (id in ids.split(Keys.GameManagerKeys.IDS_DELIMITER.toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray())
                 res.add(Integer.parseInt(id))
 
