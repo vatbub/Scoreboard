@@ -19,6 +19,7 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.github.vatbub.common.core.Common
 import kotlinx.android.synthetic.main.activity_main.*
@@ -51,6 +52,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 backingSumRowViewHolder = GameTableViewHolderWithPlaceholders(sum_row)
             return backingSumRowViewHolder!!
         }
+
+    private var headerRowEditTextViews: List<EditText>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -225,25 +228,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    private fun addPlayerHandler() =
-            createStringPrompt(this, R.string.edit_player_name, R.string.dialog_ok, R.string.dialog_cancel, object : StringPromptResultHandler {
-                override fun onOk(result: String) {
-                    val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame
-                    if (game == null) {
-                        Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
-                        return
-                    }
+    private fun addPlayerHandler() {
+        val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame
+        if (game == null) {
+            Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
+            return
+        }
 
-                    game.createPlayer(result)
+        game.createPlayer("")
 
-                    renderHeaderRow()
-                    renderSumRow()
-                    renderLeaderboard()
-                    mainTableAdapter.notifyDataSetChanged()
-                }
+        renderHeaderRow()
+        renderSumRow()
+        renderLeaderboard()
+        mainTableAdapter.notifyDataSetChanged()
 
-                override fun onCancel() {}
-            })
+        val viewToFocus = headerRowEditTextViews?.last() ?: return
+        viewToFocus.requestFocus()
+        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(viewToFocus, InputMethodManager.SHOW_IMPLICIT)
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
@@ -288,21 +291,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun renderHeaderRow() {
         val game = GameManager.getInstance(this).currentlyActiveGame
+        val editTextViews = mutableListOf<EditText>()
         headerRowUpdateLineNumber()
         headerRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
         headerRowViewHolder.deleteRowButton.visibility = View.INVISIBLE
 
         if (game == null) {
             headerRowViewHolder.scoreHolderLayout.removeAllViews()
+            headerRowEditTextViews = editTextViews
             return
         }
 
         val players = game.players
         headerRowViewHolder.scoreHolderLayout.removeAllViews()
 
-        for (i in players.indices) {
-            val player = players[i]
+        players.forEach {
             val editText = EditText(headerRowViewHolder.view.context)
+            editTextViews.add(editText)
 
             val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             editText.layoutParams = layoutParams
@@ -310,18 +315,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             editText.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
             editText.setHorizontallyScrolling(false)
             editText.maxLines = AppConfig.maxLinesForEnterText
-            editText.setText(player.name)
+            editText.setText(it.name)
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable) {
-                    players[i].name = s.toString()
+                    it.name = s.toString()
                     renderLeaderboard()
                 }
             })
 
             headerRowViewHolder.scoreHolderLayout.addView(editText)
         }
+
+        headerRowEditTextViews = editTextViews
     }
 
     fun renderSumRow() {
@@ -338,8 +345,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val looserIndices = game.loosers
         sumRowViewHolder.scoreHolderLayout.removeAllViews()
 
-        for (i in players.indices) {
-            val player = players[i]
+        players.forEachIndexed { index, player ->
             val textView = TextView(sumRowViewHolder.view.context)
             val sum = player.totalScore
             textView.text = textView.context.getString(R.string.main_table_score_template, sum)
@@ -347,9 +353,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             textView.setPadding(0, 15, 0, 15)
 
             @Suppress("DEPRECATION")
-            if (winnerIndices.contains(i))
+            if (winnerIndices.contains(index))
                 textView.setBackgroundColor(resources.getColor(R.color.winnerColor))
-            else if (looserIndices.contains(i))
+            else if (looserIndices.contains(index))
                 textView.setBackgroundColor(resources.getColor(R.color.looserColor))
 
             val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
