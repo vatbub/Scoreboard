@@ -102,7 +102,7 @@ public class GameTableRecyclerViewAdapter extends RecyclerView.Adapter<GameTable
             editText.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
             editText.setHint(String.format(editText.getContext().getString(R.string.main_table_score_template), 0));
             editText.setHorizontallyScrolling(false);
-            editText.setMaxLines(AppConfig.getInstance().getMaxLinesForEnterText());
+            editText.setMaxLines(AppConfig.Companion.getMaxLinesForEnterText());
             String scoreString = String.format(editText.getContext().getString(R.string.main_table_score_template), score);
             if (score != 0) editText.setText(scoreString);
 
