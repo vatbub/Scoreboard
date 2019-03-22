@@ -4,9 +4,9 @@
     <item
         android:id="@+id/action_add_player"
         android:contentDescription="@string/action_add_player"
-        app:materialIcon="account_plus"
         android:orderInCategory="100"
         android:title="@string/action_add_player"
+        app:materialIcon="account_plus"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_remove_player"
@@ -19,10 +19,10 @@
     <item
         android:id="@+id/action_switch_mode"
         android:contentDescription="@string/action_switch_mode"
-        app:materialIcon="loop"
         android:orderInCategory="100"
         android:title="@string/action_switch_mode"
-        app:showAsAction="ifRoom" />
+        app:materialIcon="loop"
+        app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_save_game"
@@ -30,7 +30,7 @@
         app:materialIcon="content_save"
         android:orderInCategory="100"
         android:title="@string/action_save_game"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_load_game"
@@ -38,7 +38,7 @@
         app:materialIcon="folder_outline"
         android:orderInCategory="100"
         android:title="@string/action_load_game"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_manage_saved_games"
@@ -46,5 +46,5 @@
         app:materialIcon="pencil"
         android:orderInCategory="100"
         android:title="@string/action_manage_saved_games"
-        app:showAsAction="never" />
+        app:showAsAction="ifRoom" />
 </menu>
