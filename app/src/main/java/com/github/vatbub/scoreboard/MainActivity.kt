@@ -115,8 +115,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setSumBottomSheetUp() {
-        val mBottomSheetBehavior = BottomSheetBehavior.from(findViewById<View>(R.id.sum_bottom_sheet))
-        mBottomSheetBehavior.peekHeight = 111
+        val mBottomSheetBehavior = BottomSheetBehavior.from(sum_bottom_sheet)
+        // mBottomSheetBehavior.peekHeight = sum_row.height
+        ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
+        // 31.toPx(this)
         mBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
@@ -348,6 +350,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         players.forEachIndexed { index, player ->
             val textView = TextView(sumRowViewHolder.view.context)
             val sum = player.totalScore
+            @Suppress("DEPRECATION")
+            textView.setTextColor(resources.getColor(R.color.sumRowFontColor))
             textView.text = textView.context.getString(R.string.main_table_score_template, sum)
             textView.gravity = Gravity.CENTER
             textView.setPadding(0, 15, 0, 15)
@@ -381,11 +385,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val ranking = game.ranking
         var i = 0
 
+        val textViewLayoutParams = TableRow.LayoutParams()
+        textViewLayoutParams.rightMargin = 10.toPx(this)
+
         for ((key, value) in ranking) {
             val row = TableRow(this)
-            val textView = TextView(this)
-            textView.text = getString(R.string.leaderboard_template, i + 1, key.name, value)
-            row.addView(textView)
+
+            val rankTextView = TextView(this)
+            val playerNameTextView = TextView(this)
+            val scoreTextView = TextView(this)
+
+            rankTextView.text = getString(R.string.leaderboard_rank_template, i + 1)
+            playerNameTextView.text = getString(R.string.leaderboard_player_name_template, key.name)
+            scoreTextView.text = getString(R.string.leaderboard_score_template, value)
+
+            val textColor = Color.WHITE
+            rankTextView.setTextColor(textColor)
+            playerNameTextView.setTextColor(textColor)
+            scoreTextView.setTextColor(textColor)
+
+            rankTextView.layoutParams = textViewLayoutParams
+            playerNameTextView.layoutParams = textViewLayoutParams
+            scoreTextView.layoutParams = textViewLayoutParams
+
+            row.addView(rankTextView)
+            row.addView(playerNameTextView)
+            row.addView(scoreTextView)
+
             leaderboard_table.addView(row)
             i++
         }

@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="@dimen/sum_row_height"
+    android:background="#2E2E2E"
     android:orientation="vertical">
-
-    <View
-        android:id="@+id/topBorder"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
 
     <android.widget.LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <TextView
@@ -20,14 +15,13 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="@string/main_table_row_number_template"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <LinearLayout
             android:id="@+id/main_table_text_view_holder"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginStart="20dp"
             android:layout_weight="1"
             android:orientation="horizontal">
@@ -42,11 +36,5 @@
             android:layout_weight="0"
             android:background="@android:color/transparent" />
     </android.widget.LinearLayout>
-
-    <View
-        android:id="@+id/bottomBorder"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/black" />
 
 </android.widget.LinearLayout>
