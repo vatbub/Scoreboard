@@ -1,6 +1,13 @@
+import org.ajoberstar.grgit.Grgit
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+
+ext {
+    git = Grgit.open(dir: file('..'))
+    GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
+}
 
 android {
     compileSdkVersion 26
@@ -8,8 +15,8 @@ android {
         applicationId "com.github.vatbub.scoreboard"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode GIT_COMMIT_COUNT
+        versionName "1.0." + new Date().format('yyyy_MM_dd_HHmm')
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -17,6 +24,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
