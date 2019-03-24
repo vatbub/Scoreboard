@@ -62,7 +62,6 @@ freeline_project_description.json
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.ear
 *.zip
@@ -117,3 +116,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 .idea/
+
+buddycipasswords.txt
+output.json
