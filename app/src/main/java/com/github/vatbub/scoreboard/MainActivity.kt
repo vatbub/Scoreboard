@@ -1,6 +1,7 @@
 package com.github.vatbub.scoreboard
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -227,7 +228,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun removePlayerHandler() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val currentGame = GameManager.getInstance(this@MainActivity).currentlyActiveGame ?: return
+        val players = currentGame.players
+        val playerNames = Array(players.size) { players[it].name as CharSequence }
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.delete_player_title)
+
+        val indicesToDelete = BooleanArray(playerNames.size)
+
+        builder.setMultiChoiceItems(playerNames, indicesToDelete
+        ) { _: DialogInterface, index: Int, checked: Boolean ->
+            indicesToDelete[index] = checked
+        }
+        builder.setPositiveButton(R.string.delete_player_ok) { _, _ ->
+            val playersToDelete = mutableListOf<GameManager.Game.Player>()
+            indicesToDelete.forEachIndexed { index, checked ->
+                if (checked)
+                    playersToDelete.add(players[index])
+            }
+            playersToDelete.forEach { currentGame.deletePlayer(it) }
+        }
+        builder.setNegativeButton(R.string.delete_player_cancel) { _, _ -> }
+        builder.create().show()
     }
 
     private fun addPlayerHandler() {

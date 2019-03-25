@@ -36,4 +36,7 @@
     <string name="leaderboard_rank_template">%d.</string>
     <string name="leaderboard_player_name_template">%s</string>
     <string name="leaderboard_score_template">%d</string>
+    <string name="delete_player_title">Delete players</string>
+    <string name="delete_player_ok">Ok</string>
+    <string name="delete_player_cancel">Cancel</string>
 </resources>
