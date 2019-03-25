@@ -33,7 +33,6 @@ android {
 }
 
 dependencies {
-    lintClassPath fileTree(include: ['*.jar'], dir: 'libs')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 	implementation fileTree(include: ['*.aar'], dir: 'libs')
     // implementation 'net.steamcrafted:materialiconlib:1.1.5'
