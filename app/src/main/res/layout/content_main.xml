@@ -10,25 +10,33 @@
     tools:context="com.github.vatbub.scoreboard.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <include
             android:id="@+id/header_row"
             layout="@layout/scoreboard_row"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/main_table_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="horizontal|vertical">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbars="horizontal|vertical"
+            app:layout_constraintBottom_toTopOf="@+id/space"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_row" />
 
-        </android.support.v7.widget.RecyclerView>
-    </LinearLayout>
+        <android.support.v4.widget.Space
+            android:id="@+id/space"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/sum_row_height"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/sum_bottom_sheet"
