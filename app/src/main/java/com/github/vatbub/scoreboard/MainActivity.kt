@@ -248,6 +248,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     playersToDelete.add(players[index])
             }
             playersToDelete.forEach { currentGame.deletePlayer(it) }
+            renderHeaderRow()
+            renderLeaderboard()
+            renderSumRow()
+            mainTableAdapter.notifyDataSetChanged()
         }
         builder.setNegativeButton(R.string.delete_player_cancel) { _, _ -> }
         builder.create().show()
