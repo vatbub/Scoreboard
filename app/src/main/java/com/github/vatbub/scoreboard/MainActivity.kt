@@ -235,7 +235,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!players.contains(player))
             throw IllegalArgumentException("Player must be part of the specified game.")
         val index = players.indexOf(player) + 1
-        return player.name ?: getString(R.string.player_no_name_template, index)
+        var finalName = player.name
+        if (finalName == null || finalName.replace(" ", "") == "")
+            finalName = getString(R.string.player_no_name_template, index)
+        return finalName!!
     }
 
     private fun removePlayerHandler() {
