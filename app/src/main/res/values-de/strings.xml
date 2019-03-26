@@ -38,4 +38,5 @@
     <string name="delete_player_title">Spieler löschen</string>
     <string name="delete_player_ok">Ok</string>
     <string name="delete_player_cancel">Abbrechen</string>
+    <string name="player_no_name_template">Spieler %d</string>
 </resources>

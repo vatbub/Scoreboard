@@ -227,10 +227,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         builder.create().show()
     }
 
+    private fun getPlayerNameOrDummy(game: GameManager.Game, player: GameManager.Game.Player, players: List<GameManager.Game.Player> = game.players): String {
+        if (!players.contains(player))
+            throw IllegalArgumentException("Player must be part of the specified game.")
+        val index = players.indexOf(player) + 1
+        return player.name ?: getString(R.string.player_no_name_template, index)
+    }
+
     private fun removePlayerHandler() {
         val currentGame = GameManager.getInstance(this@MainActivity).currentlyActiveGame ?: return
         val players = currentGame.players
-        val playerNames = Array(players.size) { players[it].name as CharSequence }
+        val playerNames = Array(players.size) { getPlayerNameOrDummy(currentGame, players[it], players) }
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.delete_player_title)
@@ -423,7 +430,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val scoreTextView = TextView(this)
 
             rankTextView.text = getString(R.string.leaderboard_rank_template, i + 1)
-            playerNameTextView.text = getString(R.string.leaderboard_player_name_template, key.name)
+            playerNameTextView.text = getString(R.string.leaderboard_player_name_template, getPlayerNameOrDummy(game, key))
             scoreTextView.text = getString(R.string.leaderboard_score_template, value)
 
             val textColor = Color.WHITE
