@@ -23,6 +23,10 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.github.vatbub.common.core.Common
+import com.github.vatbub.scoreboard.data.Game
+import com.github.vatbub.scoreboard.data.GameManager
+import com.github.vatbub.scoreboard.data.GameMode
+import com.github.vatbub.scoreboard.data.Player
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -65,10 +69,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         val gameManager = GameManager.getInstance(this)
-        if (gameManager.listGames().isEmpty())
+        if (gameManager.games.isEmpty())
             gameManager.createGame("dummyGame")
 
-        gameManager.activateGame(gameManager.listGames()[0])
+        gameManager.activateGame(gameManager.games[0])
         renderHeaderRow()
         setSumBottomSheetUp()
         renderSumRow()
@@ -202,8 +206,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val inputSelection = if (currentGame == null) {
             0
         } else when (currentGame.mode) {
-            GameManager.GameMode.HIGH_SCORE -> 0
-            GameManager.GameMode.LOW_SCORE -> 1
+            GameMode.HIGH_SCORE -> 0
+            GameMode.LOW_SCORE -> 1
         }
 
         val items = arrayOf<CharSequence>(getString(R.string.switch_mode_highscore), getString(R.string.switch_mode_lowscore))
@@ -217,9 +221,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return@setSingleChoiceItems
 
             if (selectedItem == 0)
-                currentGame.mode = GameManager.GameMode.HIGH_SCORE
+                currentGame.mode = GameMode.HIGH_SCORE
             else if (selectedItem == 1)
-                currentGame.mode = GameManager.GameMode.LOW_SCORE
+                currentGame.mode = GameMode.LOW_SCORE
             dialogInterface.dismiss()
             renderSumRow()
             renderLeaderboard()
@@ -227,7 +231,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         builder.create().show()
     }
 
-    private fun getPlayerNameOrDummy(game: GameManager.Game, player: GameManager.Game.Player, players: List<GameManager.Game.Player> = game.players): String {
+    private fun getPlayerNameOrDummy(game: Game, player: Player, players: List<Player> = game.players): String {
         if (!players.contains(player))
             throw IllegalArgumentException("Player must be part of the specified game.")
         val index = players.indexOf(player) + 1
@@ -249,12 +253,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             indicesToDelete[index] = checked
         }
         builder.setPositiveButton(R.string.delete_player_ok) { _, _ ->
-            val playersToDelete = mutableListOf<GameManager.Game.Player>()
+            val playersToDelete = mutableListOf<Player>()
             indicesToDelete.forEachIndexed { index, checked ->
                 if (checked)
                     playersToDelete.add(players[index])
             }
-            playersToDelete.forEach { currentGame.deletePlayer(it) }
+            playersToDelete.forEach { currentGame.players.remove(it) }
             renderHeaderRow()
             renderLeaderboard()
             renderSumRow()

@@ -8,7 +8,7 @@ import java.util.*
  * Manages game states
  */
 
-class GameManager private constructor(callingContext: Context) {
+class GameManagerOld private constructor(callingContext: Context) {
     /**
      * Returns the game that is currently active or `null` if no game is active.
      *
@@ -45,9 +45,9 @@ class GameManager private constructor(callingContext: Context) {
         }
 
     /**
-     * Returns the [SharedPreferences] to be used in the GameManager.
+     * Returns the [SharedPreferences] to be used in the GameManagerOld.
      *
-     * @return the [SharedPreferences] to be used in the GameManager.
+     * @return the [SharedPreferences] to be used in the GameManagerOld.
      */
     private val prefs = callingContext.getSharedPreferences(Keys.GameManagerKeys.SETTINGS_SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)!!
 
@@ -248,8 +248,8 @@ class GameManager private constructor(callingContext: Context) {
                 val gameMode = mode
 
                 var bestScore = when (gameMode) {
-                    GameManager.GameMode.HIGH_SCORE -> java.lang.Long.MIN_VALUE
-                    GameManager.GameMode.LOW_SCORE -> java.lang.Long.MAX_VALUE
+                    GameManagerOld.GameMode.HIGH_SCORE -> java.lang.Long.MIN_VALUE
+                    GameManagerOld.GameMode.LOW_SCORE -> java.lang.Long.MAX_VALUE
                 }
 
                 players.forEachIndexed { index, player ->
@@ -260,12 +260,12 @@ class GameManager private constructor(callingContext: Context) {
                     }
 
                     when (gameMode) {
-                        GameManager.GameMode.HIGH_SCORE -> if (score > bestScore) {
+                        GameManagerOld.GameMode.HIGH_SCORE -> if (score > bestScore) {
                             bestIndices.clear()
                             bestScore = score
                             bestIndices.add(index)
                         }
-                        GameManager.GameMode.LOW_SCORE -> if (score < bestScore) {
+                        GameManagerOld.GameMode.LOW_SCORE -> if (score < bestScore) {
                             bestIndices.clear()
                             bestScore = score
                             bestIndices.add(index)
@@ -283,8 +283,8 @@ class GameManager private constructor(callingContext: Context) {
                 val gameMode = mode
 
                 var worstScore = when (gameMode) {
-                    GameManager.GameMode.HIGH_SCORE -> java.lang.Long.MAX_VALUE
-                    GameManager.GameMode.LOW_SCORE -> java.lang.Long.MIN_VALUE
+                    GameManagerOld.GameMode.HIGH_SCORE -> java.lang.Long.MAX_VALUE
+                    GameManagerOld.GameMode.LOW_SCORE -> java.lang.Long.MIN_VALUE
                 }
 
                 players.forEachIndexed { index, player ->
@@ -295,12 +295,12 @@ class GameManager private constructor(callingContext: Context) {
                     }
 
                     when (gameMode) {
-                        GameManager.GameMode.HIGH_SCORE -> if (score < worstScore) {
+                        GameManagerOld.GameMode.HIGH_SCORE -> if (score < worstScore) {
                             worstIs.clear()
                             worstScore = score
                             worstIs.add(index)
                         }
-                        GameManager.GameMode.LOW_SCORE -> if (score > worstScore) {
+                        GameManagerOld.GameMode.LOW_SCORE -> if (score > worstScore) {
                             worstIs.clear()
                             worstScore = score
                             worstIs.add(index)
@@ -317,8 +317,8 @@ class GameManager private constructor(callingContext: Context) {
 
                 val gameMode = mode
                 val sortedScores = when (gameMode) {
-                    GameManager.GameMode.HIGH_SCORE -> ValueSortedMap<Player, Long>(false)
-                    GameManager.GameMode.LOW_SCORE -> ValueSortedMap(true)
+                    GameManagerOld.GameMode.HIGH_SCORE -> ValueSortedMap<Player, Long>(false)
+                    GameManagerOld.GameMode.LOW_SCORE -> ValueSortedMap(true)
                 }
 
                 players.forEach { sortedScores[it] = it.totalScore }
@@ -595,25 +595,25 @@ class GameManager private constructor(callingContext: Context) {
     }
 
     companion object {
-        private val instances = HashMap<Context, GameManager>()
+        private val instances = HashMap<Context, GameManagerOld>()
 
         /**
-         * Instantiates a new GameManager for the specified context or returns the existing instance if one has already been initialized.
+         * Instantiates a new GameManagerOld for the specified context or returns the existing instance if one has already been initialized.
          *
-         * @param callingContext The context to get the GameManager for
-         * @return The GameManager for the specified context
+         * @param callingContext The context to get the GameManagerOld for
+         * @return The GameManagerOld for the specified context
          */
-        fun getInstance(callingContext: Context): GameManager {
+        fun getInstance(callingContext: Context): GameManagerOld {
             synchronized(instances) {
                 if (!instances.containsKey(callingContext))
-                    instances[callingContext] = GameManager(callingContext)
+                    instances[callingContext] = GameManagerOld(callingContext)
 
                 return instances[callingContext]!!
             }
         }
 
         /**
-         * Resets the GameManager instance for the specified context. Calling [.getInstance] will cause a new instance to be crated.
+         * Resets the GameManagerOld instance for the specified context. Calling [.getInstance] will cause a new instance to be crated.
          *
          * @param context The context of the instance to reset
          * @return The id of the currently active game or -1 if [.getCurrentlyActiveGame]`== null`

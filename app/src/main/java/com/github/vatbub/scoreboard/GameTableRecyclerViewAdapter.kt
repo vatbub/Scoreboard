@@ -9,9 +9,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
+import com.github.vatbub.scoreboard.data.Game
 import java.util.*
 
-class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: GameManager.Game, val mainActivity: MainActivity) : RecyclerView.Adapter<GameTableViewHolder>() {
+class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val mainActivity: MainActivity) : RecyclerView.Adapter<GameTableViewHolder>() {
     private val mBoundViewHolders = HashSet<GameTableViewHolder>()
     private var lastLineColumnWidth: Int = 0
 
