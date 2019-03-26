@@ -2,6 +2,10 @@ package com.github.vatbub.scoreboard.data
 
 import android.content.Context
 import com.github.vatbub.scoreboard.ValueSortedMap
+import org.jdom2.Attribute
+import org.jdom2.Document
+import org.jdom2.Element
+import org.jdom2.Text
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -132,33 +136,39 @@ class GameManager(private val callingContext: Context) {
     internal fun saveGame(game: Game) {
         // val json = gson.toJson(game.serializableCopy())
         // gameManagerPrefs.edit().putString(getGameKey(game.id), json).apply()
-        KryoUtils.saveObject(callingContext, getGameKey(game.id), game.serializableCopy())
+        XmlFileUtils.saveFile(callingContext, getGameKey(game.id), game.toXml())
     }
 
     private fun saveGameList() {
         // val json = gson.toJson(gameIDs)
         // gameManagerPrefs.edit().putString(gameListPrefKey, json).apply()
-        KryoUtils.saveObject(callingContext, gameListPrefKey, gameIDs)
+
+        val rootElement = Element(XmlConstants.GameManager.XML_GAME_IDS_TAG_NAME)
+
+        gameIDs.forEach {
+            val idElement = Element(XmlConstants.GameManager.XML_GAME_ID_TAG_NAME)
+            idElement.setContent(Text(it.toString()))
+            rootElement.children.add(idElement)
+        }
+
+        XmlFileUtils.saveFile(callingContext, gameListPrefKey, Document(rootElement))
     }
 
-    private fun restoreData(): ArrayList<Game> {
+    private fun restoreData(): List<Game> {
         // val json = gameManagerPrefs.getString(gameListPrefKey, "")
         // val restoredGameIds = gson.fromJson<List<Int>>(json, List::class.java) ?: return listOf()
-        val restoredGameIds = KryoUtils.readObject(callingContext, gameListPrefKey, List::class.java)
-                ?: return arrayListOf()
-        val restoredGames = arrayListOf<Game>()
+        val gameIdsDocument = XmlFileUtils.readFile(callingContext, gameListPrefKey)
+                ?: return listOf()
+        val gameIdsElement = gameIdsDocument.rootElement
 
-        restoredGameIds.forEach {
-            it as Int
+        val restoredGames = mutableListOf<Game>()
+
+        gameIdsElement.children.forEach {
             // val gameJson = gameManagerPrefs.getString(getGameKey(it), "")
             // val restoredGame = gson.fromJson<Game>(gameJson, Game::class.java) ?: return@forEach
-            val restoredGame = KryoUtils.readObject(callingContext, getGameKey(it), Game::class.java)
-                    ?: return@forEach
-            restoredGame.gameManager = this
-
-            restoredGame.players.forEach { player ->
-                player.parentGame = restoredGame
-            }
+            val id = it.content[0].value.toInt()
+            val restoredGame = Game.fromXml(this, XmlFileUtils.readFile(callingContext, getGameKey(id))
+                    ?: return@forEach)
 
             restoredGames.add(restoredGame)
         }
@@ -317,10 +327,7 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
     }
 
     fun addEmptyScoreLine() {
-        val players = players
-        val scores = ArrayList<Long>(players.size)
-        repeat(players.size) { scores.add(0L) }
-        addScoreLine(scores)
+        addScoreLine(List(players.size) { 0L })
     }
 
     /**
@@ -365,6 +372,52 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
     }
 
     internal fun savePlayer() = gameManager?.saveGame(this)
+
+    fun toXml(): Document {
+        // var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>
+        val rootElement = Element(XmlConstants.Game.XML_GAME_TAG_NAME)
+        rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE, id.toString()))
+        rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE, name))
+        rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE, mode.toString()))
+
+        val playersElement = Element(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
+        rootElement.children.add(playersElement)
+
+        players.forEach { playersElement.children.add(it.toXml()) }
+
+        return Document(rootElement)
+    }
+
+    companion object {
+        fun fromXml(gameManager: GameManager?, document: Document): Game {
+            val rootElement = document.rootElement
+            val id = rootElement.getAttribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE).intValue
+            val name = rootElement.getAttribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE).value
+            val gameMode = GameMode.valueOf(rootElement.getAttribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE).value)
+
+            val playersElement = rootElement.getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
+            val players = List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
+
+            val game = Game(gameManager, id, name, gameMode, players)
+            players.forEach { it.parentGame = game }
+            return game
+        }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Game
+
+        if (id != other.id) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return id
+    }
 }
 
 class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Long>) {
@@ -395,6 +448,35 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
             sum += scores[i]
 
         return sum
+    }
+
+    fun toXml(): Element {
+        val result = Element(XmlConstants.Player.XML_PLAYER_TAG_NAME)
+        result.attributes.add(Attribute(XmlConstants.Player.XML_PLAYER_ID_ATTRIBUTE, id.toString()))
+        result.attributes.add(Attribute(XmlConstants.Player.XML_PLAYER_NAME_ATTRIBUTE, name))
+
+        val scoresElement = Element(XmlConstants.Player.XML_PLAYER_SCORES_TAG_NAME)
+        result.children.add(scoresElement)
+
+        scores.forEach {
+            val scoreElement = Element(XmlConstants.Player.XML_PLAYER_SCORE_TAG_NAME)
+            scoreElement.setContent(Text(it.toString()))
+            scoresElement.children.add(scoreElement)
+        }
+
+        return result
+    }
+
+    companion object {
+        fun fromXml(element: Element): Player {
+            val id = element.getAttribute(XmlConstants.Player.XML_PLAYER_ID_ATTRIBUTE).intValue
+            val name = element.getAttribute(XmlConstants.Player.XML_PLAYER_NAME_ATTRIBUTE).value
+
+            val scoresElement = element.getChild(XmlConstants.Player.XML_PLAYER_SCORES_TAG_NAME)
+            val scores = List(scoresElement.children.size) { scoresElement.children[it].content[0].value.toLong() }
+
+            return Player(null, id, name, scores)
+        }
     }
 
     override fun toString(): String {
