@@ -309,7 +309,7 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
      * @return The created player
      */
     fun createPlayer(playerName: String): Player {
-        val player = Player(this, nextPlayerId, playerName, listOf())
+        val player = Player(this, nextPlayerId, playerName, List(scoreCount) { 0L })
         players.add(player)
         return player
     }
