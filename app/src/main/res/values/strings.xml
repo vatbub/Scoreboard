@@ -42,4 +42,10 @@
     <string name="player_no_name_template">Player %d</string>
     <string name="action_show_ranking">Show ranking</string>
     <string name="action_hide_ranking">Hide ranking</string>
+    <string name="game_no_name_template">Game %d</string>
+    <string name="action_new_game">New game</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="alert_new_game_delete_current_game">Do you want to delete the current game?</string>
+    <string name="snackbar_new_game_manage_games_hint">Click \'Load game\' to restore the old game.</string>
 </resources>

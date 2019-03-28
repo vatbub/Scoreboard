@@ -11,6 +11,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBarDrawerToggle
@@ -82,20 +83,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val gameManager = GameManager.getInstance(this)
         if (gameManager.games.isEmpty())
-            gameManager.createGame("dummyGame")
+            gameManager.createGame(null)
 
         gameManager.activateGame(gameManager.games[0])
-        renderHeaderRow()
         setSumBottomSheetUp()
-        renderSumRow()
-        renderLeaderboard()
+        setRecyclerViewUp()
+
+        redraw()
         headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> mainTableAdapter.updateColumnWidths(headerRowViewHolder.lineNumberTextView.width) }
 
         setFabListenerUp()
         setNavigationDrawerUp()
         nav_view.setNavigationItemSelectedListener(this)
 
-        setRecyclerViewUp()
     }
 
     private fun setCommonLibUp() {
@@ -184,6 +184,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 saveGameHandler()
                 return true
             }
+            R.id.action_new_game -> {
+                newGameHandler()
+                return true
+            }
             R.id.action_load_game -> {
                 loadGameHandler()
                 return true
@@ -195,6 +199,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun newGameHandler() {
+        val gameManager = GameManager.getInstance(this)
+        val currentGame = gameManager.currentlyActiveGame
+
+        if (currentGame != null) {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(R.string.alert_new_game_delete_current_game)
+
+            builder.setPositiveButton(R.string.yes) { _, _ ->
+                gameManager.deleteGame(currentGame)
+            }
+            builder.setNegativeButton(R.string.no) { _, _ ->
+                Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG)
+            }
+            builder.create().show()
+        }
+
+        val newGame = gameManager.createGame(null)
+        gameManager.activateGame(newGame)
+        redraw(true)
     }
 
     private fun toggleRankingHandler() {
@@ -209,23 +235,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun loadGameHandler() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val gameManager = GameManager.getInstance(this)
+        val games = gameManager.games
+        val gameNames = List(games.size) { getGameNameOrDummy(games[it], games) }
+        val currentGame = gameManager.currentlyActiveGame
+        val inputSelection = if (currentGame == null)
+            0
+        else
+            games.indexOf(currentGame)
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.switch_mode_title)
+
+        builder.setSingleChoiceItems(gameNames.toTypedArray(), inputSelection
+        ) { dialogInterface, selectedItem ->
+            gameManager.activateGame(games[selectedItem])
+            dialogInterface.dismiss()
+            redraw(true)
+        }
+        builder.create().show()
     }
 
     private fun saveGameHandler() {
-        val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame
-        val currentName = if (game != null && game.name != "")
-            game.name
-        else
-            null
+        val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame ?: return
 
-        createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = currentName, defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
+        createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = getGameNameOrDummy(game), defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
             override fun onOk(result: String) {
-                if (game == null) {
-                    Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
-                    return
-                }
-
                 game.name = result
             }
 
@@ -263,6 +298,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         builder.create().show()
     }
 
+    private fun verifyPlayer(player: Player, players: List<Player>) {
+        if (!players.contains(player))
+            throw IllegalArgumentException("Player must be part of the specified game.")
+    }
+
     private fun getPlayerNameOrDummy(game: Game, player: Player, players: List<Player> = game.players): String {
         verifyPlayer(player, players)
         var finalName = player.name
@@ -271,15 +311,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return finalName
     }
 
-    private fun verifyPlayer(player: Player, players: List<Player>) {
-        if (!players.contains(player))
-            throw IllegalArgumentException("Player must be part of the specified game.")
-    }
-
     private fun getPlayerDummyName(game: Game, player: Player, players: List<Player> = game.players): String {
         verifyPlayer(player, players)
         val index = players.indexOf(player) + 1
         return getString(R.string.player_no_name_template, index)
+    }
+
+    private fun getGameNameOrDummy(game: Game, games: List<Game> = GameManager.getInstance(this).games): String {
+        var finalName = game.name
+        if (finalName == null || finalName.replace(" ", "") == "")
+            finalName = getGameDummyName(game, games)
+        return finalName
+    }
+
+    private fun getGameDummyName(game: Game, games: List<Game> = GameManager.getInstance(this).games): String {
+        val index = games.indexOf(game) + 1
+        return getString(R.string.game_no_name_template, index)
     }
 
     private fun removePlayerHandler() {
@@ -303,10 +350,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     playersToDelete.add(players[index])
             }
             playersToDelete.forEach { currentGame.players.remove(it) }
-            renderHeaderRow()
-            renderLeaderboard()
-            renderSumRow()
-            mainTableAdapter.notifyDataSetChanged()
+            redraw()
         }
         builder.setNegativeButton(R.string.delete_player_cancel) { _, _ -> }
         builder.create().show()
@@ -321,10 +365,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         game.createPlayer("")
 
-        renderHeaderRow()
-        renderSumRow()
-        renderLeaderboard()
-        mainTableAdapter.notifyDataSetChanged()
+        redraw()
 
         val viewToFocus = headerRowEditTextViews?.last() ?: return
         viewToFocus.requestFocus()
@@ -371,6 +412,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         sumRowUpdateLineNumber()
         headerRowViewHolder.lineNumberTextView.requestLayout()
         sumRowViewHolder.lineNumberTextView.requestLayout()
+    }
+
+    private fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true) {
+        if (refreshGameData) {
+            backingMainTableAdapter = null
+            setRecyclerViewUp()
+        }
+        if (redrawHeaderRow)
+            renderHeaderRow()
+        if (notifyDataSetChanged)
+            mainTableAdapter.notifyDataSetChanged()
+        if (redrawSumRow)
+            renderSumRow()
+        if (redrawLeaderBoard)
+            renderLeaderboard()
     }
 
     private fun renderHeaderRow() {

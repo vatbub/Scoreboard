@@ -114,7 +114,7 @@ class GameManager(private val callingContext: Context) {
      * @param gameName The name of the game to create. Does not need to be unique.
      * @return The game that was created.
      */
-    fun createGame(gameName: String): Game {
+    fun createGame(gameName: String?): Game {
         val game = Game(this, nextGameId, gameName, GameMode.HIGH_SCORE, listOf())
         _games.add(game)
         return game
@@ -188,7 +188,7 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
     @Suppress("unused")
     private constructor() : this(null, -1, null, GameMode.HIGH_SCORE, listOf())
 
-    var name by Delegates.observable(name) { _, _, _ -> gameManager?.saveGame(this) }
+    var name by Delegates.observable(name ?: "") { _, _, _ -> gameManager?.saveGame(this) }
     var mode by Delegates.observable(gameMode) { _, _, _ -> gameManager?.saveGame(this) }
     val isActive: Boolean
         get() = gameManager?.currentlyActiveGame == this

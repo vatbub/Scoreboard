@@ -41,4 +41,10 @@
     <string name="player_no_name_template">Spieler %d</string>
     <string name="action_show_ranking">Rangliste zeigen</string>
     <string name="action_hide_ranking">Rangliste verstecken</string>
+    <string name="game_no_name_template">Spiel %d</string>
+    <string name="action_new_game">Neues Spiel</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="alert_new_game_delete_current_game">Möchten Sie den aktuellen Spielstand löschen?</string>
+    <string name="snackbar_new_game_manage_games_hint">Klicken Sie auf \'Spielstand laden\', um den alten Spielstand wiederherzustellen.</string>
 </resources>

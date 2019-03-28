@@ -40,6 +40,14 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_new_game"
+        android:contentDescription="@string/action_new_game"
+        android:orderInCategory="100"
+        android:title="@string/action_new_game"
+        app:materialIcon="clipboard_plus"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_load_game"
         android:contentDescription="@string/action_load_game"
         app:materialIcon="folder_outline"
