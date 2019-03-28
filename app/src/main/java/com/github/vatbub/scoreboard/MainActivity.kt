@@ -232,13 +232,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun getPlayerNameOrDummy(game: Game, player: Player, players: List<Player> = game.players): String {
-        if (!players.contains(player))
-            throw IllegalArgumentException("Player must be part of the specified game.")
-        val index = players.indexOf(player) + 1
+        verifyPlayer(player, players)
         var finalName = player.name
         if (finalName == null || finalName.replace(" ", "") == "")
-            finalName = getString(R.string.player_no_name_template, index)
-        return finalName!!
+            finalName = getPlayerDummyName(game, player, players)
+        return finalName
+    }
+
+    private fun verifyPlayer(player: Player, players: List<Player>) {
+        if (!players.contains(player))
+            throw IllegalArgumentException("Player must be part of the specified game.")
+    }
+
+    private fun getPlayerDummyName(game: Game, player: Player, players: List<Player> = game.players): String {
+        verifyPlayer(player, players)
+        val index = players.indexOf(player) + 1
+        return getString(R.string.player_no_name_template, index)
     }
 
     private fun removePlayerHandler() {
@@ -358,6 +367,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             editText.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
             editText.setHorizontallyScrolling(false)
             editText.maxLines = AppConfig.maxLinesForEnterText
+            editText.hint = getPlayerDummyName(game, it, players)
             editText.setText(it.name)
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
