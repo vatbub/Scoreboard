@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 gameManager.deleteGame(currentGame)
             }
             builder.setNegativeButton(R.string.no) { _, _ ->
-                Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG)
+                Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG).show()
             }
             builder.create().show()
         }
@@ -319,7 +319,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun getGameNameOrDummy(game: Game, games: List<Game> = GameManager.getInstance(this).games): String {
         var finalName = game.name
-        if (finalName == null || finalName.replace(" ", "") == "")
+        if (finalName.replace(" ", "") == "")
             finalName = getGameDummyName(game, games)
         return finalName
     }
