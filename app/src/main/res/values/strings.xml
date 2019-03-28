@@ -40,4 +40,6 @@
     <string name="delete_player_ok">Ok</string>
     <string name="delete_player_cancel">Cancel</string>
     <string name="player_no_name_template">Player %d</string>
+    <string name="action_show_ranking">Show ranking</string>
+    <string name="action_hide_ranking">Hide ranking</string>
 </resources>

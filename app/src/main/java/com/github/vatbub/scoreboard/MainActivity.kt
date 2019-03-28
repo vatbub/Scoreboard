@@ -8,9 +8,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
+import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -58,7 +60,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return backingSumRowViewHolder!!
         }
 
+    private var backingBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>? = null
+    private val mBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
+        get() {
+            if (backingBottomSheetBehavior == null)
+                backingBottomSheetBehavior = BottomSheetBehavior.from(sum_bottom_sheet)
+            return backingBottomSheetBehavior!!
+        }
+
     private var headerRowEditTextViews: List<EditText>? = null
+
+    private var optionsMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,10 +132,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setSumBottomSheetUp() {
-        val mBottomSheetBehavior = BottomSheetBehavior.from(sum_bottom_sheet)
-        // mBottomSheetBehavior.peekHeight = sum_row.height
         ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
-        // 31.toPx(this)
+        mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                val optionsMenuCopy = optionsMenu ?: return
+                val menuItem = optionsMenuCopy.findItem(R.id.action_toggle_ranking) ?: return
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED)
+                    menuItem.title = getString(R.string.action_show_ranking)
+                else
+                    menuItem.title = getString(R.string.action_hide_ranking)
+            }
+        })
         mBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
@@ -134,6 +154,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        this.optionsMenu = menu
         MaterialMenuInflater.with(this)
                 .setDefaultColor(Color.WHITE)
                 .inflate(R.menu.main, menu)
@@ -149,6 +170,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.action_remove_player -> {
                 removePlayerHandler()
+                return true
+            }
+            R.id.action_toggle_ranking -> {
+                toggleRankingHandler()
                 return true
             }
             R.id.action_switch_mode -> {
@@ -170,6 +195,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
 
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun toggleRankingHandler() {
+        if (mBottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED)
+            mBottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        else
+            mBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun manageSavedGamesHandler() {

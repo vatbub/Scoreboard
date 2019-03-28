@@ -39,4 +39,6 @@
     <string name="delete_player_ok">Ok</string>
     <string name="delete_player_cancel">Abbrechen</string>
     <string name="player_no_name_template">Spieler %d</string>
+    <string name="action_show_ranking">Rangliste zeigen</string>
+    <string name="action_hide_ranking">Rangliste verstecken</string>
 </resources>
