@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -57,8 +56,8 @@
         android:background="#444444"
         android:clipToPadding="true"
         android:elevation="7dp"
-        app:layout_insetEdge="bottom"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+        app:layout_insetEdge="bottom">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -76,8 +75,8 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
                 android:text="@string/leaderboard_title"
-                android:textColor="@android:color/white"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@android:color/white" />
 
             <TableLayout
                 android:id="@+id/leaderboard_table"
@@ -85,8 +84,7 @@
                 android:layout_height="match_parent"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp"
-                android:visibility="invisible" />
+                android:paddingBottom="16dp" />
 
         </LinearLayout>
 
