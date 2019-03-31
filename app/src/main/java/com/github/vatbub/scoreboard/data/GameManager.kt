@@ -315,7 +315,7 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
         }
 
     override fun toString(): String {
-        return name ?: super.toString()
+        return name
     }
 
     /**
