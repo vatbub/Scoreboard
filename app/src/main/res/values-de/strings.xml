@@ -63,4 +63,5 @@
     <string name="no">Nein</string>
     <string name="alert_new_game_delete_current_game">Möchten Sie den aktuellen Spielstand löschen?</string>
     <string name="snackbar_new_game_manage_games_hint">Klicken Sie auf \'Spielstand laden\', um den alten Spielstand wiederherzustellen.</string>
+    <string name="play_store_url">https://play.google.com/store/apps/details?id=com.github.vatbub.scoreboard</string>
 </resources>

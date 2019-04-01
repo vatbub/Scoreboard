@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setNavigationDrawerUp()
         nav_view.setNavigationItemSelectedListener(this)
 
+
     }
 
     private fun setCommonLibUp() {
@@ -393,7 +394,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val id = item.itemId
         when (id) {
             R.id.nav_imprint -> {
-                // TODO: Imprint
+                val imprintIntent = Intent(this, AboutActivity::class.java)
+                startActivity(imprintIntent)
             }
             R.id.nav_website -> startURLIntent(AppConfig.websiteURL)
             R.id.nav_instagram -> startURLIntent(AppConfig.instagramURL)
