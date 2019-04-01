@@ -111,8 +111,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setFabListenerUp()
         setNavigationDrawerUp()
         nav_view.setNavigationItemSelectedListener(this)
-
-
     }
 
     private fun setCommonLibUp() {
@@ -400,7 +398,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_website -> startURLIntent(AppConfig.websiteURL)
             R.id.nav_instagram -> startURLIntent(AppConfig.instagramURL)
             R.id.nav_share -> {
-                // TODO: Share
+                val sendIntent = Intent(Intent.ACTION_SEND)
+                sendIntent.putExtra(Intent.EXTRA_TEXT,
+                        getString(R.string.share_message, getString(R.string.play_store_url)))
+                sendIntent.type = "text/plain"
+                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)))
             }
             R.id.nav_github -> startURLIntent(AppConfig.githubURL)
         }
