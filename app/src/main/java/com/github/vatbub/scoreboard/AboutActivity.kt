@@ -42,4 +42,9 @@ class AboutActivity : AppCompatActivity() {
         Markwon.scheduleDrawables(activity_about_markdown_view)
         Markwon.scheduleTableRows(activity_about_markdown_view)
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
 }
