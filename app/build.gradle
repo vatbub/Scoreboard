@@ -46,6 +46,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 
 dependencies {
@@ -67,6 +72,10 @@ dependencies {
     implementation 'com.amazonaws:aws-android-sdk-s3:2.7.7'
 
     testImplementation 'junit:junit:4.12'
+    testImplementation 'androidx.test:core:1.1.0'
+    testImplementation 'org.robolectric:robolectric:4.2'
+    testImplementation 'com.android.support.test:runner:0.5'
+    testImplementation 'com.google.truth:truth:0.44'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

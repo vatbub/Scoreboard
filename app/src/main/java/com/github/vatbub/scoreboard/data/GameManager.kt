@@ -67,7 +67,6 @@ class GameManager(private val callingContext: Context) {
         }
     }
 
-    private val gameManagerPrefs = callingContext.getSharedPreferences("gameManager", Context.MODE_PRIVATE)!!
     private val _games = ObservableMutableList(restoreData(),
             { _, _ -> saveGameList() },
             { _, _, _ -> saveGameList() },
@@ -132,6 +131,7 @@ class GameManager(private val callingContext: Context) {
      */
     fun createGame(gameName: String?): Game {
         val game = Game(this, nextGameId, gameName, GameMode.HIGH_SCORE, listOf())
+        saveGame(game)
         _games.add(game)
         return game
     }
@@ -197,7 +197,7 @@ enum class GameMode {
     HIGH_SCORE, LOW_SCORE
 }
 
-class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
+class Game internal constructor(var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
     /**
      * For GSON only. GSON will overwrite all default values.
      */
@@ -222,10 +222,6 @@ class Game(var gameManager: GameManager?, val id: Int, name: String?, gameMode: 
 
     private val playerIDs
         get() = List(players.size) { players[it].id }
-
-    internal fun serializableCopy(): Game {
-        return Game(null, id, name, mode, List(players.size) { players[it].serializableCopy() })
-    }
 
     /**
      * The number of lines that are currently on the scoreboard
@@ -449,10 +445,6 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
             { _, _, _ -> parentGame?.savePlayer() },
             { _, _ -> parentGame?.savePlayer() },
             { parentGame?.savePlayer() })
-
-    internal fun serializableCopy(): Player {
-        return Player(null, id, name, scores)
-    }
 
     val totalScore: Long
         get() = getSubTotalAt(scores.size - 1)
