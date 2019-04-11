@@ -107,7 +107,7 @@ class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val
         }
     }
 
-    override fun onViewRecycled(holder: GameTableViewHolder?) {
+    override fun onViewRecycled(holder: GameTableViewHolder) {
         mBoundViewHolders.remove(holder)
     }
 
