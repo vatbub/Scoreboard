@@ -35,6 +35,9 @@ before_install:
 # - gcloud config set project hearingaid-c625a
 # - ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file HearingAid-d4e4b3143662.json
 script:
+- mkdir -p /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
+- cp trove4j/trove4j-20160824.pom /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
+- cp trove4j/trove4j-20160824.jar /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
 - "./gradlew clean lint assembleAndroidTest build"
