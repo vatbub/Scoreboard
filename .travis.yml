@@ -2,6 +2,8 @@ language: android
 branches:
   only:
   - master
+git:
+  depth: false
 android:
   components:
   # - build-tools-26.0.2
