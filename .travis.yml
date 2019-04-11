@@ -42,8 +42,11 @@ script:
 - cp trove4j/trove4j-20160824.jar /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
-- "./gradlew clean lint assembleAndroidTest build"
+- "./gradlew clean lint assembleAndroidTest assembleRelease"
 # - ./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation --app ./app/build/outputs/apk/debug/app-debug.apk --test ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus10,version=21,locale=en,orientation=portrait --device model=Nexus5,version=23,locale=en,orientation=portrait --device model=Nexus6P,version=27,locale=en,orientation=portrait
+# - jarsigner -verbose -sigalg SHA1withRSA -storepass $storepass -keypass $keypass -digestalg SHA1 -keystore keystore/buddyci.jks PATH_TO_/MY.apk key0
+- apksigner sign --ks keystore/buddyci.jks --ks-pass pass:$storepass --key-pass pass:$keypass --ks-key-alias key0 --out apk-signed.apk --in app/build/outputs/apk/release/app-release-unsigned.apk
+# - zipalign -v 4 PATH_TO_/MY.apk PATH_TO_/MY_RELEASE.apk
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
