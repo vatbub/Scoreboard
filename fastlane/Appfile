@@ -1,0 +1,2 @@
+json_key_file("api-6021417281981797838-573362-3471c8228657.json") # Path to the json secret file - Follow https://docs.fastlane.tools/actions/supply/#setup to get one
+package_name("com.github.vatbub.scoreboard") # e.g. com.krausefx.app

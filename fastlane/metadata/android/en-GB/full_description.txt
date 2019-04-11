@@ -1,0 +1,10 @@
+This app allows you to keep track of player scores in any high- or lowscore game. Scores are represented by a table where every player has a column and each round is a line. At the bottom,the app shows the sum of points and a ranking of the players. That's it, keep it simple, stupid!
+
+Features:
+- Enter player scores in a table
+- (Theoretically) unlimited number of players (practically limited by your screen width)
+- Sum of points
+- Ranking according to the game mode (high-/lowscore)
+- Save multiple games and switch between them
+- No unnecessary permissions
+- Fully open source

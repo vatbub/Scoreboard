@@ -1,0 +1,1 @@
+Eine einfache App, um den Spielstand in Kartenspielen zu verfolgen.
