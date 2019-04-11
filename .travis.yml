@@ -10,7 +10,7 @@ android:
   # - android-15
   # - android-24
   # - android-25
-  - build-tools;28.0.3
+  # - build-tools-27.0.3
   - platform-tools
   - tools
   # extras:
@@ -19,6 +19,7 @@ android:
   # - m2repository-com-android-support-constraint-constraint-layout-solver-1.0.2
   # - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 before_install:
+- yes | sdkmanager "build-tools;28.0.3"
 # - yes | sdkmanager "platforms;android-27"
 #- yes | sdkmanager "ndk-bundle"
 # - wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -nv
