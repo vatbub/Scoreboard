@@ -220,19 +220,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val gameManager = GameManager.getInstance(this)
         val currentGame = gameManager.currentlyActiveGame
 
-        if (currentGame != null) {
+        if (currentGame == null) {
+            newGameHandlerCreateNewGame(gameManager)
+        } else {
             val builder = AlertDialog.Builder(this)
             builder.setTitle(R.string.alert_new_game_delete_current_game)
 
             builder.setPositiveButton(R.string.yes) { _, _ ->
                 gameManager.deleteGame(currentGame)
+                newGameHandlerCreateNewGame(gameManager)
             }
             builder.setNegativeButton(R.string.no) { _, _ ->
                 Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG).show()
+                newGameHandlerCreateNewGame(gameManager)
             }
             builder.create().show()
         }
+    }
 
+    private fun newGameHandlerCreateNewGame(gameManager: GameManager) {
         val newGame = gameManager.createGame(null)
         gameManager.activateGame(newGame)
         redraw(true)
