@@ -6,31 +6,13 @@ git:
   depth: false
 android:
   components:
-  # - build-tools-26.0.2
   - android-26
-  # - android-14
-  # - android-15
-  # - android-24
-  # - android-25
-  # - build-tools-27.0.3
   - platform-tools
   - tools
-  # extras:
-  # - android-m2repository
-  # - google-m2repository
-  # - m2repository-com-android-support-constraint-constraint-layout-solver-1.0.2
-  # - m2repository-com-android-support-constraint-constraint-layout-1.0.2
 before_install:
 - yes | sdkmanager "build-tools;28.0.3"
 - gem install fastlane --silent
 # - yes | sdkmanager "platforms;android-27"
-#- yes | sdkmanager "ndk-bundle"
-# - wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip -nv
-# - unzip -q android-ndk-r16b-linux-x86_64.zip
-# - mv android-ndk-r16b /usr/local/android-sdk/ndk-bundle
-# - yes | sdkmanager "patcher;v4"
-# - yes | sdkmanager "cmake;3.6.4111459"
-# - yes | sdkmanager "lldb;3.0"
 - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
 # - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 # - tar xf google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
@@ -44,10 +26,7 @@ script:
 - chmod +x ./gradlew
 - cp ci.local.properties local.properties
 - bundle exec fastlane beta
-# - "./gradlew clean lint assembleAndroidTest assembleRelease"
 # - ./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation --app ./app/build/outputs/apk/debug/app-debug.apk --test ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus10,version=21,locale=en,orientation=portrait --device model=Nexus5,version=23,locale=en,orientation=portrait --device model=Nexus6P,version=27,locale=en,orientation=portrait
-# - jarsigner -verbose -sigalg SHA1withRSA -storepass $storepass -keypass $keypass -digestalg SHA1 -keystore keystore/buddyci.jks PATH_TO_/MY.apk key0
-# - zipalign -v 4 PATH_TO_/MY.apk PATH_TO_/MY_RELEASE.apk
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
 - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
