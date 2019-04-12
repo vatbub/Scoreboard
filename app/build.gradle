@@ -25,6 +25,10 @@ ext {
     GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
 }
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -53,6 +57,14 @@ android {
     }
     lintOptions {
         abortOnError false
+    }
+    signingConfigs {
+        release {
+            keyAlias 'key0'
+            keyPassword System.getenv('keypass')
+            storeFile rootProject.file("keystore/buddyci.jks")
+            storePassword System.getenv('storepass')
+        }
     }
 }
 

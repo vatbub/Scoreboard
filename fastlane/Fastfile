@@ -21,7 +21,6 @@ platform :android do
       task: 'assemble',
       build_type: 'Release'
     )
-    sh "apksigner sign --ks keystore/buddyci.jks --ks-pass pass:$storepass --key-pass pass:$keypass --ks-key-alias key0 --out apk-signed.apk --in app/build/outputs/apk/release/app-release-unsigned.apk"
     upload_to_play_store(track: 'beta')
   end
 
