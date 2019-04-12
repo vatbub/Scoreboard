@@ -537,11 +537,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun renderLeaderboard() {
         val game = GameManager.getInstance(this).currentlyActiveGame
         leaderboard_table.removeAllViews()
+        val textColor = Color.WHITE
 
-        if (game == null) {
+        if (game == null || game.players.isEmpty()) {
             val emptyRow = TableRow(this)
             val emptyLabel = TextView(this)
             emptyLabel.setText(R.string.leaderboard_empty)
+            emptyLabel.setTextColor(textColor)
             emptyRow.addView(emptyLabel)
             leaderboard_table.addView(emptyRow)
             return
@@ -564,7 +566,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             playerNameTextView.text = getString(R.string.leaderboard_player_name_template, getPlayerNameOrDummy(game, key))
             scoreTextView.text = getString(R.string.leaderboard_score_template, value)
 
-            val textColor = Color.WHITE
             rankTextView.setTextColor(textColor)
             playerNameTextView.setTextColor(textColor)
             scoreTextView.setTextColor(textColor)

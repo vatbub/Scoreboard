@@ -101,7 +101,9 @@
                 android:layout_height="match_parent"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="16dp" />
+                android:paddingBottom="16dp"
+                android:shrinkColumns="0"
+                android:stretchColumns="1" />
 
         </LinearLayout>
 
