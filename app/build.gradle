@@ -25,10 +25,6 @@ ext {
     GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
 }
 
-def keystorePropertiesFile = rootProject.file("keystore.properties")
-def keystoreProperties = new Properties()
-keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
-
 android {
     compileSdkVersion 27
     defaultConfig {
