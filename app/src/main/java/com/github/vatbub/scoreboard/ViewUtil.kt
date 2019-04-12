@@ -16,8 +16,12 @@
 
 package com.github.vatbub.scoreboard
 
+import android.app.Activity
+import android.support.annotation.IdRes
 import android.view.View
 import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.OnGlobalLayoutListener
+
 
 object ViewUtil {
     fun runJustBeforeBeingDrawn(view: View, functionToExecute: ((View) -> Unit)) {
@@ -29,5 +33,25 @@ object ViewUtil {
             }
         }
         view.viewTreeObserver.addOnPreDrawListener(preDrawListener)
+    }
+
+    fun <T : View> runOnGlobalLayoutChange(activity: Activity, @IdRes viewId: Int, removeListenerPolicy: RemoveListenerPolicy, functionToExecute: ((T) -> Unit)) {
+        val viewTreeObserver = activity.window.decorView.viewTreeObserver
+        viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val view = activity.findViewById<T>(viewId)
+                if (view != null) {
+                    functionToExecute(view)
+                    if (removeListenerPolicy == ViewUtil.RemoveListenerPolicy.OnlyIfViewExists)
+                        viewTreeObserver.removeOnGlobalLayoutListener(this)
+                }
+                if (removeListenerPolicy == ViewUtil.RemoveListenerPolicy.Always)
+                    viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+    }
+
+    enum class RemoveListenerPolicy {
+        OnlyIfViewExists, Always, Never
     }
 }
