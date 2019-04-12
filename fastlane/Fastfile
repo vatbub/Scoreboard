@@ -16,6 +16,22 @@
 default_platform(:android)
 
 platform :android do
+  lane :internal do
+    gradle(
+      task: 'assemble',
+      build_type: 'Release'
+    )
+    upload_to_play_store(track: 'internal')
+  end
+
+  lane :alpha do
+    gradle(
+      task: 'assemble',
+      build_type: 'Release'
+    )
+    upload_to_play_store(track: 'alpha')
+  end
+
   lane :beta do
     gradle(
       task: 'assemble',
