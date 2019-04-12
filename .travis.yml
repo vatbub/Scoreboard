@@ -31,7 +31,7 @@ before_install:
 # - yes | sdkmanager "patcher;v4"
 # - yes | sdkmanager "cmake;3.6.4111459"
 # - yes | sdkmanager "lldb;3.0"
-- openssl aes-256-cbc -K $encrypted_d9f2fc33f35e_key -iv $encrypted_d9f2fc33f35e_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
+- openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
 # - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 # - tar xf google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 # - echo "y" | ./google-cloud-sdk/bin/gcloud components update
