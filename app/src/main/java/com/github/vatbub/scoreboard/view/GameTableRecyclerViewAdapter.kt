@@ -20,31 +20,38 @@ import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import com.github.vatbub.scoreboard.AppConfig
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
+import com.github.vatbub.scoreboard.util.toPx
 import java.util.*
+import kotlin.properties.Delegates
 
-class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val mainActivity: MainActivity) : RecyclerView.Adapter<GameTableViewHolder>() {
+class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: Game, val mainActivity: MainActivity, showSubTotal: Boolean, onShowSubTotalChange: ((Boolean) -> Unit)? = null) : RecyclerView.Adapter<GameTableViewHolder>() {
     private val mBoundViewHolders = HashSet<GameTableViewHolder>()
     private var lastLineColumnWidth: Int = 0
-
-    val allBoundViewHolders: Set<GameTableViewHolder>
-        get() = Collections.unmodifiableSet(mBoundViewHolders)
+    var showSubTotal by Delegates.observable(showSubTotal) { _, _, newValue ->
+        mBoundViewHolders.forEach {
+            it.subTotalRow.visibility = targetSubTotalVisibility(newValue)
+            onShowSubTotalChange?.invoke(newValue)
+        }
+    }
 
     init {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
-            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = updateLineNumbers()
-            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) = updateLineNumbers()
-            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = updateLineNumbers()
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = updateLineNumbers()
-            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) = updateLineNumbers()
-            override fun onChanged() = updateLineNumbers()
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = onDataChanged()
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) = onDataChanged()
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = onDataChanged()
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged()
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) = onDataChanged()
+            override fun onChanged() = onDataChanged()
         })
     }
 
@@ -55,6 +62,8 @@ class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val
 
     override fun onBindViewHolder(holder: GameTableViewHolder, position: Int) {
         mBoundViewHolders.add(holder)
+
+        holder.subTotalRow.visibility = targetSubTotalVisibility(showSubTotal)
 
         holder.setLineNumber(holder.adapterPosition + 1)
         if (lastLineColumnWidth != 0)
@@ -95,6 +104,7 @@ class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val
 
                         scoreLineCopy[index] = newScore
                         game.modifyScoreLineAt(holder.adapterPosition, scoreLineCopy)
+                        renderSubTotals()
                         mainActivity.renderSumRow()
                         mainActivity.renderLeaderboard()
                     } catch (e: NumberFormatException) {
@@ -107,13 +117,20 @@ class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val
 
             holder.scoreHolderLayout.addView(editText)
         }
+
+        renderSubTotals(holder)
     }
 
     override fun onViewRecycled(holder: GameTableViewHolder) {
         mBoundViewHolders.remove(holder)
     }
 
-    fun updateLineNumbers() {
+    private fun onDataChanged() {
+        updateLineNumbers()
+        renderSubTotals()
+    }
+
+    private fun updateLineNumbers() {
         val childCount = parent.childCount
         for (i in 0 until childCount) {
             val holder = parent.getChildViewHolder(parent.getChildAt(i)) as GameTableViewHolder
@@ -124,7 +141,29 @@ class GameTableRecyclerViewAdapter(val parent: RecyclerView, val game: Game, val
 
     fun updateColumnWidths(columnWidth: Int) {
         lastLineColumnWidth = columnWidth
-        allBoundViewHolders.forEach { it.lineNumberTextView.width = columnWidth }
+        mBoundViewHolders.forEach { it.lineNumberTextView.width = columnWidth }
+    }
+
+    private fun targetSubTotalVisibility(showSubTotal: Boolean) = if (showSubTotal) View.VISIBLE else View.GONE
+
+    private fun renderSubTotals() = mBoundViewHolders.forEach { renderSubTotals(it) }
+
+    private fun renderSubTotals(holder: GameTableViewHolder) {
+        val subTotals = List(game.players.size) { index -> game.players[index].getSubTotalAt(holder.adapterPosition) }
+        holder.subTotalHolderLayout.removeAllViews()
+
+        subTotals.forEach { subTotal ->
+            val textView = TextView(holder.view.context)
+            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+            layoutParams.marginStart = 2.toPx(holder.view.context)
+            textView.layoutParams = layoutParams
+            textView.setHorizontallyScrolling(false)
+            textView.maxLines = AppConfig.maxLinesForEnterText
+            val scoreString = textView.context.getString(R.string.main_table_score_template, subTotal)
+            textView.text = scoreString
+
+            holder.subTotalHolderLayout.addView(textView)
+        }
     }
 
     override fun getItemCount(): Int {

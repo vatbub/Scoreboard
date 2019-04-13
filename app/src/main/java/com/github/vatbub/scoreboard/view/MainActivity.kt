@@ -21,6 +21,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetBehavior
@@ -55,14 +56,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import net.steamcrafted.materialiconlib.MaterialMenuInflater
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private var showSubTotals by Delegates.observable(false) { _, _, newValue -> mainTableAdapter.showSubTotal = newValue }
 
     private var backingMainTableAdapter: GameTableRecyclerViewAdapter? = null
     private val mainTableAdapter: GameTableRecyclerViewAdapter
         get() {
             if (backingMainTableAdapter == null)
-                backingMainTableAdapter = GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this)
+                backingMainTableAdapter = GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, showSubTotals) { updateShowSubTotalsMenuItem(it) }
             return backingMainTableAdapter!!
         }
 
@@ -158,13 +161,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 val optionsMenuCopy = optionsMenu ?: return
                 val menuItem = optionsMenuCopy.findItem(R.id.action_toggle_ranking) ?: return
-                if (newState == BottomSheetBehavior.STATE_COLLAPSED)
-                    menuItem.title = getString(R.string.action_show_ranking)
-                else
-                    menuItem.title = getString(R.string.action_hide_ranking)
+                setMenuItemTitleFromBoolean(menuItem,
+                        newState == BottomSheetBehavior.STATE_COLLAPSED,
+                        getString(R.string.action_show_ranking),
+                        getString(R.string.action_hide_ranking))
             }
         })
         mBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    private fun updateShowSubTotalsMenuItem(subTotalsShown: Boolean) {
+        val optionsMenuCopy = optionsMenu ?: return
+        val menuItem = optionsMenuCopy.findItem(R.id.action_show_sub_totals) ?: return
+        setMenuItemTitleFromBoolean(menuItem,
+                subTotalsShown,
+                getString(R.string.action_hide_sub_total),
+                getString(R.string.action_show_sub_total))
+    }
+
+    private fun setMenuItemTitleFromBoolean(menuItem: MenuItem, value: Boolean, titleIfValueTrue: String, titleIfValueFalse: String) {
+        menuItem.title = if (value) titleIfValueTrue else titleIfValueFalse
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            menuItem.contentDescription = menuItem.title
     }
 
     override fun onBackPressed() {
@@ -182,8 +200,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.action_add_player -> {
                 addPlayerHandler()
                 return true
@@ -214,6 +231,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.action_manage_saved_games -> {
                 manageSavedGamesHandler()
+                return true
+            }
+            R.id.action_show_sub_totals -> {
+                showSubTotals = !showSubTotals
                 return true
             }
         }

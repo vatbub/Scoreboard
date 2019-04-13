@@ -25,6 +25,8 @@ class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = fa
     val scoreHolderLayout = view.main_table_text_view_holder!!
     val lineNumberTextView = view.main_table_line_number!!
     val deleteRowButton = view.main_table_delete_row_button!!
+    val subTotalRow = view.main_table_sub_total_row!!
+    val subTotalHolderLayout = view.main_table_sub_total_holder!!
 
     fun setLineNumber(lineNumber: Int) {
         lineNumberTextView.text = String.format(view.context.getString(R.string.main_table_row_number_template), lineNumber)
