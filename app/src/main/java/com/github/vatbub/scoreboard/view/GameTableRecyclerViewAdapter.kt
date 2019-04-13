@@ -71,7 +71,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
             holder.lineNumberTextView.width = lastLineColumnWidth
 
         holder.deleteRowButton.setOnClickListener {
-            if (holder.adapterPosition == RecyclerView.NO_POSITION)
+            if (holder.adapterPosition == NO_POSITION)
                 return@setOnClickListener
             game.removeScoreLineAt(holder.adapterPosition)
             mainActivity.updateLineNumberWidth()
@@ -135,7 +135,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         val childCount = parent.childCount
         for (i in 0 until childCount) {
             val holder = parent.getChildViewHolder(parent.getChildAt(i)) as GameTableViewHolder
-            if (holder.adapterPosition != RecyclerView.NO_POSITION)
+            if (holder.adapterPosition != NO_POSITION)
                 holder.setLineNumber(holder.adapterPosition + 1)
         }
     }
