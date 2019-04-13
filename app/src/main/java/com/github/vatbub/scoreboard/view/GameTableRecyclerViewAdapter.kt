@@ -17,6 +17,7 @@
 package com.github.vatbub.scoreboard.view
 
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -49,7 +50,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = onDataChanged()
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) = onDataChanged()
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = onDataChanged()
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged(renderSubTotals = false)
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged()
             override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) = onDataChanged()
             override fun onChanged() = onDataChanged()
         })
@@ -125,11 +126,9 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         mBoundViewHolders.remove(holder)
     }
 
-    private fun onDataChanged(updateLineNumbers: Boolean = true, renderSubTotals: Boolean = true) {
-        if (updateLineNumbers)
-            updateLineNumbers()
-        if (renderSubTotals)
-            renderSubTotals()
+    private fun onDataChanged() {
+        updateLineNumbers()
+        renderSubTotals()
     }
 
     private fun updateLineNumbers() {
@@ -151,6 +150,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
     private fun renderSubTotals() = mBoundViewHolders.forEach { renderSubTotals(it) }
 
     private fun renderSubTotals(holder: GameTableViewHolder) {
+        if (holder.adapterPosition == NO_POSITION) return
         val subTotals = List(game.players.size) { index -> game.players[index].getSubTotalAt(holder.adapterPosition) }
         holder.subTotalHolderLayout.removeAllViews()
 
