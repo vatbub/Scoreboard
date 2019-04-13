@@ -56,16 +56,27 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import net.steamcrafted.materialiconlib.MaterialMenuInflater
-import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private var showSubTotals by Delegates.observable(false) { _, _, newValue -> mainTableAdapter.showSubTotal = newValue }
+    private val showSubTotalsDefaultValue = false
+    private val showSubTotalsKey = "showSubTotals"
+    private val sharedPreferencesName = "MainActivityPrefs"
+    private fun getSharedPreferences() = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
+
+    private fun saveShowSubTotalsSetting(showSubTotals: Boolean) {
+        getSharedPreferences().edit().putBoolean("showSubTotalsKey", showSubTotals).apply()
+    }
+
+    private fun getShowSubTotalsSetting(): Boolean = getSharedPreferences().getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
 
     private var backingMainTableAdapter: GameTableRecyclerViewAdapter? = null
     private val mainTableAdapter: GameTableRecyclerViewAdapter
         get() {
             if (backingMainTableAdapter == null)
-                backingMainTableAdapter = GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, showSubTotals) { updateShowSubTotalsMenuItem(it) }
+                backingMainTableAdapter = GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, getShowSubTotalsSetting()) {
+                    saveShowSubTotalsSetting(it)
+                    updateShowSubTotalsMenuItem(it)
+                }
             return backingMainTableAdapter!!
         }
 
@@ -234,7 +245,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
             R.id.action_show_sub_totals -> {
-                showSubTotals = !showSubTotals
+                mainTableAdapter.showSubTotal = !mainTableAdapter.showSubTotal
                 return true
             }
         }

@@ -49,7 +49,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = onDataChanged()
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) = onDataChanged()
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = onDataChanged()
-            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged()
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged(renderSubTotals = false)
             override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) = onDataChanged()
             override fun onChanged() = onDataChanged()
         })
@@ -125,9 +125,11 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         mBoundViewHolders.remove(holder)
     }
 
-    private fun onDataChanged() {
-        updateLineNumbers()
-        renderSubTotals()
+    private fun onDataChanged(updateLineNumbers: Boolean = true, renderSubTotals: Boolean = true) {
+        if (updateLineNumbers)
+            updateLineNumbers()
+        if (renderSubTotals)
+            renderSubTotals()
     }
 
     private fun updateLineNumbers() {
