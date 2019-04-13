@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vatbub.scoreboard
+package com.github.vatbub.scoreboard.util
 
 import android.app.Activity
 import android.support.annotation.IdRes

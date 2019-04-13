@@ -17,7 +17,6 @@
 package com.github.vatbub.scoreboard.data
 
 import android.content.Context
-import com.github.vatbub.scoreboard.ValueSortedMap
 import org.jdom2.Attribute
 import org.jdom2.Document
 import org.jdom2.Element

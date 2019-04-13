@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vatbub.scoreboard
+package com.github.vatbub.scoreboard.view
 
 import android.os.Bundle
 import android.support.annotation.RawRes
 import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
+import com.github.vatbub.scoreboard.R
 import kotlinx.android.synthetic.main.activity_about.*
 import ru.noties.markwon.Markwon
 

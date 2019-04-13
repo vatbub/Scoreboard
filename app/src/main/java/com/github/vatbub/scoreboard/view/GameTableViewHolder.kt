@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vatbub.scoreboard
+package com.github.vatbub.scoreboard.view
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import com.github.vatbub.scoreboard.R
 import kotlinx.android.synthetic.main.scoreboard_row.view.*
 
 class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = false) : RecyclerView.ViewHolder(view) {

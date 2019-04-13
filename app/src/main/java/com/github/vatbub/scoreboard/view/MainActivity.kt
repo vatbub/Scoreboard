@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vatbub.scoreboard
+package com.github.vatbub.scoreboard.view
 
 import android.content.Context
 import android.content.DialogInterface
@@ -42,10 +42,15 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import com.github.vatbub.common.core.Common
+import com.github.vatbub.scoreboard.AppConfig
+import com.github.vatbub.scoreboard.BuildConfig
+import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
+import com.github.vatbub.scoreboard.util.ViewUtil
+import com.github.vatbub.scoreboard.util.toPx
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
