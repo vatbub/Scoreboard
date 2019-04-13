@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun getSharedPreferences() = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
 
     private fun saveShowSubTotalsSetting(showSubTotals: Boolean) {
-        getSharedPreferences().edit().putBoolean("showSubTotalsKey", showSubTotals).apply()
+        getSharedPreferences().edit().putBoolean(showSubTotalsKey, showSubTotals).apply()
     }
 
     private fun getShowSubTotalsSetting(): Boolean = getSharedPreferences().getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
