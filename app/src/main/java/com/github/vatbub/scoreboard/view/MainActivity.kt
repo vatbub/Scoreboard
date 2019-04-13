@@ -207,6 +207,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         MaterialMenuInflater.with(this)
                 .setDefaultColor(Color.WHITE)
                 .inflate(R.menu.main, menu)
+        updateShowSubTotalsMenuItem(mainTableAdapter.showSubTotal)
         return true
     }
 
