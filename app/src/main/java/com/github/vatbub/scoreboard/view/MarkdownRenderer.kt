@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vatbub.scoreboard
+package com.github.vatbub.scoreboard.view
 
 import android.content.Context
 import android.support.annotation.RawRes
