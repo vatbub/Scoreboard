@@ -26,7 +26,6 @@ import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -59,17 +58,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val showSubTotalsDefaultValue = false
     private val showSubTotalsKey = "showSubTotals"
     private val sharedPreferencesName = "MainActivityPrefs"
-    private fun getSharedPreferences() = getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)
-
-    private fun saveShowSubTotalsSetting(showSubTotals: Boolean) {
-        getSharedPreferences().edit().putBoolean(showSubTotalsKey, showSubTotals).apply()
-    }
-
-    private fun getShowSubTotalsSetting(): Boolean = getSharedPreferences().getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
+    private val sharedPreferences by lazy { getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)!! }
+    private var showSubtotals: Boolean
+        get() = sharedPreferences.getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
+        set(value) = sharedPreferences.edit().putBoolean(showSubTotalsKey, value).apply()
+    private val gameManager by lazy { GameManager.getInstance(this) }
 
     private val mainTableAdapter = ResettableLazyProperty {
-        GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, getShowSubTotalsSetting()) {
-            saveShowSubTotalsSetting(it)
+        GameTableRecyclerViewAdapter(main_table_recycler_view, gameManager.currentlyActiveGame!!, this, showSubtotals) {
+            showSubtotals = it
             updateShowSubTotalsMenuItem(it)
         }
     }
@@ -77,8 +74,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val headerRowViewHolder by lazy { GameTableViewHolder(header_row, false) }
     private val sumRowViewHolder by lazy { GameTableViewHolderWithPlaceholders(sum_row) }
     private val mBottomSheetBehavior by lazy { BottomSheetBehavior.from(sum_bottom_sheet) }
-
-    private var headerRowEditTextViews: List<EditText>? = null
 
     private var optionsMenu: Menu? = null
 
@@ -88,7 +83,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        val gameManager = GameManager.getInstance(this)
         if (gameManager.games.isEmpty())
             gameManager.createGame(null)
 
@@ -105,9 +99,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setFabListenerUp() {
-        val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame
+            val game = gameManager.currentlyActiveGame
             if (game == null) {
                 Toast.makeText(this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
                 return@setOnClickListener
@@ -117,7 +110,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             updateLineNumberWidth()
             mainTableAdapter.value.notifyItemInserted(game.scoreCount)
         }
-
     }
 
     private fun setNavigationDrawerUp() {
@@ -222,28 +214,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun newGameHandler() {
-        val gameManager = GameManager.getInstance(this)
         val currentGame = gameManager.currentlyActiveGame
 
         if (currentGame == null) {
-            newGameHandlerCreateNewGame(gameManager)
+            newGameHandlerCreateNewGame()
         } else {
             val builder = AlertDialog.Builder(this)
             builder.setTitle(R.string.alert_new_game_delete_current_game)
 
             builder.setPositiveButton(R.string.yes) { _, _ ->
                 gameManager.deleteGame(currentGame)
-                newGameHandlerCreateNewGame(gameManager)
+                newGameHandlerCreateNewGame()
             }
             builder.setNegativeButton(R.string.no) { _, _ ->
                 Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG).show()
-                newGameHandlerCreateNewGame(gameManager)
+                newGameHandlerCreateNewGame()
             }
             builder.create().show()
         }
     }
 
-    private fun newGameHandlerCreateNewGame(gameManager: GameManager) {
+    private fun newGameHandlerCreateNewGame() {
         val newGame = gameManager.createGame(null)
         gameManager.activateGame(newGame)
         redraw(true)
@@ -261,21 +252,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun loadGameHandler() {
-        val gameManager = GameManager.getInstance(this)
-        val games = gameManager.games
-        val gameNames = List(games.size) { getGameNameOrDummy(games[it], games) }
+        val gameNames = List(gameManager.games.size) { getGameNameOrDummy(gameManager.games[it]) }
         val currentGame = gameManager.currentlyActiveGame
         val inputSelection = if (currentGame == null)
             0
         else
-            games.indexOf(currentGame)
+            gameManager.games.indexOf(currentGame)
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.switch_mode_title)
 
         builder.setSingleChoiceItems(gameNames.toTypedArray(), inputSelection
         ) { dialogInterface, selectedItem ->
-            gameManager.activateGame(games[selectedItem])
+            gameManager.activateGame(gameManager.games[selectedItem])
             dialogInterface.dismiss()
             redraw(true)
         }
@@ -283,8 +272,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun saveGameHandler() {
-        val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame ?: return
-
+        val game = gameManager.currentlyActiveGame ?: return
         createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = getGameNameOrDummy(game), defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
             override fun onOk(result: String) {
                 game.name = result
@@ -295,7 +283,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun switchModeHandler() {
-        val currentGame = GameManager.getInstance(this@MainActivity).currentlyActiveGame
+        val currentGame = gameManager.currentlyActiveGame
         val inputSelection = if (currentGame == null) {
             0
         } else when (currentGame.mode) {
@@ -318,8 +306,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else if (selectedItem == 1)
                 currentGame.mode = GameMode.LOW_SCORE
             dialogInterface.dismiss()
-            renderSumRow()
-            renderLeaderboard()
+            redraw(redrawHeaderRow = false, notifyDataSetChanged = false)
         }
         builder.create().show()
     }
@@ -329,36 +316,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             throw IllegalArgumentException("Player must be part of the specified game.")
     }
 
-    private fun getPlayerNameOrDummy(game: Game, player: Player, players: List<Player> = game.players): String {
-        verifyPlayer(player, players)
+    private fun getPlayerNameOrDummy(game: Game, player: Player): String {
+        verifyPlayer(player, game.players)
         var finalName = player.name
         if (finalName == null || finalName.replace(" ", "") == "")
-            finalName = getPlayerDummyName(game, player, players)
+            finalName = getPlayerDummyName(game, player)
         return finalName
     }
 
-    private fun getPlayerDummyName(game: Game, player: Player, players: List<Player> = game.players): String {
-        verifyPlayer(player, players)
-        val index = players.indexOf(player) + 1
+    private fun getPlayerDummyName(game: Game, player: Player): String {
+        verifyPlayer(player, game.players)
+        val index = game.players.indexOf(player) + 1
         return getString(R.string.player_no_name_template, index)
     }
 
-    private fun getGameNameOrDummy(game: Game, games: List<Game> = GameManager.getInstance(this).games): String {
+    private fun verifyGame(game: Game) {
+        if (!gameManager.games.contains(game))
+            throw IllegalArgumentException("Games must be part of the current gameManager.")
+    }
+
+    private fun getGameNameOrDummy(game: Game): String {
+        verifyGame(game)
         var finalName = game.name
         if (finalName.replace(" ", "") == "")
-            finalName = getGameDummyName(game, games)
+            finalName = getGameDummyName(game)
         return finalName
     }
 
-    private fun getGameDummyName(game: Game, games: List<Game> = GameManager.getInstance(this).games): String {
-        val index = games.indexOf(game) + 1
-        return getString(R.string.game_no_name_template, index)
+    private fun getGameDummyName(game: Game): String {
+        verifyGame(game)
+        return getString(R.string.game_no_name_template, gameManager.games.indexOf(game) + 1)
     }
 
+
     private fun removePlayerHandler() {
-        val currentGame = GameManager.getInstance(this@MainActivity).currentlyActiveGame ?: return
-        val players = currentGame.players
-        val playerNames = Array(players.size) { getPlayerNameOrDummy(currentGame, players[it], players) }
+        val currentGame = gameManager.currentlyActiveGame ?: return
+        val playerNames = Array(currentGame.players.size) { getPlayerNameOrDummy(currentGame, currentGame.players[it]) }
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.delete_player_title)
@@ -373,7 +366,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val playersToDelete = mutableListOf<Player>()
             indicesToDelete.forEachIndexed { index, checked ->
                 if (checked)
-                    playersToDelete.add(players[index])
+                    playersToDelete.add(currentGame.players[index])
             }
             playersToDelete.forEach { currentGame.players.remove(it) }
             redraw()
@@ -383,7 +376,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun addPlayerHandler() {
-        val game = GameManager.getInstance(this@MainActivity).currentlyActiveGame
+        val game = gameManager.currentlyActiveGame
         if (game == null) {
             Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
             return
@@ -393,15 +386,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         redraw()
 
-        val viewToFocus = headerRowEditTextViews?.last() ?: return
+        if (headerRowViewHolder.scoreHolderLayout.childCount == 0) return
+        val viewToFocus = headerRowViewHolder.scoreHolderLayout.getChildAt(headerRowViewHolder.scoreHolderLayout.childCount - 1)
         viewToFocus.requestFocus()
         val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(viewToFocus, InputMethodManager.SHOW_IMPLICIT)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        when (id) {
+        when (item.itemId) {
             R.id.nav_imprint -> {
                 val imprintIntent = Intent(this, AboutActivity::class.java)
                 startActivity(imprintIntent)
@@ -429,12 +422,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun headerRowUpdateLineNumber() {
-        val game = GameManager.getInstance(this).currentlyActiveGame ?: return
+        val game = gameManager.currentlyActiveGame ?: return
         headerRowViewHolder.setLineNumber(game.scoreCount)
     }
 
     private fun sumRowUpdateLineNumber() {
-        val game = GameManager.getInstance(this).currentlyActiveGame ?: return
+        val game = gameManager.currentlyActiveGame ?: return
         sumRowViewHolder.setLineNumber(game.scoreCount)
     }
 
@@ -461,24 +454,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun renderHeaderRow() {
-        val game = GameManager.getInstance(this).currentlyActiveGame
-        val editTextViews = mutableListOf<EditText>()
+        val game = gameManager.currentlyActiveGame
         headerRowUpdateLineNumber()
         headerRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
         headerRowViewHolder.deleteRowButton.visibility = View.INVISIBLE
 
-        if (game == null) {
-            headerRowViewHolder.scoreHolderLayout.removeAllViews()
-            headerRowEditTextViews = editTextViews
-            return
-        }
-
-        val players = game.players
         headerRowViewHolder.scoreHolderLayout.removeAllViews()
 
-        players.forEach {
+        if (game == null) return
+
+        game.players.forEach {
             val editText = EditText(headerRowViewHolder.view.context)
-            editTextViews.add(editText)
 
             val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
             editText.layoutParams = layoutParams
@@ -486,7 +472,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             editText.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
             editText.setHorizontallyScrolling(false)
             editText.maxLines = AppConfig.maxLinesForEnterText
-            editText.hint = getPlayerDummyName(game, it, players)
+            editText.hint = getPlayerDummyName(game, it)
             editText.setText(it.name)
             editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -499,30 +485,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             headerRowViewHolder.scoreHolderLayout.addView(editText)
         }
-
-        headerRowEditTextViews = editTextViews
     }
 
     fun renderSumRow() {
-        val game = GameManager.getInstance(this).currentlyActiveGame
+        sumRowViewHolder.scoreHolderLayout.removeAllViews()
+
+        val game = gameManager.currentlyActiveGame ?: return
         sumRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
 
-        if (game == null) {
-            sumRowViewHolder.scoreHolderLayout.removeAllViews()
-            return
-        }
-
-        val players = game.players
         val winnerIndices = game.winners
         val looserIndices = game.loosers
         sumRowViewHolder.scoreHolderLayout.removeAllViews()
 
-        players.forEachIndexed { index, player ->
+        game.players.forEachIndexed { index, player ->
             val textView = TextView(sumRowViewHolder.view.context)
-            val sum = player.totalScore
             @Suppress("DEPRECATION")
             textView.setTextColor(resources.getColor(R.color.sumRowFontColor))
-            textView.text = textView.context.getString(R.string.main_table_score_template, sum)
+            textView.text = textView.context.getString(R.string.main_table_score_template, player.totalScore)
             textView.gravity = Gravity.CENTER
             textView.setPadding(0, 15, 0, 15)
 
@@ -540,7 +519,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     fun renderLeaderboard() {
-        val game = GameManager.getInstance(this).currentlyActiveGame
+        val game = gameManager.currentlyActiveGame
         leaderboard_table.removeAllViews()
         val textColor = Color.WHITE
 
