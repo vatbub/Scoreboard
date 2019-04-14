@@ -24,7 +24,7 @@
     <string name="action_switch_mode">Modus wechseln</string>
     <string name="action_save_game">Spielstand speichern</string>
     <string name="action_load_game">Spielstand laden</string>
-    <string name="action_manage_saved_games">Spielstände verwalten</string>
+    <string name="action_manage_saved_games">Spielstände löschen</string>
     <string name="edit_player_name">Spielernamen bearbeiten</string>
     <string name="edit_score">Spielstand bearbeiten</string>
     <string name="dialog_ok">OK</string>
@@ -52,8 +52,6 @@
     <string name="leaderboard_player_name_template">%s</string>
     <string name="leaderboard_score_template">%d</string>
     <string name="delete_player_title">Spieler löschen</string>
-    <string name="delete_player_ok">Ok</string>
-    <string name="delete_player_cancel">Abbrechen</string>
     <string name="player_no_name_template">Spieler %d</string>
     <string name="action_show_ranking">Rangliste zeigen</string>
     <string name="action_hide_ranking">Rangliste verstecken</string>
@@ -68,4 +66,5 @@
     <string name="share_screen_title">Teile diese App mit deinen Freunden</string>
     <string name="action_show_sub_total">Zwischensummen anzeigen</string>
     <string name="action_hide_sub_total">Zwischensummen verstecken</string>
+    <string name="manage_saved_games_title">Spielstände löschen</string>
 </resources>

@@ -135,6 +135,13 @@ class GameManager(private val callingContext: Context) {
         return game
     }
 
+    fun createGameIfEmptyAndActivateTheFirstGame() {
+        if (games.isEmpty()) {
+            createGame(null)
+        }
+        activateGame(games[0])
+    }
+
     /**
      * Deletes the specified game.
      *

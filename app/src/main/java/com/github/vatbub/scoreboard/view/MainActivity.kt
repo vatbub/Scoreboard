@@ -83,10 +83,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        if (gameManager.games.isEmpty())
-            gameManager.createGame(null)
+        gameManager.createGameIfEmptyAndActivateTheFirstGame()
 
-        gameManager.activateGame(gameManager.games[0])
         setSumBottomSheetUp()
         setRecyclerViewUp()
 
@@ -248,7 +246,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun manageSavedGamesHandler() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val gameNames = Array(gameManager.games.size) { getGameNameOrDummy(gameManager.games[it]) }
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.manage_saved_games_title)
+
+        val indicesToDelete = BooleanArray(gameManager.games.size)
+
+        builder.setMultiChoiceItems(gameNames, indicesToDelete
+        ) { _: DialogInterface, index: Int, checked: Boolean ->
+            indicesToDelete[index] = checked
+        }
+        builder.setPositiveButton(R.string.dialog_ok) { _, _ ->
+            val gamesToDelete = mutableListOf<Game>()
+            indicesToDelete.forEachIndexed { index, checked ->
+                if (checked)
+                    gamesToDelete.add(gameManager.games[index])
+            }
+            gamesToDelete.forEach { gameManager.deleteGame(it) }
+            gameManager.createGameIfEmptyAndActivateTheFirstGame()
+            redraw()
+        }
+        builder.setNegativeButton(R.string.dialog_cancel) { _, _ -> }
+        builder.create().show()
     }
 
     private fun loadGameHandler() {
@@ -362,7 +382,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         ) { _: DialogInterface, index: Int, checked: Boolean ->
             indicesToDelete[index] = checked
         }
-        builder.setPositiveButton(R.string.delete_player_ok) { _, _ ->
+        builder.setPositiveButton(R.string.dialog_ok) { _, _ ->
             val playersToDelete = mutableListOf<Player>()
             indicesToDelete.forEachIndexed { index, checked ->
                 if (checked)
@@ -371,7 +391,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             playersToDelete.forEach { currentGame.players.remove(it) }
             redraw()
         }
-        builder.setNegativeButton(R.string.delete_player_cancel) { _, _ -> }
+        builder.setNegativeButton(R.string.dialog_cancel) { _, _ -> }
         builder.create().show()
     }
 

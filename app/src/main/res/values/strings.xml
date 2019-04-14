@@ -25,7 +25,7 @@
     <string name="action_switch_mode">Switch mode</string>
     <string name="action_save_game">Save game</string>
     <string name="action_load_game">Load game</string>
-    <string name="action_manage_saved_games">Manage saved games</string>
+    <string name="action_manage_saved_games">Delete saved games</string>
     <string name="edit_player_name">Edit player name</string>
     <string name="edit_score">Edit score</string>
     <string name="dialog_ok">OK</string>
@@ -53,8 +53,6 @@
     <string name="leaderboard_player_name_template">%s</string>
     <string name="leaderboard_score_template">%d</string>
     <string name="delete_player_title">Delete players</string>
-    <string name="delete_player_ok">OK</string>
-    <string name="delete_player_cancel">Cancel</string>
     <string name="player_no_name_template">Player %d</string>
     <string name="action_show_ranking">Show ranking</string>
     <string name="action_hide_ranking">Hide ranking</string>
@@ -69,4 +67,5 @@
     <string name="share_screen_title">Share this application with your friends</string>
     <string name="action_show_sub_total">Show subtotals</string>
     <string name="action_hide_sub_total">Hide subtotals</string>
+    <string name="manage_saved_games_title">Delete saved games</string>
 </resources>
