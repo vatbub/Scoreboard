@@ -41,9 +41,7 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.github.vatbub.common.core.Common
 import com.github.vatbub.scoreboard.AppConfig
-import com.github.vatbub.scoreboard.BuildConfig
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
@@ -86,8 +84,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setCommonLibUp()
-        AppConfig.initialize(this)
 
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -106,11 +102,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setFabListenerUp()
         setNavigationDrawerUp()
         nav_view.setNavigationItemSelectedListener(this)
-    }
-
-    private fun setCommonLibUp() {
-        Common.useAndroidImplementation(this)
-        Common.getInstance().appName = BuildConfig.APPLICATION_ID
     }
 
     private fun setFabListenerUp() {
