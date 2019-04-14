@@ -30,7 +30,6 @@ import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.NavigationView
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
-import android.support.v4.widget.NestedScrollView
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -50,6 +49,7 @@ import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
+import com.github.vatbub.scoreboard.util.ResettableLazyProperty
 import com.github.vatbub.scoreboard.util.ViewUtil
 import com.github.vatbub.scoreboard.util.toPx
 import kotlinx.android.synthetic.main.activity_main.*
@@ -69,40 +69,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun getShowSubTotalsSetting(): Boolean = getSharedPreferences().getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
 
-    private var backingMainTableAdapter: GameTableRecyclerViewAdapter? = null
-    private val mainTableAdapter: GameTableRecyclerViewAdapter
-        get() {
-            if (backingMainTableAdapter == null)
-                backingMainTableAdapter = GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, getShowSubTotalsSetting()) {
-                    saveShowSubTotalsSetting(it)
-                    updateShowSubTotalsMenuItem(it)
-                }
-            return backingMainTableAdapter!!
+    private val mainTableAdapter = ResettableLazyProperty {
+        GameTableRecyclerViewAdapter(main_table_recycler_view, GameManager.getInstance(this).currentlyActiveGame!!, this, getShowSubTotalsSetting()) {
+            saveShowSubTotalsSetting(it)
+            updateShowSubTotalsMenuItem(it)
         }
+    }
 
-    private var backingHeaderRowViewHolder: GameTableViewHolder? = null
-    private val headerRowViewHolder: GameTableViewHolder
-        get() {
-            if (backingHeaderRowViewHolder == null)
-                backingHeaderRowViewHolder = GameTableViewHolder(header_row, false)
-            return backingHeaderRowViewHolder!!
-        }
-
-    private var backingSumRowViewHolder: GameTableViewHolderWithPlaceholders? = null
-    private val sumRowViewHolder: GameTableViewHolderWithPlaceholders
-        get() {
-            if (backingSumRowViewHolder == null)
-                backingSumRowViewHolder = GameTableViewHolderWithPlaceholders(sum_row)
-            return backingSumRowViewHolder!!
-        }
-
-    private var backingBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>? = null
-    private val mBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
-        get() {
-            if (backingBottomSheetBehavior == null)
-                backingBottomSheetBehavior = BottomSheetBehavior.from(sum_bottom_sheet)
-            return backingBottomSheetBehavior!!
-        }
+    private val headerRowViewHolder by lazy { GameTableViewHolder(header_row, false) }
+    private val sumRowViewHolder by lazy { GameTableViewHolderWithPlaceholders(sum_row) }
+    private val mBottomSheetBehavior by lazy { BottomSheetBehavior.from(sum_bottom_sheet) }
 
     private var headerRowEditTextViews: List<EditText>? = null
 
@@ -125,7 +101,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setRecyclerViewUp()
 
         redraw()
-        headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> mainTableAdapter.updateColumnWidths(headerRowViewHolder.lineNumberTextView.width) }
+        headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> mainTableAdapter.value.updateColumnWidths(headerRowViewHolder.lineNumberTextView.width) }
 
         setFabListenerUp()
         setNavigationDrawerUp()
@@ -148,7 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             game.addEmptyScoreLine()
             updateLineNumberWidth()
-            mainTableAdapter.notifyItemInserted(game.scoreCount)
+            mainTableAdapter.value.notifyItemInserted(game.scoreCount)
         }
 
     }
@@ -161,8 +137,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setRecyclerViewUp() {
         main_table_recycler_view.layoutManager = LinearLayoutManager(this)
-        main_table_recycler_view.adapter = mainTableAdapter
-        mainTableAdapter.notifyDataSetChanged()
+        main_table_recycler_view.adapter = mainTableAdapter.value
+        mainTableAdapter.value.notifyDataSetChanged()
     }
 
     private fun setSumBottomSheetUp() {
@@ -207,7 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         MaterialMenuInflater.with(this)
                 .setDefaultColor(Color.WHITE)
                 .inflate(R.menu.main, menu)
-        updateShowSubTotalsMenuItem(mainTableAdapter.showSubTotal)
+        updateShowSubTotalsMenuItem(mainTableAdapter.value.showSubTotal)
         return true
     }
 
@@ -246,7 +222,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
             R.id.action_show_sub_totals -> {
-                mainTableAdapter.showSubTotal = !mainTableAdapter.showSubTotal
+                mainTableAdapter.value.showSubTotal = !mainTableAdapter.value.showSubTotal
                 return true
             }
         }
@@ -480,13 +456,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true) {
         if (refreshGameData) {
-            backingMainTableAdapter = null
+            mainTableAdapter.resetValue()
             setRecyclerViewUp()
         }
         if (redrawHeaderRow)
             renderHeaderRow()
         if (notifyDataSetChanged)
-            mainTableAdapter.notifyDataSetChanged()
+            mainTableAdapter.value.notifyDataSetChanged()
         if (redrawSumRow)
             renderSumRow()
         if (redrawLeaderBoard)
