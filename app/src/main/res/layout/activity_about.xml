@@ -33,5 +33,13 @@
             android:layout_marginStart="15dp"
             android:layout_marginEnd="15dp"
             android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/imprint_button_open_source_licenses"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="7dp"
+            android:text="@string/imprint_button_open_source_licenses" />
     </LinearLayout>
 </ScrollView>

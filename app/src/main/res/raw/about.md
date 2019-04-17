@@ -35,6 +35,3 @@ In short, this means:
   exercise of permissions under this License.
   
 The full (and legally binding) license text can be found [here](http://www.apache.org/licenses/LICENSE-2.0.html). 
-
-This application uses libraries and third party code which might be 
-published under different licenses (see more in the sidebar).

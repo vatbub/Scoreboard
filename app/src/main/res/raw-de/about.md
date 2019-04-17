@@ -30,6 +30,3 @@ Grob gesagt bedeutet das Folgendes:
   weder ausdrücklich noch implizit.
   
 Die komplette, rechtsgültige Lizenz kann [hier](http://www.apache.org/licenses/LICENSE-2.0.html) (auf Englisch) eingesehen werden. 
-
-Diese App benutzt Programmbibliotheken, welche evtl. unter einer anderen 
-Lizenz stehen (mehr Details hierzu im entsprechenden Eintrag in der Sidebar).

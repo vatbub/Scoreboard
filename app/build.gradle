@@ -17,8 +17,9 @@
 import org.ajoberstar.grgit.Grgit
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 
 ext {
     git = Grgit.open(dir: file('..'))
@@ -86,4 +87,5 @@ dependencies {
     implementation 'org.jdom:jdom2:2.0.6'
     implementation 'ru.noties:markwon:1.0.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
+    implementation 'com.google.android.gms:play-services-oss-licenses:16.0.2'
 }

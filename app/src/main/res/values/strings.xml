@@ -69,4 +69,7 @@
     <string name="action_hide_sub_total">Hide subtotals</string>
     <string name="manage_saved_games_title">Delete saved games</string>
     <string name="load_game_title">Load game</string>
+    <string name="sidebar_open_source_licenses">Open source licenses</string>
+    <string name="activity_open_source_licenses_title">Open source licenses</string>
+    <string name="imprint_button_open_source_licenses">Show open source licenses</string>
 </resources>

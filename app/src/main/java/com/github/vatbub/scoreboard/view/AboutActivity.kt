@@ -16,11 +16,14 @@
 
 package com.github.vatbub.scoreboard.view
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.RawRes
 import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
 import com.github.vatbub.scoreboard.R
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.android.synthetic.main.activity_about.*
 import ru.noties.markwon.Markwon
 
@@ -31,6 +34,11 @@ class AboutActivity : AppCompatActivity() {
         setContentView(R.layout.activity_about)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         displayMarkdown(R.raw.about)
+        setButtonListenersUp()
+    }
+
+    private fun setButtonListenersUp() {
+        imprint_button_open_source_licenses.setOnClickListener { showOpenSourceLicenses(this) }
     }
 
     private fun displayMarkdown(@RawRes markdownFile: Int) {
@@ -47,5 +55,12 @@ class AboutActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         finish()
         return true
+    }
+
+    companion object {
+        fun showOpenSourceLicenses(context: Context) {
+            OssLicensesMenuActivity.setActivityTitle(context.getString(R.string.activity_open_source_licenses_title))
+            context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+        }
     }
 }
