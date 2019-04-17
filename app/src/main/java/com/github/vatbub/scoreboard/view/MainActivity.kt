@@ -280,7 +280,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             gameManager.games.indexOf(currentGame)
 
         val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.switch_mode_title)
+        builder.setTitle(R.string.load_game_title)
 
         builder.setSingleChoiceItems(gameNames.toTypedArray(), inputSelection
         ) { dialogInterface, selectedItem ->

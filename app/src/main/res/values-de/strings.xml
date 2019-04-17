@@ -67,4 +67,5 @@
     <string name="action_show_sub_total">Zwischensummen anzeigen</string>
     <string name="action_hide_sub_total">Zwischensummen verstecken</string>
     <string name="manage_saved_games_title">Spielstände löschen</string>
+    <string name="load_game_title">Spielstand laden</string>
 </resources>
