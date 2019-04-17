@@ -32,6 +32,7 @@ class AboutActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
+        setTitle(R.string.activity_about_title)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         displayMarkdown(R.raw.about)
         setButtonListenersUp()

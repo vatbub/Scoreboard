@@ -68,7 +68,7 @@
     <string name="action_hide_sub_total">Zwischensummen verstecken</string>
     <string name="manage_saved_games_title">Spielstände löschen</string>
     <string name="load_game_title">Spielstand laden</string>
-    <string name="sidebar_open_source_licenses">Open Source Lizenzen</string>
     <string name="activity_open_source_licenses_title">Open Source Lizenzen</string>
     <string name="imprint_button_open_source_licenses">Open Source Lizenzen anzeigen</string>
+    <string name="activity_about_title">Impressum &amp;  Datenschutz</string>
 </resources>
