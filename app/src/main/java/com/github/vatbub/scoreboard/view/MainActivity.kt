@@ -458,7 +458,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         sumRowViewHolder.lineNumberTextView.requestLayout()
     }
 
-    private fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true) {
+    fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true, updateFabButtonHint: Boolean = true) {
         if (refreshGameData) {
             mainTableAdapter.resetValue()
             setRecyclerViewUp()
@@ -471,6 +471,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             renderSumRow()
         if (redrawLeaderBoard)
             renderLeaderboard()
+        if (updateFabButtonHint)
+            updateFabButtonHint()
+    }
+
+    private fun updateFabButtonHint() {
+        val currentGame = gameManager.currentlyActiveGame
+        val targetAlpha = when {
+            currentGame == null -> 0f
+            currentGame.players.isEmpty() -> 0f
+            currentGame.scoreCount > 0 -> 0f
+            else -> 1f
+        }
+        fab_hint.animate()
+                .alpha(targetAlpha)
+                .setDuration(250)
+                .start()
     }
 
     private fun renderHeaderRow() {
@@ -499,7 +515,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable) {
                     it.name = s.toString()
-                    renderLeaderboard()
+                    redraw(false, false, false, false, true, false)
                 }
             })
 
@@ -507,7 +523,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun renderSumRow() {
+    private fun renderSumRow() {
         sumRowViewHolder.scoreHolderLayout.removeAllViews()
 
         val game = gameManager.currentlyActiveGame ?: return
@@ -538,7 +554,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    fun renderLeaderboard() {
+    private fun renderLeaderboard() {
         val game = gameManager.currentlyActiveGame
         leaderboard_table.removeAllViews()
         val textColor = Color.WHITE

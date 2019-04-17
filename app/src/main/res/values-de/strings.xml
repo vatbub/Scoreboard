@@ -38,7 +38,7 @@
     <string name="sidebar_github">GitHub</string>
     <string name="sidebar_instagram">Instagram</string>
     <string name="sidebar_website">Website</string>
-    <string name="sidebar_imprint">Impressum &amp;  Datenschutz</string>
+    <string name="sidebar_imprint">Impressum &amp; Datenschutz</string>
     <string name="no_game_active_toast">Bitte aktivieren Sie ein Spiel</string>
     <string name="app_icon_content_description">App icon</string>
     <string name="switch_mode_title">Modus wechseln</string>
@@ -70,5 +70,6 @@
     <string name="load_game_title">Spielstand laden</string>
     <string name="activity_open_source_licenses_title">Open Source Lizenzen</string>
     <string name="imprint_button_open_source_licenses">Open Source Lizenzen anzeigen</string>
-    <string name="activity_about_title">Impressum &amp;  Datenschutz</string>
+    <string name="activity_about_title">Impressum &amp; Datenschutz</string>
+    <string name="fab_hint_content_description">Benutzen Sie die Schaltfläche in der unteren rechten Ecke, um eine neue Runde hinzuzufügen.</string>
 </resources>

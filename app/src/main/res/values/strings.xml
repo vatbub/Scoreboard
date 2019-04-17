@@ -72,4 +72,5 @@
     <string name="activity_open_source_licenses_title">Open source licenses</string>
     <string name="imprint_button_open_source_licenses">Show open source licenses</string>
     <string name="activity_about_title">Imprint &amp; Privacy Policy</string>
+    <string name="fab_hint_content_description">Use the button in the lower right corner to add a new score line.</string>
 </resources>

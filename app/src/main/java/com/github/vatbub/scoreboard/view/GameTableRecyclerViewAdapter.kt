@@ -75,8 +75,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
                 return@setOnClickListener
             game.removeScoreLineAt(holder.adapterPosition)
             mainActivity.updateLineNumberWidth()
-            mainActivity.renderSumRow()
-            mainActivity.renderLeaderboard()
+            mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
             notifyItemRemoved(holder.adapterPosition)
         }
 
@@ -106,8 +105,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
                         scoreLineCopy[index] = newScore
                         game.modifyScoreLineAt(holder.adapterPosition, scoreLineCopy)
                         renderSubTotals()
-                        mainActivity.renderSumRow()
-                        mainActivity.renderLeaderboard()
+                        mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
                     } catch (e: NumberFormatException) {
                         Toast.makeText(holder.view.context, R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show()
                         editable.delete(editable.length - 1, editable.length)
@@ -129,6 +127,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
     private fun onDataChanged() {
         updateLineNumbers()
         renderSubTotals()
+        mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
     }
 
     private fun updateLineNumbers() {
