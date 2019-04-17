@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             gamesToDelete.forEach { gameManager.deleteGame(it) }
             gameManager.createGameIfEmptyAndActivateTheFirstGame()
-            redraw()
+            redraw(true)
         }
         builder.setNegativeButton(R.string.dialog_cancel) { _, _ -> }
         builder.create().show()
