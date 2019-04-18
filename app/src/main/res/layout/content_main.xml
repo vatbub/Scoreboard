@@ -56,15 +56,15 @@
 
     <ImageView
         android:id="@+id/fab_hint"
-        android:layout_width="243dp"
-        android:layout_height="200dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
-        android:layout_marginEnd="35dp"
-        android:layout_marginBottom="80dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="10dp"
         android:contentDescription="@string/fab_hint_content_description"
         app:elevation="9dp"
         app:layout_dodgeInsetEdges="bottom"
-        app:srcCompat="@drawable/ic_fab_fab_hint" />
+        app:srcCompat="@drawable/ic_fab_hint" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
