@@ -118,6 +118,7 @@ fabric.properties
 .idea/
 
 buddycipasswords.txt
+passwords.docx
 output.json
 
 Gemfile\.lock
