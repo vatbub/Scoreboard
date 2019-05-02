@@ -28,7 +28,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import com.github.vatbub.scoreboard.AppConfig
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.util.toPx
@@ -89,7 +88,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
             editText.inputType = EditorInfo.TYPE_CLASS_NUMBER
             editText.hint = editText.context.getString(R.string.main_table_score_template, 0)
             editText.setHorizontallyScrolling(false)
-            editText.maxLines = AppConfig.maxLinesForEnterText
+            editText.maxLines = parent.context.resources.getInteger(R.integer.max_lines_for_enter_text)
             val scoreString = editText.context.getString(R.string.main_table_score_template, score)
             if (score != 0L) editText.setText(scoreString)
 
@@ -159,7 +158,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
             layoutParams.marginStart = 2.toPx(holder.view.context)
             textView.layoutParams = layoutParams
             textView.setHorizontallyScrolling(false)
-            textView.maxLines = AppConfig.maxLinesForEnterText
+            textView.maxLines = parent.context.resources.getInteger(R.integer.max_lines_for_enter_text)
             val scoreString = textView.context.getString(R.string.main_table_score_template, subTotal)
             textView.text = scoreString
 

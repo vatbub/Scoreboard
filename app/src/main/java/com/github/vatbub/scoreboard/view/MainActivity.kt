@@ -40,7 +40,6 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import com.github.vatbub.scoreboard.AppConfig
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
@@ -419,8 +418,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val imprintIntent = Intent(this, AboutActivity::class.java)
                 startActivity(imprintIntent)
             }
-            R.id.nav_website -> startURLIntent(AppConfig.websiteURL)
-            R.id.nav_instagram -> startURLIntent(AppConfig.instagramURL)
+            R.id.nav_website -> startURLIntent(R.string.website_url)
+            R.id.nav_instagram -> startURLIntent(R.string.instagram_url)
             R.id.nav_share -> {
                 val sendIntent = Intent(Intent.ACTION_SEND)
                 sendIntent.putExtra(Intent.EXTRA_TEXT,
@@ -428,14 +427,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 sendIntent.type = "text/plain"
                 startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)))
             }
-            R.id.nav_github -> startURLIntent(AppConfig.githubURL)
+            R.id.nav_github -> startURLIntent(R.string.github_url)
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun startURLIntent(url: String) {
+    private fun startURLIntent(@StringRes urlRes:Int) {
+        val url = getString(urlRes)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
         startActivity(intent)
@@ -507,7 +507,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             editText.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
             editText.setHorizontallyScrolling(false)
-            editText.maxLines = AppConfig.maxLinesForEnterText
+            editText.maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
             editText.hint = getPlayerDummyName(game, it)
             editText.setText(it.name)
             editText.addTextChangedListener(object : TextWatcher {

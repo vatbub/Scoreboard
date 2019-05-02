@@ -72,4 +72,7 @@
     <string name="imprint_button_open_source_licenses">Open Source Lizenzen anzeigen</string>
     <string name="activity_about_title">Impressum &amp; Datenschutz</string>
     <string name="fab_hint_content_description">Benutzen Sie die Schaltfläche in der unteren rechten Ecke, um eine neue Runde hinzuzufügen.</string>
+    <string name="website_url">https://fredplus10.me/</string>
+    <string name="github_url">https://github.com/vatbub/Scoreboard</string>
+    <string name="instagram_url">https://www.instagram.com/vatbub/</string>
 </resources>

@@ -73,4 +73,7 @@
     <string name="imprint_button_open_source_licenses">Show open source licenses</string>
     <string name="activity_about_title">Imprint &amp; Privacy Policy</string>
     <string name="fab_hint_content_description">Use the button in the lower right corner to add a new score line.</string>
+    <string name="website_url">https://fredplus10.me/en/</string>
+    <string name="github_url">https://github.com/vatbub/Scoreboard</string>
+    <string name="instagram_url">https://www.instagram.com/vatbub/</string>
 </resources>
