@@ -17,6 +17,8 @@
 package com.github.vatbub.scoreboard.data
 
 import android.content.Context
+import android.support.annotation.StringRes
+import com.github.vatbub.scoreboard.R
 import org.jdom2.Attribute
 import org.jdom2.Document
 import org.jdom2.Element
@@ -26,9 +28,7 @@ import kotlin.properties.Delegates
 
 class GameManager(private val callingContext: Context) {
     companion object {
-        // private val gson = Gson()
         private const val gameListPrefKey = "games"
-
         private val instances = HashMap<Context, GameManager>()
 
         /**
@@ -54,12 +54,8 @@ class GameManager(private val callingContext: Context) {
          */
         fun resetInstance(context: Context): Int {
             synchronized(instances) {
-                var res = -1
-
                 val currentGame = getInstance(context).currentlyActiveGame
-                if (currentGame != null)
-                    res = currentGame.id
-
+                val res = currentGame?.id ?: -1
                 instances.remove(context)
                 return res
             }
@@ -91,22 +87,14 @@ class GameManager(private val callingContext: Context) {
             return if (ids.isEmpty()) 0 else Collections.max(ids) + 1
         }
 
-    fun getGameById(id: Int): Game? {
-        _games.forEach {
-            if (it.id == id)
-                return it
-        }
-        return null
-    }
+    operator fun get(id: Int) = _games.find { it.id == id }
 
     /**
      * Activates the game with the specified id.
      *
      * @param id The id of the game to activate
      */
-    fun activateGame(id: Int) {
-        activateGame(getGameById(id))
-    }
+    fun activateGame(id: Int) = activateGame(this[id])
 
     /**
      * Activates the specified game
@@ -115,10 +103,8 @@ class GameManager(private val callingContext: Context) {
      */
     fun activateGame(gameToBeActivated: Game?) {
         val previousGame = currentlyActiveGame
-
         if (previousGame != null && previousGame == gameToBeActivated)
             return
-
         currentlyActiveGame = gameToBeActivated
     }
 
@@ -136,10 +122,8 @@ class GameManager(private val callingContext: Context) {
     }
 
     fun createGameIfEmptyAndActivateTheFirstGame() {
-        if (games.isEmpty()) {
-            createGame(null)
-        }
-        activateGame(games[0])
+        val gameToActivate = if (games.isEmpty()) createGame(null) else games[0]
+        activateGame(gameToActivate)
     }
 
     /**
@@ -156,51 +140,37 @@ class GameManager(private val callingContext: Context) {
     private fun getGameKey(id: Int): String = "game$id"
 
     internal fun saveGame(game: Game) {
-        // val json = gson.toJson(game.serializableCopy())
-        // gameManagerPrefs.edit().putString(getGameKey(game.id), json).apply()
         XmlFileUtils.saveFile(callingContext, getGameKey(game.id), game.toXml())
     }
 
     private fun saveGameList() {
-        // val json = gson.toJson(gameIDs)
-        // gameManagerPrefs.edit().putString(gameListPrefKey, json).apply()
-
         val rootElement = Element(XmlConstants.GameManager.XML_GAME_IDS_TAG_NAME)
-
         gameIDs.forEach {
             val idElement = Element(XmlConstants.GameManager.XML_GAME_ID_TAG_NAME)
             idElement.setContent(Text(it.toString()))
             rootElement.children.add(idElement)
         }
-
         XmlFileUtils.saveFile(callingContext, gameListPrefKey, Document(rootElement))
     }
 
     private fun restoreData(): List<Game> {
-        // val json = gameManagerPrefs.getString(gameListPrefKey, "")
-        // val restoredGameIds = gson.fromJson<List<Int>>(json, List::class.java) ?: return listOf()
+        val restoredGames = mutableListOf<Game>()
         val gameIdsDocument = XmlFileUtils.readFile(callingContext, gameListPrefKey)
                 ?: return listOf()
-        val gameIdsElement = gameIdsDocument.rootElement
-
-        val restoredGames = mutableListOf<Game>()
-
-        gameIdsElement.children.forEach {
-            // val gameJson = gameManagerPrefs.getString(getGameKey(it), "")
-            // val restoredGame = gson.fromJson<Game>(gameJson, Game::class.java) ?: return@forEach
+        gameIdsDocument.rootElement.children.forEach {
             val id = it.content[0].value.toInt()
             val restoredGame = Game.fromXml(this, XmlFileUtils.readFile(callingContext, getGameKey(id))
                     ?: return@forEach)
-
             restoredGames.add(restoredGame)
         }
-
         return restoredGames
     }
 }
 
-enum class GameMode {
-    HIGH_SCORE, LOW_SCORE
+enum class GameMode(@StringRes val nameResource: Int) {
+    HIGH_SCORE(R.string.switch_mode_highscore), LOW_SCORE(R.string.switch_mode_lowscore);
+
+    fun getNameString(context: Context) = context.getString(nameResource)
 }
 
 class Game internal constructor(var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {

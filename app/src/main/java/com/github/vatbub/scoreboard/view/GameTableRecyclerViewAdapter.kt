@@ -60,12 +60,32 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         return GameTableViewHolder(rowView, true)
     }
 
+    private inner class CustomTextWatcher(val index: Int, val holder: GameTableViewHolder, val scoreLine: MutableList<Long>) : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+        override fun afterTextChanged(editable: Editable) {
+            try {
+                var newScore: Long = 0
+                if (editable.isNotEmpty())
+                    newScore = editable.toString().toLong()
+
+                scoreLine[index] = newScore
+                game.modifyScoreLineAt(holder.adapterPosition, scoreLine)
+                renderSubTotals()
+                mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
+            } catch (e: NumberFormatException) {
+                Toast.makeText(holder.view.context, R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show()
+                editable.delete(editable.length - 1, editable.length)
+            }
+        }
+    }
+
     override fun onBindViewHolder(holder: GameTableViewHolder, position: Int) {
         mBoundViewHolders.add(holder)
 
         holder.subTotalRow.visibility = targetSubTotalVisibility(showSubTotal)
 
-        holder.setLineNumber(holder.adapterPosition + 1)
+        holder.lineNumber = holder.adapterPosition + 1
         if (lastLineColumnWidth != 0)
             holder.lineNumberTextView.width = lastLineColumnWidth
 
@@ -83,39 +103,17 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         holder.scoreHolderLayout.removeAllViews()
 
         scoreLine.forEachIndexed { index, score ->
-            val editText = EditText(holder.view.context)
-            editText.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            editText.inputType = EditorInfo.TYPE_CLASS_NUMBER
-            editText.hint = editText.context.getString(R.string.main_table_score_template, 0)
-            editText.setHorizontallyScrolling(false)
-            editText.maxLines = parent.context.resources.getInteger(R.integer.max_lines_for_enter_text)
-            val scoreString = editText.context.getString(R.string.main_table_score_template, score)
-            if (score != 0L) editText.setText(scoreString)
-
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(editable: Editable) {
-                    try {
-                        var newScore: Long = 0
-                        if (editable.isNotEmpty())
-                            newScore = editable.toString().toLong()
-
-                        scoreLineCopy[index] = newScore
-                        game.modifyScoreLineAt(holder.adapterPosition, scoreLineCopy)
-                        renderSubTotals()
-                        mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
-                    } catch (e: NumberFormatException) {
-                        Toast.makeText(holder.view.context, R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show()
-                        editable.delete(editable.length - 1, editable.length)
-                    }
-
-                }
-            })
-
-            holder.scoreHolderLayout.addView(editText)
+            with(EditText(holder.view.context)) {
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                inputType = EditorInfo.TYPE_CLASS_NUMBER
+                hint = context.getString(R.string.main_table_score_template, 0)
+                setHorizontallyScrolling(false)
+                maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
+                if (score != 0L) setText(context.getString(R.string.main_table_score_template, score))
+                addTextChangedListener(CustomTextWatcher(index, holder, scoreLineCopy))
+                holder.scoreHolderLayout.addView(this)
+            }
         }
-
         renderSubTotals(holder)
     }
 
@@ -130,11 +128,10 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
     }
 
     private fun updateLineNumbers() {
-        val childCount = parent.childCount
-        for (i in 0 until childCount) {
+        for (i in 0 until parent.childCount) {
             val holder = parent.getChildViewHolder(parent.getChildAt(i)) as GameTableViewHolder
             if (holder.adapterPosition != NO_POSITION)
-                holder.setLineNumber(holder.adapterPosition + 1)
+                holder.lineNumber = holder.adapterPosition + 1
         }
     }
 
@@ -153,20 +150,17 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         holder.subTotalHolderLayout.removeAllViews()
 
         subTotals.forEach { subTotal ->
-            val textView = TextView(holder.view.context)
-            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            layoutParams.marginStart = 2.toPx(holder.view.context)
-            textView.layoutParams = layoutParams
-            textView.setHorizontallyScrolling(false)
-            textView.maxLines = parent.context.resources.getInteger(R.integer.max_lines_for_enter_text)
-            val scoreString = textView.context.getString(R.string.main_table_score_template, subTotal)
-            textView.text = scoreString
-
-            holder.subTotalHolderLayout.addView(textView)
+            with(TextView(holder.view.context)) {
+                val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                layoutParams.marginStart = 2.toPx(holder.view.context)
+                this.layoutParams = layoutParams
+                setHorizontallyScrolling(false)
+                maxLines = context.resources.getInteger(R.integer.max_lines_for_enter_text)
+                text = context.getString(R.string.main_table_score_template, subTotal)
+                holder.subTotalHolderLayout.addView(this)
+            }
         }
     }
 
-    override fun getItemCount(): Int {
-        return game.scoreCount
-    }
+    override fun getItemCount() = game.scoreCount
 }

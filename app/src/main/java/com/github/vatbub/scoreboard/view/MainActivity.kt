@@ -48,6 +48,7 @@ import com.github.vatbub.scoreboard.data.Player
 import com.github.vatbub.scoreboard.util.ResettableLazyProperty
 import com.github.vatbub.scoreboard.util.ViewUtil
 import com.github.vatbub.scoreboard.util.toPx
+import com.github.vatbub.scoreboard.util.transform
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -310,24 +311,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             GameMode.LOW_SCORE -> 1
         }
 
-        val items = arrayOf<CharSequence>(getString(R.string.switch_mode_highscore), getString(R.string.switch_mode_lowscore))
+        val items = GameMode.values().transform { it.getNameString(this) }
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.switch_mode_title)
+        with(AlertDialog.Builder(this)) {
+            setTitle(R.string.switch_mode_title)
+            setSingleChoiceItems(items, inputSelection) { dialogInterface, selectedItem ->
+                if (currentGame == null)
+                    return@setSingleChoiceItems
 
-        builder.setSingleChoiceItems(items, inputSelection
-        ) { dialogInterface, selectedItem ->
-            if (currentGame == null)
-                return@setSingleChoiceItems
-
-            if (selectedItem == 0)
-                currentGame.mode = GameMode.HIGH_SCORE
-            else if (selectedItem == 1)
-                currentGame.mode = GameMode.LOW_SCORE
-            dialogInterface.dismiss()
-            redraw(redrawHeaderRow = false, notifyDataSetChanged = false)
+                if (selectedItem == 0)
+                    currentGame.mode = GameMode.HIGH_SCORE
+                else if (selectedItem == 1)
+                    currentGame.mode = GameMode.LOW_SCORE
+                dialogInterface.dismiss()
+                redraw(redrawHeaderRow = false, notifyDataSetChanged = false)
+            }
+            create().show()
         }
-        builder.create().show()
     }
 
     private fun verifyPlayer(player: Player, players: List<Player>) {
@@ -370,28 +370,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun removePlayerHandler() {
         val currentGame = gameManager.currentlyActiveGame ?: return
-        val playerNames = Array(currentGame.players.size) { getPlayerNameOrDummy(currentGame, currentGame.players[it]) }
+        val playerNames = currentGame.players.transform { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
 
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle(R.string.delete_player_title)
-
-        val indicesToDelete = BooleanArray(playerNames.size)
-
-        builder.setMultiChoiceItems(playerNames, indicesToDelete
-        ) { _: DialogInterface, index: Int, checked: Boolean ->
-            indicesToDelete[index] = checked
-        }
-        builder.setPositiveButton(R.string.dialog_ok) { _, _ ->
-            val playersToDelete = mutableListOf<Player>()
-            indicesToDelete.forEachIndexed { index, checked ->
-                if (checked)
-                    playersToDelete.add(currentGame.players[index])
+        with(AlertDialog.Builder(this)) {
+            setTitle(R.string.delete_player_title)
+            val indicesToDelete = BooleanArray(playerNames.size)
+            setMultiChoiceItems(playerNames, indicesToDelete) { _, index, checked -> indicesToDelete[index] = checked }
+            setPositiveButton(R.string.dialog_ok) { _, _ ->
+                val playersToDelete = mutableListOf<Player>()
+                indicesToDelete.forEachIndexed { index, checked ->
+                    if (checked)
+                        playersToDelete.add(currentGame.players[index])
+                }
+                playersToDelete.forEach { currentGame.players.remove(it) }
+                redraw()
             }
-            playersToDelete.forEach { currentGame.players.remove(it) }
-            redraw()
+            setNegativeButton(R.string.dialog_cancel) { _, _ -> }
+            create().show()
         }
-        builder.setNegativeButton(R.string.dialog_cancel) { _, _ -> }
-        builder.create().show()
     }
 
     private fun addPlayerHandler() {
@@ -434,7 +430,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun startURLIntent(@StringRes urlRes:Int) {
+    private fun startURLIntent(@StringRes urlRes: Int) {
         val url = getString(urlRes)
         val intent = Intent(Intent.ACTION_VIEW)
         intent.data = Uri.parse(url)
@@ -443,7 +439,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun headerRowUpdateLineNumber() {
         val game = gameManager.currentlyActiveGame ?: return
-        headerRowViewHolder.setLineNumber(game.scoreCount)
+        headerRowViewHolder.lineNumber = game.scoreCount
     }
 
     private fun sumRowUpdateLineNumber() {

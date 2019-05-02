@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.github.vatbub.scoreboard.R
 import kotlinx.android.synthetic.main.scoreboard_row.view.*
+import kotlin.properties.Delegates
 
 class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = false) : RecyclerView.ViewHolder(view) {
     val scoreHolderLayout = view.main_table_text_view_holder!!
@@ -27,19 +28,18 @@ class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = fa
     val deleteRowButton = view.main_table_delete_row_button!!
     val subTotalRow = view.main_table_sub_total_row!!
     val subTotalHolderLayout = view.main_table_sub_total_holder!!
+    var lineNumber by Delegates.observable(0) { _, _, newValue ->
+        lineNumberTextView.text = String.format(view.context.getString(R.string.main_table_row_number_template), newValue)
+        deleteRowButton.contentDescription = String.format(view.context.getString(R.string.main_table_delete_button_content_description_template), newValue)
 
-    fun setLineNumber(lineNumber: Int) {
-        lineNumberTextView.text = String.format(view.context.getString(R.string.main_table_row_number_template), lineNumber)
-        deleteRowButton.contentDescription = String.format(view.context.getString(R.string.main_table_delete_button_content_description_template), lineNumber)
-
-        if (!shouldLineColorBeSet) return
+        if (!shouldLineColorBeSet) return@observable
 
         @Suppress("DEPRECATION")
-        if (isOdd(lineNumber))
-            view.setBackgroundColor(view.resources.getColor(R.color.oddLineColor))
+        val color = if (isOdd(newValue))
+            view.resources.getColor(R.color.oddLineColor)
         else
-            view.setBackgroundColor(view.resources.getColor(R.color.evenLineColor))
-
+            view.resources.getColor(R.color.evenLineColor)
+        view.setBackgroundColor(color)
     }
 
     private fun isOdd(i: Int) = i % 2 == 1
