@@ -53,9 +53,8 @@ class MarkdownRenderer private constructor(private val context: Context) {
             return instances[context]!!
         }
 
-        fun resetInstance(context: Context) {
+        fun resetInstance(context: Context) =
             instances.remove(context)
-        }
     }
 
     fun getCachedRenderResult(@RawRes markdownFile: Int): CharSequence {

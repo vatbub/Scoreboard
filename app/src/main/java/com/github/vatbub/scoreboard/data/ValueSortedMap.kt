@@ -50,9 +50,8 @@ class ValueSortedMap<K, V> private constructor(initialMap: MutableMap<K, V>?, co
     override operator fun get(key: K) = map[key]
 
     override fun put(key: K, value: V): V? {
-        if (lookupMap.containsKey(key)) {
+        if (lookupMap.containsKey(key))
             map.remove(key)
-        }
         lookupMap[key] = value
         return map.put(key, value)
     }

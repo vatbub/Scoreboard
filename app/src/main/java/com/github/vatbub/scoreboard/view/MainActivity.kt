@@ -431,10 +431,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun startURLIntent(@StringRes urlRes: Int) {
-        val url = getString(urlRes)
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        startActivity(intent)
+        with(Intent(Intent.ACTION_VIEW)) {
+            data = Uri.parse(getString(urlRes))
+            startActivity(this)
+        }
     }
 
     private fun headerRowUpdateLineNumber() {
@@ -486,75 +486,70 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun renderHeaderRow() {
-        val game = gameManager.currentlyActiveGame
         headerRowUpdateLineNumber()
         headerRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
         headerRowViewHolder.deleteRowButton.visibility = View.INVISIBLE
 
         headerRowViewHolder.scoreHolderLayout.removeAllViews()
 
-        if (game == null) return
-
+        val game = gameManager.currentlyActiveGame ?: return
         game.players.forEach {
-            val editText = EditText(headerRowViewHolder.view.context)
+            with(EditText(headerRowViewHolder.view.context)) {
+                val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                this.layoutParams = layoutParams
 
-            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-            editText.layoutParams = layoutParams
+                inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
+                setHorizontallyScrolling(false)
+                maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
+                hint = getPlayerDummyName(game, it)
+                setText(it.name)
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                    override fun afterTextChanged(s: Editable) {
+                        it.name = s.toString()
+                        redraw(false, false, false, false, true, false)
+                    }
+                })
 
-            editText.inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
-            editText.setHorizontallyScrolling(false)
-            editText.maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
-            editText.hint = getPlayerDummyName(game, it)
-            editText.setText(it.name)
-            editText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-                override fun afterTextChanged(s: Editable) {
-                    it.name = s.toString()
-                    redraw(false, false, false, false, true, false)
-                }
-            })
-
-            headerRowViewHolder.scoreHolderLayout.addView(editText)
+                headerRowViewHolder.scoreHolderLayout.addView(this)
+            }
         }
     }
 
     private fun renderSumRow() {
+        sumRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
         sumRowViewHolder.scoreHolderLayout.removeAllViews()
 
         val game = gameManager.currentlyActiveGame ?: return
-        sumRowViewHolder.lineNumberTextView.visibility = View.INVISIBLE
-
         val winnerIndices = game.winners
         val looserIndices = game.loosers
-        sumRowViewHolder.scoreHolderLayout.removeAllViews()
 
         game.players.forEachIndexed { index, player ->
-            val textView = TextView(sumRowViewHolder.view.context)
-            @Suppress("DEPRECATION")
-            textView.setTextColor(resources.getColor(R.color.sumRowFontColor))
-            textView.text = textView.context.getString(R.string.main_table_score_template, player.totalScore)
-            textView.gravity = Gravity.CENTER
-            textView.setPadding(0, 15, 0, 15)
+            with(TextView(sumRowViewHolder.view.context)) {
+                @Suppress("DEPRECATION")
+                setTextColor(resources.getColor(R.color.sumRowFontColor))
+                text = context.getString(R.string.main_table_score_template, player.totalScore)
+                gravity = Gravity.CENTER
+                setPadding(0, 15, 0, 15)
 
-            @Suppress("DEPRECATION")
-            if (winnerIndices.contains(index))
-                textView.setBackgroundColor(resources.getColor(R.color.winnerColor))
-            else if (looserIndices.contains(index))
-                textView.setBackgroundColor(resources.getColor(R.color.looserColor))
+                @Suppress("DEPRECATION")
+                if (winnerIndices.contains(index))
+                    setBackgroundColor(resources.getColor(R.color.winnerColor))
+                else if (looserIndices.contains(index))
+                    setBackgroundColor(resources.getColor(R.color.looserColor))
 
-            val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
-            textView.layoutParams = layoutParams
-
-            sumRowViewHolder.scoreHolderLayout.addView(textView)
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                sumRowViewHolder.scoreHolderLayout.addView(this)
+            }
         }
     }
 
     private fun renderLeaderboard() {
-        val game = gameManager.currentlyActiveGame
         leaderboard_table.removeAllViews()
         val textColor = Color.WHITE
 
+        val game = gameManager.currentlyActiveGame
         if (game == null || game.players.isEmpty()) {
             val emptyRow = TableRow(this)
             val emptyLabel = TextView(this)
@@ -572,8 +567,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         textViewLayoutParams.rightMargin = 10.toPx(this)
 
         for ((key, value) in ranking) {
-            val row = TableRow(this)
-
             val rankTextView = TextView(this)
             val playerNameTextView = TextView(this)
             val scoreTextView = TextView(this)
@@ -590,45 +583,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             playerNameTextView.layoutParams = textViewLayoutParams
             scoreTextView.layoutParams = textViewLayoutParams
 
-            row.addView(rankTextView)
-            row.addView(playerNameTextView)
-            row.addView(scoreTextView)
-
-            leaderboard_table.addView(row)
+            with(TableRow(this)) {
+                addView(rankTextView)
+                addView(playerNameTextView)
+                addView(scoreTextView)
+                leaderboard_table.addView(this)
+            }
             i++
         }
     }
 
     interface StringPromptResultHandler {
         fun onOk(result: String)
-
         fun onCancel()
     }
 
     companion object {
-        private fun createStringPrompt(context: Context, @StringRes title: Int, @StringRes okText: Int, @StringRes cancelText: Int, resultHandler: StringPromptResultHandler, defaultText: String? = null, defaultHint: String? = null) {
-            createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), resultHandler, defaultText, defaultHint)
-        }
+        private fun createStringPrompt(context: Context, @StringRes title: Int, @StringRes okText: Int, @StringRes cancelText: Int, resultHandler: StringPromptResultHandler, defaultText: String? = null, defaultHint: String? = null) =
+                createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), resultHandler, defaultText, defaultHint)
 
         private fun createStringPrompt(context: Context, title: CharSequence, okText: CharSequence, cancelText: CharSequence, resultHandler: StringPromptResultHandler, defaultText: String? = null, defaultHint: String? = null) {
-            val builder = AlertDialog.Builder(context)
-            builder.setTitle(title)
+            with(AlertDialog.Builder(context)) {
+                setTitle(title)
 
-            val input = EditText(context)
-            input.inputType = InputType.TYPE_CLASS_TEXT
-            if (defaultText != null)
-                input.setText(defaultText)
-            if (defaultHint != null)
-                input.hint = defaultHint
-            builder.setView(input)
+                val input = EditText(context)
+                input.inputType = InputType.TYPE_CLASS_TEXT
+                if (defaultText != null)
+                    input.setText(defaultText)
+                if (defaultHint != null)
+                    input.hint = defaultHint
+                setView(input)
 
-            builder.setPositiveButton(okText) { _, _ -> resultHandler.onOk(input.text.toString()) }
-            builder.setNegativeButton(cancelText) { dialog, _ ->
-                dialog.cancel()
-                resultHandler.onCancel()
+                setPositiveButton(okText) { _, _ -> resultHandler.onOk(input.text.toString()) }
+                setNegativeButton(cancelText) { dialog, _ ->
+                    dialog.cancel()
+                    resultHandler.onCancel()
+                }
+
+                show()
             }
-
-            builder.show()
         }
     }
 }

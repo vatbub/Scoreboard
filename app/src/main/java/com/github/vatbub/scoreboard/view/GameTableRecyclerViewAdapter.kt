@@ -65,11 +65,10 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         override fun afterTextChanged(editable: Editable) {
             try {
-                var newScore: Long = 0
-                if (editable.isNotEmpty())
-                    newScore = editable.toString().toLong()
+                scoreLine[index] = if (editable.isNotEmpty())
+                    editable.toString().toLong()
+                else 0
 
-                scoreLine[index] = newScore
                 game.modifyScoreLineAt(holder.adapterPosition, scoreLine)
                 renderSubTotals()
                 mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
@@ -82,9 +81,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
 
     override fun onBindViewHolder(holder: GameTableViewHolder, position: Int) {
         mBoundViewHolders.add(holder)
-
         holder.subTotalRow.visibility = targetSubTotalVisibility(showSubTotal)
-
         holder.lineNumber = holder.adapterPosition + 1
         if (lastLineColumnWidth != 0)
             holder.lineNumberTextView.width = lastLineColumnWidth

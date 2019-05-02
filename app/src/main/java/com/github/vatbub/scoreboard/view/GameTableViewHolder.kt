@@ -19,6 +19,7 @@ package com.github.vatbub.scoreboard.view
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import com.github.vatbub.scoreboard.R
+import com.github.vatbub.scoreboard.util.isOdd
 import kotlinx.android.synthetic.main.scoreboard_row.view.*
 import kotlin.properties.Delegates
 
@@ -35,12 +36,10 @@ class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = fa
         if (!shouldLineColorBeSet) return@observable
 
         @Suppress("DEPRECATION")
-        val color = if (isOdd(newValue))
+        val color = if (newValue.isOdd)
             view.resources.getColor(R.color.oddLineColor)
         else
             view.resources.getColor(R.color.evenLineColor)
         view.setBackgroundColor(color)
     }
-
-    private fun isOdd(i: Int) = i % 2 == 1
 }

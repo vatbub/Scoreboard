@@ -19,6 +19,7 @@ package com.github.vatbub.scoreboard.data
 import android.content.Context
 import android.support.annotation.StringRes
 import com.github.vatbub.scoreboard.R
+import com.github.vatbub.scoreboard.util.transform
 import org.jdom2.Attribute
 import org.jdom2.Document
 import org.jdom2.Element
@@ -54,8 +55,7 @@ class GameManager(private val callingContext: Context) {
          */
         fun resetInstance(context: Context): Int {
             synchronized(instances) {
-                val currentGame = getInstance(context).currentlyActiveGame
-                val res = currentGame?.id ?: -1
+                val res = getInstance(context).currentlyActiveGame?.id ?: -1
                 instances.remove(context)
                 return res
             }
@@ -170,7 +170,7 @@ class GameManager(private val callingContext: Context) {
 enum class GameMode(@StringRes val nameResource: Int) {
     HIGH_SCORE(R.string.switch_mode_highscore), LOW_SCORE(R.string.switch_mode_lowscore);
 
-    fun getNameString(context: Context) = context.getString(nameResource)
+    fun getNameString(context: Context): String = context.getString(nameResource)
 }
 
 class Game internal constructor(var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
@@ -275,20 +275,16 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
 
     val ranking: Map<Player, Long>
         get() {
-            val gameMode = mode
-            val sortedScores = when (gameMode) {
+            val sortedScores = when (mode) {
                 GameMode.HIGH_SCORE -> ValueSortedMap<Player, Long>(false)
                 GameMode.LOW_SCORE -> ValueSortedMap(true)
             }
 
             players.forEach { sortedScores[it] = it.totalScore }
-
             return sortedScores
         }
 
-    override fun toString(): String {
-        return name
-    }
+    override fun toString() = name
 
     /**
      * Creates a new player in this game
@@ -309,14 +305,11 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
      */
     fun addScoreLine(scores: List<Long>) {
         assertScoreListLength(scores)
-        players.forEachIndexed { index, player ->
-            player.scores.add(scores[index])
-        }
+        players.forEachIndexed { index, player -> player.scores.add(scores[index]) }
     }
 
-    fun addEmptyScoreLine() {
-        addScoreLine(List(players.size) { 0L })
-    }
+    fun addEmptyScoreLine() =
+            addScoreLine(List(players.size) { 0L })
 
     /**
      * Modifies the specified score line
@@ -326,9 +319,7 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
      */
     fun modifyScoreLineAt(index: Int, scores: List<Long>) {
         assertScoreListLength(scores)
-        players.forEachIndexed { playerIndex, player ->
-            player.scores[index] = scores[playerIndex]
-        }
+        players.forEachIndexed { playerIndex, player -> player.scores[index] = scores[playerIndex] }
     }
 
     private fun assertScoreListLength(scores: List<Long>) {
@@ -341,9 +332,8 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
      *
      * @param index The index of the row to remove
      */
-    fun removeScoreLineAt(index: Int) {
-        players.forEach { it.scores.removeAt(index) }
-    }
+    fun removeScoreLineAt(index: Int) =
+            players.forEach { it.scores.removeAt(index) }
 
     /**
      * Returns the specified score line
@@ -351,18 +341,11 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
      * @param index The row index of the line to return
      * @return The score line at the specified index
      */
-    fun getScoreLineAt(index: Int): List<Long> {
-        val playersCopy = players
-        return List(playersCopy.size) { playerIndex ->
-            val playerScores = playersCopy[playerIndex].scores
-            playerScores[index]
-        }
-    }
+    fun getScoreLineAt(index: Int) = players.transform { it.scores[index] }
 
     internal fun savePlayer() = gameManager?.saveGame(this)
 
     fun toXml(): Document {
-        // var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>
         val rootElement = Element(XmlConstants.Game.XML_GAME_TAG_NAME)
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE, id.toString()))
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE, name))
@@ -378,17 +361,18 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
 
     companion object {
         fun fromXml(gameManager: GameManager?, document: Document): Game {
-            val rootElement = document.rootElement
-            val id = rootElement.getAttribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE).intValue
-            val name = rootElement.getAttribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE).value
-            val gameMode = GameMode.valueOf(rootElement.getAttribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE).value)
+            with(document.rootElement) {
+                val id = getAttribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE).intValue
+                val name = getAttribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE).value
+                val gameMode = GameMode.valueOf(getAttribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE).value)
 
-            val playersElement = rootElement.getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
-            val players = List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
+                val playersElement = getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
+                val players = List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
 
-            val game = Game(gameManager, id, name, gameMode, players)
-            players.forEach { it.parentGame = game }
-            return game
+                val game = Game(gameManager, id, name, gameMode, players)
+                players.forEach { it.parentGame = game }
+                return game
+            }
         }
     }
 
@@ -403,9 +387,7 @@ class Game internal constructor(var gameManager: GameManager?, val id: Int, name
         return true
     }
 
-    override fun hashCode(): Int {
-        return id
-    }
+    override fun hashCode() = id
 }
 
 class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Long>) {
@@ -425,14 +407,7 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
     val totalScore: Long
         get() = getSubTotalAt(scores.size - 1)
 
-    fun getSubTotalAt(index: Int): Long {
-        var sum: Long = 0
-        val scores = scores
-        for (i in 0..index)
-            sum += scores[i]
-
-        return sum
-    }
+    fun getSubTotalAt(index: Int) = scores.take(index + 1).sum()
 
     fun toXml(): Element {
         val result = Element(XmlConstants.Player.XML_PLAYER_TAG_NAME)
@@ -463,9 +438,7 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
         }
     }
 
-    override fun toString(): String {
-        return name ?: super.toString()
-    }
+    override fun toString() = name ?: super.toString()
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -478,7 +451,5 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
         return true
     }
 
-    override fun hashCode(): Int {
-        return id
-    }
+    override fun hashCode() = id
 }
