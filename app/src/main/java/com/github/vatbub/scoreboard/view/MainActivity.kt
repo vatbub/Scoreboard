@@ -36,6 +36,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
+import android.util.DisplayMetrics
 import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -45,13 +46,12 @@ import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
-import com.github.vatbub.scoreboard.util.ResettableLazyProperty
-import com.github.vatbub.scoreboard.util.ViewUtil
-import com.github.vatbub.scoreboard.util.toPx
-import com.github.vatbub.scoreboard.util.transform
+import com.github.vatbub.scoreboard.util.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
+import net.steamcrafted.materialiconlib.MaterialIconView
 import net.steamcrafted.materialiconlib.MaterialMenuInflater
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -76,6 +76,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val mBottomSheetBehavior by lazy { BottomSheetBehavior.from(sum_bottom_sheet) }
 
     private var optionsMenu: Menu? = null
+    private var lastAddPlayerActionBarCenterX = -1f
+    private var lastAddPlayerArrowWidth = -1
+    private var lastAddPlayerHintWidth = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,9 +94,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         redraw()
         headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> mainTableAdapter.value.updateColumnWidths(headerRowViewHolder.lineNumberTextView.width) }
 
+        setAddPlayerHintLayoutListenerUp()
         setFabListenerUp()
         setNavigationDrawerUp()
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    private fun setAddPlayerHintLayoutListenerUp() {
+        // add_player_hint_arrow.layoutParams.width
+        add_player_hint_arrow.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+            val oldWidth = Math.abs(oldRight - oldLeft)
+            lastAddPlayerArrowWidth = Math.abs(right - left)
+            if (oldWidth != lastAddPlayerArrowWidth)
+                informAddPlayerButtonLocation()
+        }
+        add_player_hint.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+            val oldWidth = Math.abs(oldRight - oldLeft)
+            lastAddPlayerHintWidth = Math.abs(right - left)
+            if (oldWidth != lastAddPlayerHintWidth)
+                informAddPlayerButtonLocation()
+        }
     }
 
     private fun setFabListenerUp() {
@@ -177,6 +197,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         MaterialMenuInflater.with(this)
                 .setDefaultColor(Color.WHITE)
                 .inflate(R.menu.main, menu)
+
+        val menuItem = menu.findItem(R.id.action_add_player)
+        val actionView = MaterialIconView(this)
+        actionView.setOnClickListener { onOptionsItemSelected(menuItem) }
+        actionView.setIcon(MaterialDrawableBuilder.IconValue.ACCOUNT_PLUS)
+        actionView.setToActionbarSize()
+        actionView.setColor(Color.WHITE)
+        menuItem.actionView = actionView
+        println("menuItem.isVisible: ${menuItem.isVisible}")
+        actionView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(view: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                if (view == null) return
+                if (left == 0 && top == 0 && right == 0 && bottom == 0) return
+
+                val location = IntArray(2)
+                view.getLocationOnScreen(location)
+                lastAddPlayerActionBarCenterX = location[0] + (right - left) / 2f
+                println("centerX: $lastAddPlayerActionBarCenterX")
+                informAddPlayerButtonLocation()
+            }
+        })
         updateShowSubTotalsMenuItem(mainTableAdapter.value.showSubTotal)
         return true
     }
@@ -467,7 +508,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         sumRowViewHolder.lineNumberTextView.requestLayout()
     }
 
-    fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true, updateFabButtonHint: Boolean = true) {
+    fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true, updateFabButtonHint: Boolean = true, updateAddPlayerHint: Boolean = true) {
         if (refreshGameData) {
             mainTableAdapter.resetValue()
             setRecyclerViewUp()
@@ -482,6 +523,40 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             renderLeaderboard()
         if (updateFabButtonHint)
             updateFabButtonHint()
+        if (updateAddPlayerHint)
+            updateAddPlayerHint()
+    }
+
+    private fun informAddPlayerButtonLocation() {
+        if (lastAddPlayerActionBarCenterX < 0) return
+        if (lastAddPlayerArrowWidth < 0) return
+        if (lastAddPlayerHintWidth < 0) return
+        add_player_hint_arrow.x = lastAddPlayerActionBarCenterX - lastAddPlayerArrowWidth / 2f
+
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenWidth = displayMetrics.widthPixels
+        val maxHintLeft = screenWidth - lastAddPlayerHintWidth
+        val desiredHintLeft = lastAddPlayerActionBarCenterX - lastAddPlayerHintWidth / 2f
+        add_player_hint.x = Math.max(0f, Math.min(maxHintLeft.toFloat(), desiredHintLeft))
+    }
+
+    private fun updateAddPlayerHint() {
+        val currentGame = gameManager.currentlyActiveGame
+        val targetAlpha =
+                if (currentGame != null && currentGame.players.isEmpty())
+                    1f
+                else 0f
+
+        val animationDuration = 150L
+        add_player_hint_arrow.animate()
+                .alpha(targetAlpha)
+                .setDuration(animationDuration)
+                .start()
+        add_player_hint.animate()
+                .alpha(targetAlpha)
+                .setDuration(animationDuration)
+                .start()
     }
 
     private fun updateFabButtonHint() {

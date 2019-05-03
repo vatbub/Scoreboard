@@ -76,4 +76,5 @@
     <string name="website_url">https://fredplus10.me/en/</string>
     <string name="github_url">https://github.com/vatbub/Scoreboard</string>
     <string name="instagram_url">https://www.instagram.com/vatbub/</string>
+    <string name="add_player_hint_content_description">Use the button just above to add new players to the game.</string>
 </resources>
