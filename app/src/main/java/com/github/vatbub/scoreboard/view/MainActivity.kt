@@ -122,10 +122,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mainTableAdapter.value.notifyDataSetChanged()
     }
 
+    private fun calculateBottomSheetHeightFromOffset(bottomSheet: View, slideOffset: Float): Int {
+        val peekHeight = mBottomSheetBehavior.peekHeight
+        val fullHeight = bottomSheet.height
+        if (slideOffset == 0f) return peekHeight
+        if (slideOffset < 0f) return ((slideOffset + 1) * peekHeight).toInt()
+        return ((slideOffset * (fullHeight - peekHeight)) + peekHeight).toInt()
+    }
+
     private fun setSumBottomSheetUp() {
         ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
         mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                val layoutParams = sum_bottom_sheet_scroll_space.layoutParams
+                layoutParams.height = calculateBottomSheetHeightFromOffset(bottomSheet, slideOffset)
+                sum_bottom_sheet_scroll_space.layoutParams = layoutParams
+            }
+
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 val optionsMenuCopy = optionsMenu ?: return
                 val menuItem = optionsMenuCopy.findItem(R.id.action_toggle_ranking) ?: return
