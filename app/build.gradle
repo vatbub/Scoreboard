@@ -27,11 +27,11 @@ ext {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId "com.github.vatbub.scoreboard"
         minSdkVersion 21
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode GIT_COMMIT_COUNT
         versionName "1.0." + new Date().format('yyyy_MM_dd_HHmm')
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -70,9 +70,9 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation fileTree(include: ['*.aar'], dir: 'libs')
     implementation 'net.steamcrafted:materialiconlib:1.1.5'
-    implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
-    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
     testImplementation 'junit:junit:4.12'
