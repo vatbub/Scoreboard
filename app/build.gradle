@@ -85,7 +85,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'commons-io:commons-io:2.6'
     implementation 'org.jdom:jdom2:2.0.6'
-    implementation 'ru.noties:markwon:1.0.3'
+    implementation 'ru.noties:markwon:2.0.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.1'
     implementation 'com.google.android.gms:play-services-oss-licenses:16.0.2'
 }
