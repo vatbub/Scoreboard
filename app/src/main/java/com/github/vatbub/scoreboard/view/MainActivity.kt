@@ -546,7 +546,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (redrawSumRow)
             renderSumRow()
         if (redrawLeaderBoard)
-            renderLeaderboard()
+            renderLeaderBoard()
         if (updateFabButtonHint)
             updateFabButtonHint()
         if (updateAddPlayerHint)
@@ -659,7 +659,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun renderLeaderboard() {
+    private fun renderLeaderBoard() {
         leaderboard_table.removeAllViews()
         val textColor = Color.WHITE
 
