@@ -16,7 +16,15 @@
 default_platform(:android)
 
 platform :android do
+  lane :testRelease do
+    gradle(
+      task: 'test',
+      build_type: 'Release'
+    )
+  end
+
   lane :assembleRelease do
+    testRelease
     gradle(
       task: 'assemble',
       build_type: 'Release'
