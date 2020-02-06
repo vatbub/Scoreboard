@@ -173,7 +173,7 @@ enum class GameMode(@StringRes val nameResource: Int) {
     fun getNameString(context: Context): String = context.getString(nameResource)
 }
 
-class Game internal constructor(var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
+class Game internal constructor(private var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
     /**
      * For GSON only. GSON will overwrite all default values.
      */

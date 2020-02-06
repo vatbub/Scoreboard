@@ -42,7 +42,10 @@ import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
-import com.github.vatbub.scoreboard.util.*
+import com.github.vatbub.scoreboard.util.ResettableLazyProperty
+import com.github.vatbub.scoreboard.util.ViewUtil
+import com.github.vatbub.scoreboard.util.toPx
+import com.github.vatbub.scoreboard.util.transform
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -52,6 +55,9 @@ import kotlinx.android.synthetic.main.content_main.*
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import net.steamcrafted.materialiconlib.MaterialIconView
 import net.steamcrafted.materialiconlib.MaterialMenuInflater
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private val showSubTotalsDefaultValue = false
@@ -102,14 +108,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setAddPlayerHintLayoutListenerUp() {
         // add_player_hint_arrow.layoutParams.width
         add_player_hint_arrow.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
-            val oldWidth = Math.abs(oldRight - oldLeft)
-            lastAddPlayerArrowWidth = Math.abs(right - left)
+            val oldWidth = abs(oldRight - oldLeft)
+            lastAddPlayerArrowWidth = abs(right - left)
             if (oldWidth != lastAddPlayerArrowWidth)
                 informAddPlayerButtonLocation()
         }
         add_player_hint.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
-            val oldWidth = Math.abs(oldRight - oldLeft)
-            lastAddPlayerHintWidth = Math.abs(right - left)
+            val oldWidth = abs(oldRight - oldLeft)
+            lastAddPlayerHintWidth = abs(right - left)
             if (oldWidth != lastAddPlayerHintWidth)
                 informAddPlayerButtonLocation()
         }
@@ -537,7 +543,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val screenWidth = displayMetrics.widthPixels
         val maxHintLeft = screenWidth - lastAddPlayerHintWidth
         val desiredHintLeft = lastAddPlayerActionBarCenterX - lastAddPlayerHintWidth / 2f
-        add_player_hint.x = Math.max(0f, Math.min(maxHintLeft.toFloat(), desiredHintLeft))
+        add_player_hint.x = max(0f, min(maxHintLeft.toFloat(), desiredHintLeft))
     }
 
     private fun updateAddPlayerHint() {
@@ -595,7 +601,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
                     override fun afterTextChanged(s: Editable) {
                         it.name = s.toString()
-                        redraw(false, false, false, false, true, false)
+                        redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = false, redrawLeaderBoard = true, updateFabButtonHint = false)
                     }
                 })
 

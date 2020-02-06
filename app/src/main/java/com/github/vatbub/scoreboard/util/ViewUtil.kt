@@ -42,10 +42,10 @@ object ViewUtil {
                 val view = activity.findViewById<T>(viewId)
                 if (view != null) {
                     functionToExecute(view)
-                    if (removeListenerPolicy == ViewUtil.RemoveListenerPolicy.OnlyIfViewExists)
+                    if (removeListenerPolicy == RemoveListenerPolicy.OnlyIfViewExists)
                         viewTreeObserver.removeOnGlobalLayoutListener(this)
                 }
-                if (removeListenerPolicy == ViewUtil.RemoveListenerPolicy.Always)
+                if (removeListenerPolicy == RemoveListenerPolicy.Always)
                     viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
