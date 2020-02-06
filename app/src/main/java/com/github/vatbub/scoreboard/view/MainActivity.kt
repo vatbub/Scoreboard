@@ -37,6 +37,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
@@ -132,6 +133,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             game.addEmptyScoreLine()
             updateLineNumberWidth()
             mainTableAdapter.value.notifyItemInserted(game.scoreCount)
+            focusOnLastRow(game)
+        }
+    }
+
+    private fun focusOnLastRow(game: Game) {
+        main_table_recycler_view.smoothScrollToPosition(game.scoreCount)
+        focusOnLastRowSecondStep(game)
+    }
+
+    private fun focusOnLastRowSecondStep(game: Game) {
+        ViewUtil.runOnGlobalLayoutChange<RecyclerView>(this, R.id.main_table_recycler_view, ViewUtil.RemoveListenerPolicy.Always) {
+            val viewHolder = main_table_recycler_view.findViewHolderForAdapterPosition(game.scoreCount - 1)
+            if (viewHolder == null) {
+                // Layout not yet complete, reschedule the action
+                focusOnLastRowSecondStep(game)
+                return@runOnGlobalLayoutChange
+            }
+
+            viewHolder as GameTableViewHolder
+            viewHolder.scoreHolderLayout.getChildAt(0).requestFocus()
         }
     }
 
