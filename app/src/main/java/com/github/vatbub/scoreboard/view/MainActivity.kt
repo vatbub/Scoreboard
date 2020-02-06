@@ -578,18 +578,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun updateAddPlayerHint() {
         val currentGame = gameManager.currentlyActiveGame
-        val targetAlpha =
+        val targetArrowAlpha =
                 if (currentGame != null && currentGame.players.isEmpty())
                     1f
                 else 0f
+        val targetHeaderRowAlpha = 1f - targetArrowAlpha
 
         val animationDuration = 150L
         add_player_hint_arrow.animate()
-                .alpha(targetAlpha)
+                .alpha(targetArrowAlpha)
                 .setDuration(animationDuration)
                 .start()
         add_player_hint.animate()
-                .alpha(targetAlpha)
+                .alpha(targetArrowAlpha)
+                .setDuration(animationDuration)
+                .start()
+        header_row.animate()
+                .alpha(targetHeaderRowAlpha)
+                .setDuration(animationDuration)
+                .start()
+        header_row_shadow_view.animate()
+                .alpha(targetHeaderRowAlpha)
                 .setDuration(animationDuration)
                 .start()
     }
