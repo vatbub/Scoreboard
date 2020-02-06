@@ -29,4 +29,6 @@
     <color name="looserColor">#D32F2F</color>
 
     <color name="sumRowFontColor">@android:color/white</color>
+
+    <color name="headerRowBackgroundColor">#e0e0e0</color>
 </resources>

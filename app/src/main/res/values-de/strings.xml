@@ -76,4 +76,5 @@
     <string name="github_url">https://github.com/vatbub/Scoreboard</string>
     <string name="instagram_url">https://www.instagram.com/vatbub/</string>
     <string name="add_player_hint_content_description">Benutzen Sie die Schaltfläche direkt darüber, um einen neuen Spieler hinzuzufügen.</string>
+    <string name="shadow_content_description">Schatten, nicht anklicken.</string>
 </resources>

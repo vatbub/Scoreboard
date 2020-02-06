@@ -67,6 +67,16 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/header_row_shadow_view"
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:contentDescription="@string/shadow_content_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/header_row"
+            app:srcCompat="@drawable/header_row_shadow" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/main_table_recycler_view"
             android:layout_width="0dp"

@@ -165,6 +165,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setRecyclerViewUp() {
         main_table_recycler_view.layoutManager = LinearLayoutManager(this)
         main_table_recycler_view.adapter = mainTableAdapter.value
+        main_table_recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val scrollPosition = recyclerView.computeVerticalScrollOffset()
+                val maxScrollPosition = 31
+                header_row_shadow_view.alpha = min(1.0f, (1.0f / maxScrollPosition) * scrollPosition)
+            }
+        })
         mainTableAdapter.value.notifyDataSetChanged()
     }
 
