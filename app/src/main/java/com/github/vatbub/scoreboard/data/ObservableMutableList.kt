@@ -42,12 +42,12 @@ class ObservableMutableList<E> private constructor(
     )
 
     constructor(
-            c: Collection<E>?,
+            c: Collection<E>,
             onAdd: ((element: E, index: Int) -> Unit)? = null,
             onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
             onRemove: ((element: E, index: Int) -> Unit)? = null,
             onClear: (() -> Unit)? = null
-    ) : this(onAdd, onSet, onRemove, onClear, ArrayList(c))
+    ) : this(onAdd, onSet, onRemove, onClear, ArrayList<E>(c))
 
     constructor(
             onAdd: ((element: E, index: Int) -> Unit)? = null,
