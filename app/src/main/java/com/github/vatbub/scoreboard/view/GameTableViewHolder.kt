@@ -16,8 +16,8 @@
 
 package com.github.vatbub.scoreboard.view
 
-import android.support.v7.widget.RecyclerView
 import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.util.isOdd
 import kotlinx.android.synthetic.main.scoreboard_row.view.*

@@ -20,8 +20,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.RawRes
-import android.support.v7.app.AppCompatActivity
 import android.text.method.LinkMovementMethod
+import androidx.appcompat.app.AppCompatActivity
 import com.github.vatbub.scoreboard.R
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.android.synthetic.main.activity_about.*

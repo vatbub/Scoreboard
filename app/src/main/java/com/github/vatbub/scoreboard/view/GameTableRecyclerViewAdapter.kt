@@ -16,8 +16,6 @@
 
 package com.github.vatbub.scoreboard.view
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.NO_POSITION
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -28,6 +26,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.util.toPx

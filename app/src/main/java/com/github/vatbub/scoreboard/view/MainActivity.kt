@@ -24,15 +24,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
-import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -41,12 +32,20 @@ import android.view.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
 import com.github.vatbub.scoreboard.util.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -152,7 +151,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setSumBottomSheetUp() {
         ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
-        mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetCallback() {
+        mBottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 val layoutParams = sum_bottom_sheet_scroll_space.layoutParams
                 layoutParams.height = calculateBottomSheetHeightFromOffset(bottomSheet, slideOffset)
