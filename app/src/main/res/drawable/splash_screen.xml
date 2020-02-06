@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="1080dp"
+        android:height="1920dp"
+        android:gravity="fill"
+        android:viewportWidth="1080"
+        android:viewportHeight="1920">
+        <shape
+            android:shape="rectangle"
+            android:tint="@color/colorPrimaryDark" />
+    </item>
+    <item android:gravity="center_horizontal|center_vertical|fill_horizontal">
+        <bitmap
+            android:width="50dp"
+            android:height="50dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:src="@drawable/ic_splash" />
+    </item>
+</layer-list>
