@@ -38,6 +38,10 @@ class GameManager(private val callingContext: Context) {
          * @param callingContext The context to get the GameManagerOld for
          * @return The GameManagerOld for the specified context
          */
+        @Suppress("DEPRECATION")
+        operator fun get(callingContext: Context): GameManager = getInstance(callingContext)
+
+        @Deprecated(message = "Deprecated syntax", replaceWith = ReplaceWith("GameManager[callingContext]"))
         fun getInstance(callingContext: Context): GameManager {
             synchronized(instances) {
                 if (!instances.containsKey(callingContext))
@@ -55,7 +59,7 @@ class GameManager(private val callingContext: Context) {
          */
         fun resetInstance(context: Context): Int {
             synchronized(instances) {
-                val res = getInstance(context).currentlyActiveGame?.id ?: -1
+                val res = GameManager[context].currentlyActiveGame?.id ?: -1
                 instances.remove(context)
                 return res
             }
@@ -102,9 +106,6 @@ class GameManager(private val callingContext: Context) {
      * @param gameToBeActivated The game to be activated or `null` to indicate that no game shall be active.
      */
     fun activateGame(gameToBeActivated: Game?) {
-        val previousGame = currentlyActiveGame
-        if (previousGame != null && previousGame == gameToBeActivated)
-            return
         currentlyActiveGame = gameToBeActivated
     }
 
@@ -121,20 +122,22 @@ class GameManager(private val callingContext: Context) {
         return game
     }
 
-    fun createGameIfEmptyAndActivateTheFirstGame() {
+    fun createGameIfEmptyAndActivateTheFirstGame(): Game {
         val gameToActivate = if (games.isEmpty()) createGame(null) else games[0]
         activateGame(gameToActivate)
+        return gameToActivate
     }
 
     /**
-     * Deletes the specified game.
+     * Deletes the specified game if it exists.
      *
      * @param game The game to delete.
+     * @return `true` if the game was successfully deleted, `false` if the game did not exist.
      */
-    fun deleteGame(game: Game) {
+    fun deleteGame(game: Game): Boolean {
         if (game.isActive)
             activateGame(null)
-        _games.remove(game)
+        return _games.remove(game)
     }
 
     private fun getGameKey(id: Int): String = "game$id"

@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var showSubtotals: Boolean
         get() = sharedPreferences.getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
         set(value) = sharedPreferences.edit().putBoolean(showSubTotalsKey, value).apply()
-    private val gameManager by lazy { GameManager.getInstance(this) }
+    private val gameManager by lazy { GameManager[this] }
 
     private val mainTableAdapter = ResettableLazyProperty {
         GameTableRecyclerViewAdapter(main_table_recycler_view, gameManager.currentlyActiveGame!!, this, showSubtotals) {

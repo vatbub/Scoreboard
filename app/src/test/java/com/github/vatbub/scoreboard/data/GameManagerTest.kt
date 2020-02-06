@@ -16,23 +16,15 @@
 
 package com.github.vatbub.scoreboard.data
 
+import android.content.Context
 import com.google.common.truth.Truth.assertThat
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 
-@RunWith(RobolectricTestRunner::class)
-// @RunWith(AndroidJUnit4::class)
-class GameManagerTest {
-    @Suppress("DEPRECATION")
-    private val context = RuntimeEnvironment.application.applicationContext// ApplicationProvider.getApplicationContext<Context>()
-
+class GameManagerTest : TestClassWithContext() {
     @Before
     fun beforeEachTest() {
-        context.filesDir.listFiles().forEach {
+        context.filesDir?.listFiles()?.forEach {
             println("Deleting file: ${it.absolutePath}")
             it.delete()
         }
@@ -40,33 +32,109 @@ class GameManagerTest {
 
     @Test
     fun sameInstanceForSameContextTest() {
-        val instance1 = GameManager.getInstance(context)
-        val instance2 = GameManager.getInstance(context)
-        Assert.assertSame(instance1, instance2)
+        val instance1 = GameManager[context]
+        val instance2 = GameManager[context]
+        assertThat(instance2).isSameInstanceAs(instance1)
     }
 
     @Test
     fun differentInstanceAfterReset() {
-        val instance1 = GameManager.getInstance(context)
+        val instance1 = GameManager[context]
         GameManager.resetInstance(context)
-        val instance2 = GameManager.getInstance(context)
-        Assert.assertNotSame(instance1, instance2)
+        val instance2 = GameManager[context]
+        assertThat(instance2).isNotSameInstanceAs(instance1)
     }
 
     @Test
     fun emptyGamesListOnInitialization() {
-        val gameManager = GameManager.getInstance(context)
+        val gameManager = GameManager[context]
         assertThat(gameManager.games).isEmpty()
     }
 
     @Test
     fun createGameTest() {
-        val gameManager = GameManager.getInstance(context)
+        val gameManager = GameManager[context]
         val newGame = gameManager.createGame("game1")
-        assertThat(gameManager.games).containsExactly(newGame)
+        assertGameList(gameManager, context, newGame)
+    }
 
+    @Test
+    fun getGameTest() {
+        val gameManager = GameManager[context]
+        val newGame = gameManager.createGame("game1")
+        val findResult = gameManager[newGame.id]
+        assertThat(findResult).isSameInstanceAs(newGame)
+    }
+
+    @Test
+    fun activateGameById() {
+        val gameManager = GameManager[context]
+        val newGame = gameManager.createGame("game1")
+        assertThat(gameManager.currentlyActiveGame).isNull()
+        gameManager.activateGame(newGame.id)
+        assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
+    }
+
+    @Test
+    fun activateGameByGameObject() {
+        val gameManager = GameManager[context]
+        val newGame = gameManager.createGame("game1")
+        assertThat(gameManager.currentlyActiveGame).isNull()
+        gameManager.activateGame(newGame)
+        assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
+    }
+
+    @Test
+    fun createGameIfEmptyAndActivateTheFirstGameNoGameTest() {
+        val gameManager = GameManager[context]
+        assertThat(gameManager.games).isEmpty()
+        val newGame = gameManager.createGameIfEmptyAndActivateTheFirstGame()
+        assertGameList(gameManager, context, newGame)
+        assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
+    }
+
+    @Test
+    fun createGameIfEmptyAndActivateTheFirstGameWithGameTest() {
+        val gameManager = GameManager[context]
+        assertThat(gameManager.games).isEmpty()
+        val newGame = gameManager.createGame("game1")
+        gameManager.createGameIfEmptyAndActivateTheFirstGame()
+        assertGameList(gameManager, context, newGame)
+        assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
+    }
+
+    @Test
+    fun deleteNonExistentGame() {
+        val gameManager = GameManager[context]
+        assertThat(gameManager.games).isEmpty()
+        val game = Game(gameManager, 1, "game1", GameMode.HIGH_SCORE, listOf())
+        assertThat(gameManager.deleteGame(game)).isFalse()
+    }
+
+    @Test
+    fun deleteInactiveGame() {
+        val gameManager = GameManager[context]
+        assertThat(gameManager.games).isEmpty()
+        val newGame = gameManager.createGame("game1")
+        assertThat(gameManager.deleteGame(newGame)).isTrue()
+        assertThat(gameManager.games).isEmpty()
+    }
+
+    @Test
+    fun deleteActiveGame() {
+        val gameManager = GameManager[context]
+        assertThat(gameManager.games).isEmpty()
+        val newGame = gameManager.createGame("game1")
+        gameManager.activateGame(newGame)
+        assertThat(gameManager.deleteGame(newGame)).isTrue()
+        assertThat(gameManager.games).isEmpty()
+        assertThat(gameManager.currentlyActiveGame).isNull()
+    }
+
+    private fun assertGameList(gameManager: GameManager, context: Context, vararg games: Game) {
+        assertThat(gameManager.games).containsExactly(*games)
+        // Test data retention
         GameManager.resetInstance(context)
-        val gameManager2 = GameManager.getInstance(context)
-        assertThat(gameManager2.games).containsExactly(newGame)
+        assertThat(GameManager[context].games).containsExactly(*games)
     }
 }
