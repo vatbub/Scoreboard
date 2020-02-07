@@ -13,12 +13,18 @@ sum of points and a ranking of the players. That's it, keep it simple, stupid!
 - Save multiple games and switch between them
 - No unnecessary permissions
 - Fully open source
+- Privacy friendly: All data is stored on your device, the app doesn't even have permission to access the internet!
 
-## Becoming an Alpha-Tester
-The app is already available on Google Play, but only in private test mode,
-as it's not finished yet. However, if you wish to try it out now, just 
-write a quick email to [scoreboard@fredplus10.me](mailto:scoreboard@fredplus10.me) 
-with your google account so that I can whitelist you as an alpha-tester.
+## Download
+F-Droid coming soon!
+
+<a href='https://play.google.com/store/apps/details?id=com.github.vatbub.scoreboard&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+
+## Screenshots
+![Screenshot 1](/screenshots/htc/screenshot1.png?raw=true)
+![Screenshot 2](/screenshots/htc/screenshot2.png?raw=true)
+![Screenshot 3](/screenshots/htc/screenshot3.png?raw=true)
+![Screenshot 4](/screenshots/htc/screenshot4.png?raw=true)
 
 ## Will this application be available on F-Droid?
 Yes, but publishing on F-Droid isn't as straightforward as publishing 
