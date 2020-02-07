@@ -1,6 +1,4 @@
-This app allows you to keep track of player scores in any high- or lowscore game.
-The app consists of a simple table where every player has a column and each round is a line.
-At the bottom, the app shows the sum of points and a ranking of the players.
+This app allows you to keep track of player scores in any high- or lowscore game. The app consists of a simple table where every player has a column and each round is a line. At the bottom, the app shows the sum of points and a ranking of the players.
 
 That's it, keep it simple, stupid!
 
