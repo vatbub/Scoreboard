@@ -18,7 +18,7 @@ sum of points and a ranking of the players. That's it, keep it simple, stupid!
 ## Download
 F-Droid coming soon!
 
-<a href='https://play.google.com/store/apps/details?id=com.github.vatbub.scoreboard&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'/></a>
+<a href='https://play.google.com/store/apps/details?id=com.github.vatbub.scoreboard&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width="200"/></a>
 
 ## Screenshots
 [<img src="/screenshots/htc/screenshot1.png?raw=true" width="250"/>](/screenshots/htc/screenshot1.png?raw=true)
