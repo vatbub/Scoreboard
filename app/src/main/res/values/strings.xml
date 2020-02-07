@@ -78,4 +78,5 @@
     <string name="instagram_url">https://www.instagram.com/vatbub/</string>
     <string name="add_player_hint_content_description">Use the button just above to add new players to the game.</string>
     <string name="shadow_content_description">It\'s a shadow, don\'t click on it.</string>
+    <string name="version_label_template">App version: %s - %d</string>
 </resources>

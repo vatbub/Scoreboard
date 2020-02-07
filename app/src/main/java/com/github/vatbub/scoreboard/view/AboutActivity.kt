@@ -22,6 +22,7 @@ import android.os.Bundle
 import android.support.annotation.RawRes
 import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AppCompatActivity
+import com.github.vatbub.scoreboard.BuildConfig
 import com.github.vatbub.scoreboard.R
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import kotlinx.android.synthetic.main.activity_about.*
@@ -36,6 +37,11 @@ class AboutActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         displayMarkdown(R.raw.about)
         setButtonListenersUp()
+        setVersionLabelUp()
+    }
+
+    private fun setVersionLabelUp() {
+        activity_about_version_label.text = getString(R.string.version_label_template, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
     }
 
     private fun setButtonListenersUp() {
