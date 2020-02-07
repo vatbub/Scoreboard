@@ -1,10 +1,15 @@
-Diese App bietet die Möglichkeit, den Spielstand eines beliebigen punktebasierten Spiels zu verfolgen. Die Punkte werden in Tabellenform eingetragen: Jeder SPieler hat eine Spalte, jede Spielrunde eine Zeile. Unten werden die Punkte aufsummiert und eine Rangliste anhand des aktuellen Spielmodus (High-/Lowscore) erstellt. Das wars, simpel und einfach.
+Diese App bietet die Möglichkeit, den Spielstand eines beliebigen punktebasierten Spiels zu verfolgen.
+Die App besteht aus einer einfachen Tabelle: Jeder Spieler hat eine Spalte, jede Spielrunde eine Zeile.
+Unten werden die Punkte aufsummiert und eine Rangliste anhand des aktuellen Spielmodus (High-/Lowscore) erstellt.
+
+Das wars, simpel und einfach.
 
 Features:
 - Punkte in Tabellenform eintragen
 - (Theoretisch) unbegrenzte Zahl an Spielern (praktisch durch die Bildschirmbreite begrenzt)
 - Aufsummierung der Punkte
-- Rangliste anhand des aktuellen Spielmodus (High-Lowscore)
+- Rangliste anhand des aktuellen Spielmodus (High-/Lowscore)
 - Mehrere Spielstände können gleichzeitig gespeichert werden
 - Keine unnötigen Berechtigungen
 - Komplett open source
+- Privatsphärefreundlich: Alle Daten werden auf dem Gerät gespeichert, die App hat keinen Zugang zum Internet!
