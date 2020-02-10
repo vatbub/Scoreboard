@@ -17,14 +17,13 @@
 package com.github.vatbub.scoreboard.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.support.annotation.RawRes
 import android.text.method.LinkMovementMethod
 import androidx.appcompat.app.AppCompatActivity
 import com.github.vatbub.scoreboard.BuildConfig
 import com.github.vatbub.scoreboard.R
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.mikepenz.aboutlibraries.LibsBuilder
 import kotlinx.android.synthetic.main.activity_about.*
 import ru.noties.markwon.Markwon
 
@@ -64,10 +63,9 @@ class AboutActivity : AppCompatActivity() {
         return true
     }
 
-    companion object {
-        fun showOpenSourceLicenses(context: Context) {
-            OssLicensesMenuActivity.setActivityTitle(context.getString(R.string.activity_open_source_licenses_title))
-            context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
-        }
+    private fun showOpenSourceLicenses(context: Context) {
+        // OssLicensesMenuActivity.setActivityTitle(context.getString(R.string.activity_open_source_licenses_title))
+        // context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+        LibsBuilder().start(this)
     }
 }
