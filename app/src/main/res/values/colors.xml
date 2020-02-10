@@ -31,4 +31,6 @@
     <color name="sumRowFontColor">@android:color/white</color>
 
     <color name="headerRowBackgroundColor">#e0e0e0</color>
+
+    <color name="textColorPrimary">@android:color/black</color>
 </resources>

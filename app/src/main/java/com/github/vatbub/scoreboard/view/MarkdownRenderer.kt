@@ -46,7 +46,7 @@ class MarkdownRenderer private constructor(private val context: Context) {
 
     companion object {
         private val instances = HashMap<Context, MarkdownRenderer>()
-        fun getInstance(context: Context): MarkdownRenderer {
+        operator fun get(context: Context): MarkdownRenderer {
             if (!instances.containsKey(context))
                 instances[context] = MarkdownRenderer(context)
 

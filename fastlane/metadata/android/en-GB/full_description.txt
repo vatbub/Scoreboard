@@ -8,6 +8,7 @@ Features:
 - Sum of points
 - Ranking according to the game mode (high-/lowscore)
 - Save multiple games and switch between them
+- Support for dark mode
 - No unnecessary permissions
 - Fully open source
 - Privacy friendly: All data is stored on your device, the app doesn't even have permission to access the internet!

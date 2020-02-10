@@ -16,7 +16,7 @@
 
 package com.github.vatbub.scoreboard.view
 
-import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.RawRes
 import android.text.method.LinkMovementMethod
@@ -29,6 +29,14 @@ import ru.noties.markwon.Markwon
 
 
 class AboutActivity : AppCompatActivity() {
+    private val textColor by lazy {
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            resources.getColor(R.color.textColorPrimary, null)
+        else
+            resources.getColor(R.color.textColorPrimary)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
@@ -41,10 +49,11 @@ class AboutActivity : AppCompatActivity() {
 
     private fun setVersionLabelUp() {
         activity_about_version_label.text = getString(R.string.version_label_template, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+        activity_about_version_label.setTextColor(textColor)
     }
 
     private fun setButtonListenersUp() {
-        imprint_button_open_source_licenses.setOnClickListener { showOpenSourceLicenses(this) }
+        imprint_button_open_source_licenses.setOnClickListener { showOpenSourceLicenses() }
     }
 
     private fun displayMarkdown(@RawRes markdownFile: Int) {
@@ -52,7 +61,9 @@ class AboutActivity : AppCompatActivity() {
         Markwon.unscheduleDrawables(activity_about_markdown_view)
         Markwon.unscheduleTableRows(activity_about_markdown_view)
 
-        activity_about_markdown_view.text = MarkdownRenderer.getInstance(this).getCachedRenderResult(markdownFile)
+        activity_about_markdown_view.text = MarkdownRenderer[this].getCachedRenderResult(markdownFile)
+
+        activity_about_markdown_view.setTextColor(textColor)
 
         Markwon.scheduleDrawables(activity_about_markdown_view)
         Markwon.scheduleTableRows(activity_about_markdown_view)
@@ -63,9 +74,7 @@ class AboutActivity : AppCompatActivity() {
         return true
     }
 
-    private fun showOpenSourceLicenses(context: Context) {
-        // OssLicensesMenuActivity.setActivityTitle(context.getString(R.string.activity_open_source_licenses_title))
-        // context.startActivity(Intent(context, OssLicensesMenuActivity::class.java))
+    private fun showOpenSourceLicenses() {
         LibsBuilder().start(this)
     }
 }

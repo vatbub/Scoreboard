@@ -8,6 +8,7 @@ Features:
 - Aufsummierung der Punkte
 - Rangliste anhand des aktuellen Spielmodus (High-/Lowscore)
 - Mehrere Spielstände können gleichzeitig gespeichert werden
+- Dunkles Farbthema wird unterstützt
 - Keine unnötigen Berechtigungen
 - Komplett open source
 - Privatsphärefreundlich: Alle Daten werden auf dem Gerät gespeichert, die App hat keinen Zugang zum Internet!
