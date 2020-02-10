@@ -33,16 +33,19 @@ platform :android do
   
   lane :internal do
     assembleRelease
+    changelog = File.read("../Changelog.txt")
     upload_to_play_store(track: 'internal')
   end
 
   lane :alpha do
     assembleRelease
+    changelog = File.read("../Changelog.txt")
     upload_to_play_store(track: 'alpha')
   end
 
   lane :beta do
     assembleRelease
+    changelog = File.read("../Changelog.txt")
     upload_to_play_store(track: 'beta')
   end
 

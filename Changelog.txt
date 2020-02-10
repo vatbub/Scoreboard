@@ -1,1 +1,8 @@
-Initial version
+<en-GB>
+- Reworked the open source licenses screen
+</en-GB>
+
+<de-DE>
+- Überarbeiteter Open-Source-Lizenzen-Bereich
+</de-DE>
+
