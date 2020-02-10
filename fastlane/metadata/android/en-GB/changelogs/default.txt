@@ -1,0 +1,2 @@
+10.02.2020:
+- Reworked the open source licenses screen

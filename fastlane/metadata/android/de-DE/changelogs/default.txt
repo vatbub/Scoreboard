@@ -1,0 +1,2 @@
+10.02.2020:
+- Überarbeiteter Open-Source-Lizenzen-Bereich
