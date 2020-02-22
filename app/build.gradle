@@ -24,6 +24,8 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 ext {
     git = Grgit.open(dir: file('..'))
     GIT_COMMIT_COUNT = git.log(includes: ['HEAD']).size()
+    GIT_COMMIT_HASH = git.head().abbreviatedId
+    GIT_COMMIT_HASH_LONG = git.head().id
 }
 
 android {
@@ -33,8 +35,10 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode GIT_COMMIT_COUNT
-        versionName "1.0." + new Date().format('yyyy_MM_dd_HHmm')
+        versionName "1.0-$GIT_COMMIT_COUNT"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "GitHash", "\"$GIT_COMMIT_HASH\""
+        buildConfigField "String", "GitFullHash", "\"$GIT_COMMIT_HASH_LONG\""
     }
     signingConfigs {
         release {

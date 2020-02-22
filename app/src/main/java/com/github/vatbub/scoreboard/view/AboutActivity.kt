@@ -48,7 +48,7 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun setVersionLabelUp() {
-        activity_about_version_label.text = getString(R.string.version_label_template, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+        activity_about_version_label.text = getString(R.string.version_label_template, BuildConfig.VERSION_NAME, BuildConfig.GitHash)
         activity_about_version_label.setTextColor(textColor)
     }
 
