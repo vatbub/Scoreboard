@@ -17,7 +17,7 @@
 package com.github.vatbub.scoreboard.data
 
 import android.content.Context
-import android.support.annotation.StringRes
+import androidx.annotation.StringRes
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.util.transform
 import org.jdom2.Attribute

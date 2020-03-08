@@ -17,10 +17,10 @@
 package com.github.vatbub.scoreboard.util
 
 import android.app.Activity
-import android.support.annotation.IdRes
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
+import androidx.annotation.IdRes
 
 
 object ViewUtil {
