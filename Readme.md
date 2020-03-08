@@ -1,4 +1,4 @@
-# Scoreboard
+# Scoreboard [![Build Status](https://travis-ci.org/vatbub/Scoreboard.svg?branch=master)](https://travis-ci.org/vatbub/Scoreboard)
 A simple app to keep track of player scores during any high- or lowscore game.
 
 Following the KISS-principle, this app consists of a simple table in which
