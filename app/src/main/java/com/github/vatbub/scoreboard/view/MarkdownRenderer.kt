@@ -17,8 +17,8 @@
 package com.github.vatbub.scoreboard.view
 
 import android.content.Context
-import android.support.annotation.RawRes
 import android.util.SparseArray
+import androidx.annotation.RawRes
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.commonmark.parser.Parser

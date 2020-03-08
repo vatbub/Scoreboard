@@ -18,8 +18,8 @@ package com.github.vatbub.scoreboard.view
 
 import android.os.Build
 import android.os.Bundle
-import android.support.annotation.RawRes
 import android.text.method.LinkMovementMethod
+import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import com.github.vatbub.scoreboard.BuildConfig
 import com.github.vatbub.scoreboard.R
