@@ -1,3 +1,6 @@
+09.03.2020:
+- Fix: [Issue #19] Bei mehreren gespeicherten Spielständen wurde immer der erste wieder geladen, wenn der Bildschirm gedreht wurde
+
 10.02.2020:
 - Überarbeiteter Open-Source-Lizenzen-Bereich
 - Dunkles Farbschema hinzugefügt

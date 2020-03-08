@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        gameManager.createGameIfEmptyAndActivateTheFirstGame()
+        gameManager.createGameIfEmptyAndActivateTheLastActivatedGame()
 
         setSumBottomSheetUp()
         setRecyclerViewUp()
@@ -353,7 +353,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     gamesToDelete.add(gameManager.games[index])
             }
             gamesToDelete.forEach { gameManager.deleteGame(it) }
-            gameManager.createGameIfEmptyAndActivateTheFirstGame()
+            gameManager.createGameIfEmptyAndActivateTheLastActivatedGame()
             redraw(true)
         }
         builder.setNegativeButton(R.string.dialog_cancel) { _, _ -> }

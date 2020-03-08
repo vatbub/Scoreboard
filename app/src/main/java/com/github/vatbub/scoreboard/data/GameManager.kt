@@ -66,6 +66,11 @@ class GameManager(private val callingContext: Context) {
         }
     }
 
+    private object SharedPrefKeys {
+        internal val gameManagerTitle = "GameManager"
+        internal val currentlyActiveGameSharedPrefsKey = "currentlyActiveGame.id"
+    }
+
     private val _games = ObservableMutableList(restoreData(),
             { _, _ -> saveGameList() },
             { _, _, _ -> saveGameList() },
@@ -107,6 +112,12 @@ class GameManager(private val callingContext: Context) {
      */
     fun activateGame(gameToBeActivated: Game?) {
         currentlyActiveGame = gameToBeActivated
+        val editor = callingContext.getSharedPreferences(SharedPrefKeys.gameManagerTitle, Context.MODE_PRIVATE).edit()
+        if (gameToBeActivated != null)
+            editor.putInt(SharedPrefKeys.currentlyActiveGameSharedPrefsKey, gameToBeActivated.id)
+        else
+            editor.remove(SharedPrefKeys.currentlyActiveGameSharedPrefsKey)
+        editor.apply()
     }
 
     /**
@@ -122,8 +133,9 @@ class GameManager(private val callingContext: Context) {
         return game
     }
 
-    fun createGameIfEmptyAndActivateTheFirstGame(): Game {
-        val gameToActivate = if (games.isEmpty()) createGame(null) else games[0]
+    fun createGameIfEmptyAndActivateTheLastActivatedGame(): Game {
+        val lastActivatedId = callingContext.getSharedPreferences(SharedPrefKeys.gameManagerTitle, Context.MODE_PRIVATE).getInt(SharedPrefKeys.currentlyActiveGameSharedPrefsKey, 0)
+        val gameToActivate = if (games.isEmpty()) createGame(null) else games[lastActivatedId]
         activateGame(gameToActivate)
         return gameToActivate
     }

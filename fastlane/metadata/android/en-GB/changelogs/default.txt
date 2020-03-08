@@ -1,3 +1,6 @@
+09.03.2020:
+- Fix: [Issue #19] When having multiple saved games, the first game was loaded when rotating the device
+
 10.02.2020:
 - Reworked the open source licenses screen
 - Added support for dark mode

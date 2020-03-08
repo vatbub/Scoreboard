@@ -88,7 +88,7 @@ class GameManagerTest : TestClassWithContext() {
     fun createGameIfEmptyAndActivateTheFirstGameNoGameTest() {
         val gameManager = GameManager[context]
         assertThat(gameManager.games).isEmpty()
-        val newGame = gameManager.createGameIfEmptyAndActivateTheFirstGame()
+        val newGame = gameManager.createGameIfEmptyAndActivateTheLastActivatedGame()
         assertGameList(gameManager, context, newGame)
         assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
     }
@@ -98,7 +98,7 @@ class GameManagerTest : TestClassWithContext() {
         val gameManager = GameManager[context]
         assertThat(gameManager.games).isEmpty()
         val newGame = gameManager.createGame("game1")
-        gameManager.createGameIfEmptyAndActivateTheFirstGame()
+        gameManager.createGameIfEmptyAndActivateTheLastActivatedGame()
         assertGameList(gameManager, context, newGame)
         assertThat(gameManager.currentlyActiveGame).isSameInstanceAs(newGame)
     }
