@@ -21,10 +21,10 @@ F-Droid coming soon!
 <a href='https://play.google.com/store/apps/details?id=com.github.vatbub.scoreboard&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width="200"/></a>
 
 ## Screenshots
-[<img src="/screenshots/htc/screenshot1.png?raw=true" width="250"/>](/screenshots/htc/screenshot1.png?raw=true)
-[<img src="/screenshots/htc/screenshot2.png?raw=true" width="250"/>](/screenshots/htc/screenshot2.png?raw=true)
-[<img src="/screenshots/htc/screenshot3.png?raw=true" width="250"/>](/screenshots/htc/screenshot3.png?raw=true)
-[<img src="/screenshots/htc/screenshot4.png?raw=true" width="250"/>](/screenshots/htc/screenshot4.png?raw=true)
+[<img src="/fastlane/metadata/android/en-GB/images/phoneScreenshots/1.png?raw=true" width="250"/>](/screenshots/htc/screenshot1.png?raw=true)
+[<img src="/fastlane/metadata/android/en-GB/images/phoneScreenshots/2.png?raw=true" width="250"/>](/screenshots/htc/screenshot2.png?raw=true)
+[<img src="/fastlane/metadata/android/en-GB/images/phoneScreenshots/3.png?raw=true" width="250"/>](/screenshots/htc/screenshot3.png?raw=true)
+[<img src="/fastlane/metadata/android/en-GB/images/phoneScreenshots/4.png?raw=true" width="250"/>](/screenshots/htc/screenshot4.png?raw=true)
 
 ## Will this application be available on F-Droid?
 Yes, but publishing on F-Droid isn't as straightforward as publishing 
