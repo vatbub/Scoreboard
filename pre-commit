@@ -1,0 +1,30 @@
+#!/bin/sh
+# Configuration
+# -------------
+# The Manifest path is relative to THIS script.
+# If you copy-and-paste this into your pre-commit hook
+# and your AndroidManifest.xml is in the root of your repo
+# then the path would be:
+MANIFEST_RELATIVE_TO_PROJECT_ROOT="app/src/main/AndroidManifest.xml"
+MANIFEST="../../"${MANIFEST_RELATIVE_TO_PROJECT_ROOT}
+
+# If this is in the same directory then it's just:
+# MANIFEST="AndroidManifest.xml"
+
+# Script DO NOT MODIFY (unless you want to)
+
+declare -x SCRIPTPATH="${0}"
+
+FULLPATH=${SCRIPTPATH%/*}/$MANIFEST
+
+if [ -f $FULLPATH ]; then
+  LINE=$(grep -o ${FULLPATH} -e 'android:versionCode="[0-9]*"')
+  declare -a LINE
+  LINE=($(echo $LINE | tr "\"" " "))
+  VERSION=(${LINE[1]})
+  INCREMENTED=$(($VERSION + 1))
+  sed "s/android:versionCode=\"[0-9]*\"/android:versionCode=\"${INCREMENTED}\"/" $FULLPATH >$FULLPATH.tmp && mv $FULLPATH.tmp $FULLPATH
+  echo "Updated android:versionCode to ${INCREMENTED} in ${FULLPATH}"
+  git add $MANIFEST_RELATIVE_TO_PROJECT_ROOT
+  echo "Successfully staged $MANIFEST_RELATIVE_TO_PROJECT_ROOT"
+fi

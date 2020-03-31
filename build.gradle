@@ -1,3 +1,5 @@
+import org.apache.commons.lang3.SystemUtils
+
 /*
  * Copyright (c) 2019 Frederik Kammel <vatbub123@googlemail.com>
  *
@@ -31,6 +33,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.ajoberstar:grgit:2.3.0'
         classpath "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin:${latestAboutLibsRelease}"
+        classpath "org.apache.commons:commons-lang3:3.9"
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -45,6 +48,22 @@ allprojects {
     }
 }
 
+task installGitHooks(type: Copy) {
+    from new File(rootProject.rootDir, 'pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
+}
+
+task gitExecutableHooks() {
+    dependsOn(installGitHooks)
+    doLast {
+        if (SystemUtils.IS_OS_WINDOWS) return
+        Runtime.getRuntime().exec("chmod -R +x .git/hooks/")
+    }
+}
+
 task clean(type: Delete) {
+    dependsOn(gitExecutableHooks)
     delete rootProject.buildDir
 }
+
+tasks.getByPath('app:preBuild').dependsOn(gitExecutableHooks)
