@@ -16,15 +16,23 @@ MANIFEST="../../"${MANIFEST_RELATIVE_TO_PROJECT_ROOT}
 declare -x SCRIPTPATH="${0}"
 
 FULLPATH=${SCRIPTPATH%/*}/$MANIFEST
+echo $FULLPATH
 
 if [ -f $FULLPATH ]; then
   LINE=$(grep -o ${FULLPATH} -e 'android:versionCode="[0-9]*"')
+  VERSION_NAME_LINE=$(grep -o ${FULLPATH} -e 'android:versionName="[0-9]*\.[0-9]*-[0-9]*"')
   declare -a LINE
+  declare -a VERSION_NAME_LINE
   LINE=($(echo $LINE | tr "\"" " "))
+  VERSION_NAME_LINE=($(echo $VERSION_NAME_LINE | tr "\"" " "))
+  VERSION_NAME_LINE=($(echo ${VERSION_NAME_LINE[1]} | tr "-" " "))
   VERSION=(${LINE[1]})
+  VERSION_NAME=${VERSION_NAME_LINE[1]}
   INCREMENTED=$(($VERSION + 1))
   sed "s/android:versionCode=\"[0-9]*\"/android:versionCode=\"${INCREMENTED}\"/" $FULLPATH >$FULLPATH.tmp && mv $FULLPATH.tmp $FULLPATH
+  sed "s/android:versionName=\"[0-9]*\.[0-9]*-[0-9]*\"/android:versionName=\"${VERSION_NAME}-${INCREMENTED}\"/" $FULLPATH >$FULLPATH.tmp && mv $FULLPATH.tmp $FULLPATH
   echo "Updated android:versionCode to ${INCREMENTED} in ${FULLPATH}"
+  echo "Updated android:versionName to ${VERSION_NAME}-${INCREMENTED} in ${FULLPATH}"
   git add $MANIFEST_RELATIVE_TO_PROJECT_ROOT
   echo "Successfully staged $MANIFEST_RELATIVE_TO_PROJECT_ROOT"
 fi
