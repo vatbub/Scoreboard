@@ -14,43 +14,64 @@
   ~ limitations under the License.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.AboutActivity">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:ignore="ScrollViewSize">
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <TextView
-            android:id="@+id/activity_about_markdown_view"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/about_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:paddingTop="16dp"
-            android:textColor="@android:color/black" />
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-        <TextView
-            android:id="@+id/activity_about_version_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:textColor="@android:color/black" />
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <Button
-            android:id="@+id/imprint_button_open_source_licenses"
-            style="@style/Widget.AppCompat.Button.Colored"
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:elevation="7dp"
-            android:text="@string/imprint_button_open_source_licenses" />
-    </LinearLayout>
-</ScrollView>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            tools:ignore="ScrollViewSize">
+
+            <TextView
+                android:id="@+id/activity_about_markdown_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:paddingTop="16dp"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/activity_about_version_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:textColor="@android:color/black" />
+
+            <Button
+                android:id="@+id/imprint_button_open_source_licenses"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:elevation="7dp"
+                android:text="@string/imprint_button_open_source_licenses" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
