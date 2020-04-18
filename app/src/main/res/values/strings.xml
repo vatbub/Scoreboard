@@ -79,4 +79,8 @@
     <string name="add_player_hint_content_description">Use the button just above to add new players to the game.</string>
     <string name="shadow_content_description">It\'s a shadow, don\'t click on it.</string>
     <string name="version_label_template">App version: %s - Git hash: %s</string>
+    <string name="action_sync_name">Sync scores</string>
+    <string name="title_activity_sync">Sync scores with a friend</string>
+    <string name="tab_text_1">Sync your score with someone else</string>
+    <string name="tab_text_2">See someone else\'s score</string>
 </resources>

@@ -295,6 +295,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mainTableAdapter.value.showSubTotal = !mainTableAdapter.value.showSubTotal
                 return true
             }
+            R.id.action_sync -> {
+                val syncIntent = Intent(this, SyncActivity::class.java)
+                startActivity(syncIntent)
+            }
         }
 
         return super.onOptionsItemSelected(item)

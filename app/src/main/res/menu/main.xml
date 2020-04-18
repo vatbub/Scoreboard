@@ -85,4 +85,10 @@
         android:orderInCategory="100"
         app:materialIcon="sigma"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_sync"
+        android:contentDescription="@string/action_sync_name"
+        android:title="@string/action_sync_name"
+        android:orderInCategory="100"
+        />
 </menu>
