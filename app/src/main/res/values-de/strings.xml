@@ -78,4 +78,8 @@
     <string name="add_player_hint_content_description">Benutzen Sie die Schaltfläche direkt darüber, um einen neuen Spieler hinzuzufügen.</string>
     <string name="shadow_content_description">Schatten, nicht anklicken.</string>
     <string name="version_label_template">App-Version: %s - Git Hash: %s</string>
+    <string name="action_sync_name">Spielstand synchronisieren</string>
+    <string name="title_activity_sync">Spielstand synchronisieren</string>
+    <string name="tab_host_title">Spielstand mit einer anderen Person teilen</string>
+    <string name="tab_join_title">Spielstand von jemand anders sehen</string>
 </resources>

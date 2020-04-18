@@ -81,6 +81,6 @@
     <string name="version_label_template">App version: %s - Git hash: %s</string>
     <string name="action_sync_name">Sync scores</string>
     <string name="title_activity_sync">Sync scores with a friend</string>
-    <string name="tab_text_1">Sync your score with someone else</string>
-    <string name="tab_text_2">See someone else\'s score</string>
+    <string name="tab_host_title">Sync your score with someone else</string>
+    <string name="tab_join_title">See someone else\'s score</string>
 </resources>
