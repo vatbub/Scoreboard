@@ -46,7 +46,6 @@ import com.github.vatbub.scoreboard.data.Player
 import com.github.vatbub.scoreboard.util.ResettableLazyProperty
 import com.github.vatbub.scoreboard.util.ViewUtil
 import com.github.vatbub.scoreboard.util.toPx
-import com.github.vatbub.scoreboard.util.transform
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -460,7 +459,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             GameMode.LOW_SCORE -> 1
         }
 
-        val items = GameMode.values().transform { it.getNameString(this) }
+        val items = GameMode.values()
+            .map { it.getNameString(this) }
+            .toTypedArray()
 
         with(AlertDialog.Builder(this)) {
             setTitle(R.string.switch_mode_title)
@@ -520,7 +521,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun removePlayerHandler() {
         val currentGame = gameManager.currentlyActiveGame ?: return
         val playerNames =
-            currentGame.players.transform { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
+            currentGame.players.map { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
 
         with(AlertDialog.Builder(this)) {
             setTitle(R.string.delete_player_title)

@@ -22,7 +22,6 @@ import androidx.annotation.StringRes
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE
 import com.github.vatbub.scoreboard.data.XmlConstants.Game.XML_GAME_ID_ATTRIBUTE
-import com.github.vatbub.scoreboard.util.transform
 import org.jdom2.Attribute
 import org.jdom2.Document
 import org.jdom2.Element
@@ -376,7 +375,7 @@ class Game internal constructor(
      * @param index The row index of the line to return
      * @return The score line at the specified index
      */
-    fun getScoreLineAt(index: Int) = players.transform { it.scores[index] }
+    fun getScoreLineAt(index: Int) = players.map { it.scores[index] }
 
     internal fun savePlayer() = gameManager?.saveGame(this)
 

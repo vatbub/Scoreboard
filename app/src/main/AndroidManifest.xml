@@ -16,8 +16,8 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:versionCode="219"
-    android:versionName="1.0-219">
+    android:versionCode="220"
+    android:versionName="1.0-220">
 
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
 
