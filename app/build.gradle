@@ -16,10 +16,13 @@
 
 import org.ajoberstar.grgit.Grgit
 
+plugins {
+    id 'com.mikepenz.aboutlibraries.plugin'
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 
 ext {
     git = Grgit.open(dir: file('..'))
@@ -88,5 +91,6 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation "com.mikepenz:aboutlibraries:${latestAboutLibsRelease}"
+    implementation "com.mikepenz:aboutlibraries-core:${latestAboutLibsRelease}"
+    implementation "com.mikepenz:aboutlibraries-compose:${latestAboutLibsRelease}"
 }

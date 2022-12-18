@@ -17,8 +17,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.github.vatbub.scoreboard"
-    android:versionCode="211"
-    android:versionName="1.0-211">
+    android:versionCode="212"
+    android:versionName="1.0-212">
 
     <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
 
