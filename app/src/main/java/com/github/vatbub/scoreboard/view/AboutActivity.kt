@@ -48,7 +48,11 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun setVersionLabelUp() {
-        activity_about_version_label.text = getString(R.string.version_label_template, BuildConfig.VERSION_NAME, BuildConfig.GitHash)
+        activity_about_version_label.text = getString(
+            R.string.version_label_template,
+            BuildConfig.VERSION_NAME,
+            BuildConfig.GitHash
+        )
         activity_about_version_label.setTextColor(textColor)
     }
 
@@ -61,7 +65,8 @@ class AboutActivity : AppCompatActivity() {
         Markwon.unscheduleDrawables(activity_about_markdown_view)
         Markwon.unscheduleTableRows(activity_about_markdown_view)
 
-        activity_about_markdown_view.text = MarkdownRenderer[this].getCachedRenderResult(markdownFile)
+        activity_about_markdown_view.text =
+            MarkdownRenderer[this].getCachedRenderResult(markdownFile)
 
         activity_about_markdown_view.setTextColor(textColor)
 

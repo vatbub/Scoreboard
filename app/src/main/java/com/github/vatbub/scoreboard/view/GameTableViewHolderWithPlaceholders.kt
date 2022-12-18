@@ -27,7 +27,8 @@ class GameTableViewHolderWithPlaceholders(val view: View) : RecyclerView.ViewHol
     val deleteRowButton = view.main_table_delete_row_button_placeholder!!
 
     fun setLineNumber(lineNumber: Int) {
-        lineNumberTextView.text = view.context.getString(R.string.main_table_row_number_template, lineNumber)
+        lineNumberTextView.text =
+            view.context.getString(R.string.main_table_row_number_template, lineNumber)
     }
 
 }

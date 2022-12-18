@@ -25,7 +25,8 @@ import java.io.File
 
 object XmlFileUtils {
     private fun getFileName(fileNameWithoutExtension: String) = "$fileNameWithoutExtension.xml"
-    private fun getFile(context: Context, fileNameWithoutExtension: String) = File(context.filesDir, getFileName(fileNameWithoutExtension))
+    private fun getFile(context: Context, fileNameWithoutExtension: String) =
+        File(context.filesDir, getFileName(fileNameWithoutExtension))
 
     fun saveFile(context: Context, filenameWithoutExtension: String, document: Document) {
         val outputter = XMLOutputter(Format.getPrettyFormat())

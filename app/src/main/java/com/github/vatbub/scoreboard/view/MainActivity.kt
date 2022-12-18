@@ -64,14 +64,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val showSubTotalsDefaultValue = false
     private val showSubTotalsKey = "showSubTotals"
     private val sharedPreferencesName = "MainActivityPrefs"
-    private val sharedPreferences by lazy { getSharedPreferences(sharedPreferencesName, Context.MODE_PRIVATE)!! }
+    private val sharedPreferences by lazy {
+        getSharedPreferences(
+            sharedPreferencesName,
+            Context.MODE_PRIVATE
+        )!!
+    }
     private var showSubtotals: Boolean
         get() = sharedPreferences.getBoolean(showSubTotalsKey, showSubTotalsDefaultValue)
         set(value) = sharedPreferences.edit().putBoolean(showSubTotalsKey, value).apply()
     private val gameManager by lazy { GameManager[this] }
 
     private val mainTableAdapter = ResettableLazyProperty {
-        GameTableRecyclerViewAdapter(main_table_recycler_view, gameManager.currentlyActiveGame!!, this, showSubtotals) {
+        GameTableRecyclerViewAdapter(
+            main_table_recycler_view,
+            gameManager.currentlyActiveGame!!,
+            this,
+            showSubtotals
+        ) {
             showSubtotals = it
             updateShowSubTotalsMenuItem(it)
         }
@@ -99,7 +109,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setRecyclerViewUp()
 
         redraw()
-        headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> mainTableAdapter.value.updateColumnWidths(headerRowViewHolder.lineNumberTextView.width) }
+        headerRowViewHolder.lineNumberTextView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            mainTableAdapter.value.updateColumnWidths(
+                headerRowViewHolder.lineNumberTextView.width
+            )
+        }
 
         setAddPlayerHintLayoutListenerUp()
         setFabListenerUp()
@@ -144,8 +158,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun focusOnLastRowSecondStep(game: Game) {
-        ViewUtil.runOnGlobalLayoutChange<RecyclerView>(this, R.id.main_table_recycler_view, ViewUtil.RemoveListenerPolicy.Always) {
-            val viewHolder = main_table_recycler_view.findViewHolderForAdapterPosition(game.scoreCount - 1)
+        ViewUtil.runOnGlobalLayoutChange<RecyclerView>(
+            this,
+            R.id.main_table_recycler_view,
+            ViewUtil.RemoveListenerPolicy.Always
+        ) {
+            val viewHolder =
+                main_table_recycler_view.findViewHolderForAdapterPosition(game.scoreCount - 1)
             if (viewHolder == null) {
                 // Layout not yet complete, reschedule the action
                 focusOnLastRowSecondStep(game)
@@ -158,7 +177,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setNavigationDrawerUp() {
-        val toggle = ActionBarDrawerToggle(this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawer_layout,
+            toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        )
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
     }
@@ -171,7 +196,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 super.onScrolled(recyclerView, dx, dy)
                 val scrollPosition = recyclerView.computeVerticalScrollOffset()
                 val maxScrollPosition = 31
-                header_row_shadow_view.alpha = min(1.0f, (1.0f / maxScrollPosition) * scrollPosition)
+                header_row_shadow_view.alpha =
+                    min(1.0f, (1.0f / maxScrollPosition) * scrollPosition)
             }
         })
         mainTableAdapter.value.notifyDataSetChanged()
@@ -187,35 +213,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun setSumBottomSheetUp() {
         ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
-        mBottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-            override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                val layoutParams = sum_bottom_sheet_scroll_space.layoutParams
-                layoutParams.height = calculateBottomSheetHeightFromOffset(bottomSheet, slideOffset)
-                sum_bottom_sheet_scroll_space.layoutParams = layoutParams
-            }
+        mBottomSheetBehavior.addBottomSheetCallback(
+            object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    val layoutParams = sum_bottom_sheet_scroll_space.layoutParams
+                    layoutParams.height =
+                        calculateBottomSheetHeightFromOffset(bottomSheet, slideOffset)
+                    sum_bottom_sheet_scroll_space.layoutParams = layoutParams
+                }
 
-            override fun onStateChanged(bottomSheet: View, newState: Int) {
-                val optionsMenuCopy = optionsMenu ?: return
-                val menuItem = optionsMenuCopy.findItem(R.id.action_toggle_ranking) ?: return
-                setMenuItemTitleFromBoolean(menuItem,
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    val optionsMenuCopy = optionsMenu ?: return
+                    val menuItem = optionsMenuCopy.findItem(R.id.action_toggle_ranking) ?: return
+                    setMenuItemTitleFromBoolean(
+                        menuItem,
                         newState == BottomSheetBehavior.STATE_COLLAPSED,
                         getString(R.string.action_show_ranking),
-                        getString(R.string.action_hide_ranking))
-            }
-        })
+                        getString(R.string.action_hide_ranking)
+                    )
+                }
+            })
         mBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     private fun updateShowSubTotalsMenuItem(subTotalsShown: Boolean) {
         val optionsMenuCopy = optionsMenu ?: return
         val menuItem = optionsMenuCopy.findItem(R.id.action_show_sub_totals) ?: return
-        setMenuItemTitleFromBoolean(menuItem,
-                subTotalsShown,
-                getString(R.string.action_hide_sub_total),
-                getString(R.string.action_show_sub_total))
+        setMenuItemTitleFromBoolean(
+            menuItem,
+            subTotalsShown,
+            getString(R.string.action_hide_sub_total),
+            getString(R.string.action_show_sub_total)
+        )
     }
 
-    private fun setMenuItemTitleFromBoolean(menuItem: MenuItem, value: Boolean, titleIfValueTrue: String, titleIfValueFalse: String) {
+    private fun setMenuItemTitleFromBoolean(
+        menuItem: MenuItem,
+        value: Boolean,
+        titleIfValueTrue: String,
+        titleIfValueFalse: String
+    ) {
         menuItem.title = if (value) titleIfValueTrue else titleIfValueFalse
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             menuItem.contentDescription = menuItem.title
@@ -230,8 +267,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         this.optionsMenu = menu
         MaterialMenuInflater.with(this)
-                .setDefaultColor(Color.WHITE)
-                .inflate(R.menu.main, menu)
+            .setDefaultColor(Color.WHITE)
+            .inflate(R.menu.main, menu)
 
         val menuItem = menu.findItem(R.id.action_add_player)
         val actionView = MaterialIconView(this)
@@ -242,7 +279,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         menuItem.actionView = actionView
         println("menuItem.isVisible: ${menuItem.isVisible}")
         actionView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-            override fun onLayoutChange(view: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+            override fun onLayoutChange(
+                view: View?,
+                left: Int,
+                top: Int,
+                right: Int,
+                bottom: Int,
+                oldLeft: Int,
+                oldTop: Int,
+                oldRight: Int,
+                oldBottom: Int
+            ) {
                 if (view == null) return
                 if (left == 0 && top == 0 && right == 0 && bottom == 0) return
 
@@ -314,7 +361,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 newGameHandlerCreateNewGame()
             }
             builder.setNegativeButton(R.string.no) { _, _ ->
-                Snackbar.make(root_node, R.string.snackbar_new_game_manage_games_hint, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(
+                    root_node,
+                    R.string.snackbar_new_game_manage_games_hint,
+                    Snackbar.LENGTH_LONG
+                ).show()
                 newGameHandlerCreateNewGame()
             }
             builder.create().show()
@@ -342,7 +393,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val indicesToDelete = BooleanArray(gameManager.games.size)
 
-        builder.setMultiChoiceItems(gameNames, indicesToDelete
+        builder.setMultiChoiceItems(
+            gameNames, indicesToDelete
         ) { _: DialogInterface, index: Int, checked: Boolean ->
             indicesToDelete[index] = checked
         }
@@ -371,7 +423,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.load_game_title)
 
-        builder.setSingleChoiceItems(gameNames.toTypedArray(), inputSelection
+        builder.setSingleChoiceItems(
+            gameNames.toTypedArray(), inputSelection
         ) { dialogInterface, selectedItem ->
             gameManager.activateGame(gameManager.games[selectedItem])
             dialogInterface.dismiss()
@@ -382,13 +435,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun saveGameHandler() {
         val game = gameManager.currentlyActiveGame ?: return
-        createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = getGameNameOrDummy(game), defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
-            override fun onOk(result: String) {
-                game.name = result
-            }
+        createStringPrompt(
+            this,
+            R.string.save_game_dialog_title,
+            R.string.dialog_ok,
+            R.string.dialog_cancel,
+            defaultText = getGameNameOrDummy(game),
+            defaultHint = getString(R.string.save_game_dialog_hint),
+            resultHandler = object : StringPromptResultHandler {
+                override fun onOk(result: String) {
+                    game.name = result
+                }
 
-            override fun onCancel() {}
-        })
+                override fun onCancel() {}
+            })
     }
 
     private fun switchModeHandler() {
@@ -459,12 +519,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun removePlayerHandler() {
         val currentGame = gameManager.currentlyActiveGame ?: return
-        val playerNames = currentGame.players.transform { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
+        val playerNames =
+            currentGame.players.transform { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
 
         with(AlertDialog.Builder(this)) {
             setTitle(R.string.delete_player_title)
             val indicesToDelete = BooleanArray(playerNames.size)
-            setMultiChoiceItems(playerNames, indicesToDelete) { _, index, checked -> indicesToDelete[index] = checked }
+            setMultiChoiceItems(
+                playerNames,
+                indicesToDelete
+            ) { _, index, checked -> indicesToDelete[index] = checked }
             setPositiveButton(R.string.dialog_ok) { _, _ ->
                 val playersToDelete = mutableListOf<Player>()
                 indicesToDelete.forEachIndexed { index, checked ->
@@ -482,7 +546,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun addPlayerHandler() {
         val game = gameManager.currentlyActiveGame
         if (game == null) {
-            Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, R.string.no_game_active_toast, Toast.LENGTH_LONG)
+                .show()
             return
         }
 
@@ -491,9 +556,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         redraw()
 
         if (headerRowViewHolder.scoreHolderLayout.childCount == 0) return
-        val viewToFocus = headerRowViewHolder.scoreHolderLayout.getChildAt(headerRowViewHolder.scoreHolderLayout.childCount - 1)
+        val viewToFocus =
+            headerRowViewHolder.scoreHolderLayout.getChildAt(headerRowViewHolder.scoreHolderLayout.childCount - 1)
         viewToFocus.requestFocus()
-        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val inputMethodManager =
+            getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         inputMethodManager.showSoftInput(viewToFocus, InputMethodManager.SHOW_IMPLICIT)
     }
 
@@ -507,10 +574,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_instagram -> startURLIntent(R.string.instagram_url)
             R.id.nav_share -> {
                 val sendIntent = Intent(Intent.ACTION_SEND)
-                sendIntent.putExtra(Intent.EXTRA_TEXT,
-                        getString(R.string.share_message, getString(R.string.play_store_url)))
+                sendIntent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    getString(R.string.share_message, getString(R.string.play_store_url))
+                )
                 sendIntent.type = "text/plain"
-                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_screen_title)))
+                startActivity(
+                    Intent.createChooser(
+                        sendIntent,
+                        getString(R.string.share_screen_title)
+                    )
+                )
             }
             R.id.nav_github -> startURLIntent(R.string.github_url)
         }
@@ -543,7 +617,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         sumRowViewHolder.lineNumberTextView.requestLayout()
     }
 
-    fun redraw(refreshGameData: Boolean = false, redrawHeaderRow: Boolean = true, notifyDataSetChanged: Boolean = true, redrawSumRow: Boolean = true, redrawLeaderBoard: Boolean = true, updateFabButtonHint: Boolean = true, updateAddPlayerHint: Boolean = true) {
+    fun redraw(
+        refreshGameData: Boolean = false,
+        redrawHeaderRow: Boolean = true,
+        notifyDataSetChanged: Boolean = true,
+        redrawSumRow: Boolean = true,
+        redrawLeaderBoard: Boolean = true,
+        updateFabButtonHint: Boolean = true,
+        updateAddPlayerHint: Boolean = true
+    ) {
         if (refreshGameData) {
             mainTableAdapter.resetValue()
             setRecyclerViewUp()
@@ -579,28 +661,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun updateAddPlayerHint() {
         val currentGame = gameManager.currentlyActiveGame
         val targetArrowAlpha =
-                if (currentGame != null && currentGame.players.isEmpty())
-                    1f
-                else 0f
+            if (currentGame != null && currentGame.players.isEmpty()) 1f
+            else 0f
         val targetHeaderRowAlpha = 1f - targetArrowAlpha
 
         val animationDuration = 150L
         add_player_hint_arrow.animate()
-                .alpha(targetArrowAlpha)
-                .setDuration(animationDuration)
-                .start()
+            .alpha(targetArrowAlpha)
+            .setDuration(animationDuration)
+            .start()
         add_player_hint.animate()
-                .alpha(targetArrowAlpha)
-                .setDuration(animationDuration)
-                .start()
+            .alpha(targetArrowAlpha)
+            .setDuration(animationDuration)
+            .start()
         header_row.animate()
-                .alpha(targetHeaderRowAlpha)
-                .setDuration(animationDuration)
-                .start()
+            .alpha(targetHeaderRowAlpha)
+            .setDuration(animationDuration)
+            .start()
         header_row_shadow_view.animate()
-                .alpha(targetHeaderRowAlpha)
-                .setDuration(animationDuration)
-                .start()
+            .alpha(targetHeaderRowAlpha)
+            .setDuration(animationDuration)
+            .start()
     }
 
     private fun updateFabButtonHint() {
@@ -612,9 +693,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> 1f
         }
         fab_hint.animate()
-                .alpha(targetAlpha)
-                .setDuration(250)
-                .start()
+            .alpha(targetAlpha)
+            .setDuration(250)
+            .start()
     }
 
     private fun renderHeaderRow() {
@@ -627,20 +708,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val game = gameManager.currentlyActiveGame ?: return
         game.players.forEach {
             with(EditText(headerRowViewHolder.view.context)) {
-                val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                val layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
                 this.layoutParams = layoutParams
 
-                inputType = EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
+                inputType =
+                    EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE or EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
                 setHorizontallyScrolling(false)
                 maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
                 hint = getPlayerDummyName(game, it)
                 setText(it.name)
                 addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                    override fun beforeTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        count: Int,
+                        after: Int
+                    ) {
+                    }
+
+                    override fun onTextChanged(
+                        s: CharSequence,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                    }
+
                     override fun afterTextChanged(s: Editable) {
                         it.name = s.toString()
-                        redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = false, redrawLeaderBoard = true, updateFabButtonHint = false)
+                        redraw(
+                            refreshGameData = false,
+                            redrawHeaderRow = false,
+                            notifyDataSetChanged = false,
+                            redrawSumRow = false,
+                            redrawLeaderBoard = true,
+                            updateFabButtonHint = false
+                        )
                     }
                 })
 
@@ -671,7 +778,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 else if (looserIndices.contains(index))
                     setBackgroundColor(resources.getColor(R.color.looserColor))
 
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    1f
+                )
                 sumRowViewHolder.scoreHolderLayout.addView(this)
             }
         }
@@ -704,7 +815,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val scoreTextView = TextView(this)
 
             rankTextView.text = getString(R.string.leaderboard_rank_template, i + 1)
-            playerNameTextView.text = getString(R.string.leaderboard_player_name_template, getPlayerNameOrDummy(game, key))
+            playerNameTextView.text = getString(
+                R.string.leaderboard_player_name_template,
+                getPlayerNameOrDummy(game, key)
+            )
             scoreTextView.text = getString(R.string.leaderboard_score_template, value)
 
             rankTextView.setTextColor(textColor)
@@ -731,10 +845,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     companion object {
-        private fun createStringPrompt(context: Context, @StringRes title: Int, @StringRes okText: Int, @StringRes cancelText: Int, resultHandler: StringPromptResultHandler, defaultText: String? = null, defaultHint: String? = null) =
-                createStringPrompt(context, context.getText(title), context.getText(okText), context.getText(cancelText), resultHandler, defaultText, defaultHint)
+        private fun createStringPrompt(
+            context: Context,
+            @StringRes title: Int,
+            @StringRes okText: Int,
+            @StringRes cancelText: Int,
+            resultHandler: StringPromptResultHandler,
+            defaultText: String? = null,
+            defaultHint: String? = null
+        ) =
+            createStringPrompt(
+                context,
+                context.getText(title),
+                context.getText(okText),
+                context.getText(cancelText),
+                resultHandler,
+                defaultText,
+                defaultHint
+            )
 
-        private fun createStringPrompt(context: Context, title: CharSequence, okText: CharSequence, cancelText: CharSequence, resultHandler: StringPromptResultHandler, defaultText: String? = null, defaultHint: String? = null) {
+        private fun createStringPrompt(
+            context: Context,
+            title: CharSequence,
+            okText: CharSequence,
+            cancelText: CharSequence,
+            resultHandler: StringPromptResultHandler,
+            defaultText: String? = null,
+            defaultHint: String? = null
+        ) {
             with(AlertDialog.Builder(context)) {
                 setTitle(title)
 

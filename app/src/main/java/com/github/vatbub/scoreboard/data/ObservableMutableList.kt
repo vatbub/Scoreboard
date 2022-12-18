@@ -21,45 +21,45 @@ package com.github.vatbub.scoreboard.data
  * A list which allows other entities to subscribe to changes
  */
 class ObservableMutableList<E> private constructor(
-        var onAdd: ((element: E, index: Int) -> Unit)?,
-        var onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)?,
-        var onRemove: ((element: E, index: Int) -> Unit)?,
-        var onClear: (() -> Unit)?,
-        private val backingList: MutableList<E>
+    var onAdd: ((element: E, index: Int) -> Unit)?,
+    var onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)?,
+    var onRemove: ((element: E, index: Int) -> Unit)?,
+    var onClear: (() -> Unit)?,
+    private val backingList: MutableList<E>
 ) : MutableList<E> {
     constructor(
-            initialCapacity: Int,
-            onAdd: ((element: E, index: Int) -> Unit)? = null,
-            onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
-            onRemove: ((element: E, index: Int) -> Unit)? = null,
-            onClear: (() -> Unit)? = null
+        initialCapacity: Int,
+        onAdd: ((element: E, index: Int) -> Unit)? = null,
+        onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
+        onRemove: ((element: E, index: Int) -> Unit)? = null,
+        onClear: (() -> Unit)? = null
     ) : this(
-            onAdd,
-            onSet,
-            onRemove,
-            onClear,
-            ArrayList(initialCapacity)
+        onAdd,
+        onSet,
+        onRemove,
+        onClear,
+        ArrayList(initialCapacity)
     )
 
     constructor(
-            c: Collection<E>,
-            onAdd: ((element: E, index: Int) -> Unit)? = null,
-            onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
-            onRemove: ((element: E, index: Int) -> Unit)? = null,
-            onClear: (() -> Unit)? = null
+        c: Collection<E>,
+        onAdd: ((element: E, index: Int) -> Unit)? = null,
+        onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
+        onRemove: ((element: E, index: Int) -> Unit)? = null,
+        onClear: (() -> Unit)? = null
     ) : this(onAdd, onSet, onRemove, onClear, ArrayList<E>(c))
 
     constructor(
-            onAdd: ((element: E, index: Int) -> Unit)? = null,
-            onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
-            onRemove: ((element: E, index: Int) -> Unit)? = null,
-            onClear: (() -> Unit)? = null
+        onAdd: ((element: E, index: Int) -> Unit)? = null,
+        onSet: ((oldElement: E, newElement: E, index: Int) -> Unit)? = null,
+        onRemove: ((element: E, index: Int) -> Unit)? = null,
+        onClear: (() -> Unit)? = null
     ) : this(
-            onAdd,
-            onSet,
-            onRemove,
-            onClear,
-            ArrayList()
+        onAdd,
+        onSet,
+        onRemove,
+        onClear,
+        ArrayList()
     )
 
     override val size: Int
@@ -194,11 +194,11 @@ class ObservableMutableList<E> private constructor(
 
     override fun subList(fromIndex: Int, toIndex: Int): ObservableMutableList<E> {
         return ObservableMutableList(
-                onAdd,
-                onSet,
-                onRemove,
-                onClear,
-                backingList.subList(fromIndex, toIndex)
+            onAdd,
+            onSet,
+            onRemove,
+            onClear,
+            backingList.subList(fromIndex, toIndex)
         )
     }
 }

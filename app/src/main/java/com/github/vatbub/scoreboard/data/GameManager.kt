@@ -17,8 +17,11 @@
 package com.github.vatbub.scoreboard.data
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import androidx.annotation.StringRes
 import com.github.vatbub.scoreboard.R
+import com.github.vatbub.scoreboard.data.XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE
+import com.github.vatbub.scoreboard.data.XmlConstants.Game.XML_GAME_ID_ATTRIBUTE
 import com.github.vatbub.scoreboard.util.transform
 import org.jdom2.Attribute
 import org.jdom2.Document
@@ -41,7 +44,10 @@ class GameManager(private val callingContext: Context) {
         @Suppress("DEPRECATION")
         operator fun get(callingContext: Context): GameManager = getInstance(callingContext)
 
-        @Deprecated(message = "Deprecated syntax", replaceWith = ReplaceWith("GameManager[callingContext]"))
+        @Deprecated(
+            message = "Deprecated syntax",
+            replaceWith = ReplaceWith("GameManager[callingContext]")
+        )
         fun getInstance(callingContext: Context): GameManager {
             synchronized(instances) {
                 if (!instances.containsKey(callingContext))
@@ -72,10 +78,10 @@ class GameManager(private val callingContext: Context) {
     }
 
     private val _games = ObservableMutableList(restoreData(),
-            { _, _ -> saveGameList() },
-            { _, _, _ -> saveGameList() },
-            { _, _ -> saveGameList() },
-            { saveGameList() })
+        { _, _ -> saveGameList() },
+        { _, _, _ -> saveGameList() },
+        { _, _ -> saveGameList() },
+        { saveGameList() })
 
     private val gameIDs
         get() = List(_games.size) { _games[it].id }
@@ -112,7 +118,10 @@ class GameManager(private val callingContext: Context) {
      */
     fun activateGame(gameToBeActivated: Game?) {
         currentlyActiveGame = gameToBeActivated
-        val editor = callingContext.getSharedPreferences(SharedPrefKeys.gameManagerTitle, Context.MODE_PRIVATE).edit()
+        val editor = callingContext.getSharedPreferences(
+            SharedPrefKeys.gameManagerTitle,
+            MODE_PRIVATE
+        ).edit()
         if (gameToBeActivated != null)
             editor.putInt(SharedPrefKeys.currentlyActiveGameSharedPrefsKey, gameToBeActivated.id)
         else
@@ -134,7 +143,10 @@ class GameManager(private val callingContext: Context) {
     }
 
     fun createGameIfEmptyAndActivateTheLastActivatedGame(): Game {
-        val lastActivatedId = callingContext.getSharedPreferences(SharedPrefKeys.gameManagerTitle, Context.MODE_PRIVATE).getInt(SharedPrefKeys.currentlyActiveGameSharedPrefsKey, 0)
+        val lastActivatedId = callingContext.getSharedPreferences(
+            SharedPrefKeys.gameManagerTitle,
+            MODE_PRIVATE
+        ).getInt(SharedPrefKeys.currentlyActiveGameSharedPrefsKey, 0)
         val gameToActivate = if (games.isEmpty()) createGame(null) else games[lastActivatedId]
         activateGame(gameToActivate)
         return gameToActivate
@@ -171,11 +183,13 @@ class GameManager(private val callingContext: Context) {
     private fun restoreData(): List<Game> {
         val restoredGames = mutableListOf<Game>()
         val gameIdsDocument = XmlFileUtils.readFile(callingContext, gameListPrefKey)
-                ?: return listOf()
+            ?: return listOf()
         gameIdsDocument.rootElement.children.forEach {
             val id = it.content[0].value.toInt()
-            val restoredGame = Game.fromXml(this, XmlFileUtils.readFile(callingContext, getGameKey(id))
-                    ?: return@forEach)
+            val restoredGame = Game.fromXml(
+                this, XmlFileUtils.readFile(callingContext, getGameKey(id))
+                    ?: return@forEach
+            )
             restoredGames.add(restoredGame)
         }
         return restoredGames
@@ -188,7 +202,13 @@ enum class GameMode(@StringRes val nameResource: Int) {
     fun getNameString(context: Context): String = context.getString(nameResource)
 }
 
-class Game internal constructor(private var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
+class Game internal constructor(
+    private var gameManager: GameManager?,
+    val id: Int,
+    name: String?,
+    gameMode: GameMode,
+    players: List<Player>
+) {
     /**
      * For GSON only. GSON will overwrite all default values.
      */
@@ -200,10 +220,10 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
     val isActive: Boolean
         get() = gameManager?.currentlyActiveGame == this
     val players = ObservableMutableList(players,
-            { _, _ -> gameManager?.saveGame(this) },
-            { _, _, _ -> gameManager?.saveGame(this) },
-            { _, _ -> gameManager?.saveGame(this) },
-            { gameManager?.saveGame(this) })
+        { _, _ -> gameManager?.saveGame(this) },
+        { _, _, _ -> gameManager?.saveGame(this) },
+        { _, _ -> gameManager?.saveGame(this) },
+        { gameManager?.saveGame(this) })
 
     private val nextPlayerId: Int
         get() {
@@ -324,7 +344,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
     }
 
     fun addEmptyScoreLine() =
-            addScoreLine(List(players.size) { 0L })
+        addScoreLine(List(players.size) { 0L })
 
     /**
      * Modifies the specified score line
@@ -348,7 +368,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
      * @param index The index of the row to remove
      */
     fun removeScoreLineAt(index: Int) =
-            players.forEach { it.scores.removeAt(index) }
+        players.forEach { it.scores.removeAt(index) }
 
     /**
      * Returns the specified score line
@@ -362,9 +382,19 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
 
     fun toXml(): Document {
         val rootElement = Element(XmlConstants.Game.XML_GAME_TAG_NAME)
-        rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE, id.toString()))
+        rootElement.attributes.add(
+            Attribute(
+                XML_GAME_ID_ATTRIBUTE,
+                id.toString()
+            )
+        )
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE, name))
-        rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE, mode.toString()))
+        rootElement.attributes.add(
+            Attribute(
+                XML_GAME_GAME_MODE_ATTRIBUTE,
+                mode.toString()
+            )
+        )
 
         val playersElement = Element(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
         rootElement.children.add(playersElement)
@@ -377,12 +407,13 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
     companion object {
         fun fromXml(gameManager: GameManager?, document: Document): Game {
             with(document.rootElement) {
-                val id = getAttribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE).intValue
+                val id = getAttribute(XML_GAME_ID_ATTRIBUTE).intValue
                 val name = getAttribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE).value
-                val gameMode = GameMode.valueOf(getAttribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE).value)
+                val gameMode = GameMode.valueOf(getAttribute(XML_GAME_GAME_MODE_ATTRIBUTE).value)
 
                 val playersElement = getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
-                val players = List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
+                val players =
+                    List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
 
                 val game = Game(gameManager, id, name, gameMode, players)
                 players.forEach { it.parentGame = game }
@@ -414,10 +445,10 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
 
     var name: String? by Delegates.observable(name) { _, _, _ -> parentGame?.savePlayer() }
     val scores = ObservableMutableList(scores,
-            { _, _ -> parentGame?.savePlayer() },
-            { _, _, _ -> parentGame?.savePlayer() },
-            { _, _ -> parentGame?.savePlayer() },
-            { parentGame?.savePlayer() })
+        { _, _ -> parentGame?.savePlayer() },
+        { _, _, _ -> parentGame?.savePlayer() },
+        { _, _ -> parentGame?.savePlayer() },
+        { parentGame?.savePlayer() })
 
     val totalScore: Long
         get() = getSubTotalAt(scores.size - 1)
@@ -447,7 +478,8 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
             val name = element.getAttribute(XmlConstants.Player.XML_PLAYER_NAME_ATTRIBUTE).value
 
             val scoresElement = element.getChild(XmlConstants.Player.XML_PLAYER_SCORES_TAG_NAME)
-            val scores = List(scoresElement.children.size) { scoresElement.children[it].content[0].value.toLong() }
+            val scores =
+                List(scoresElement.children.size) { scoresElement.children[it].content[0].value.toLong() }
 
             return Player(null, id, name, scores)
         }
