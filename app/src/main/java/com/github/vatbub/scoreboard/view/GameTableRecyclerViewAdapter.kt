@@ -65,9 +65,12 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         override fun afterTextChanged(editable: Editable) {
             try {
-                scoreLine[index] = if (editable.isNotEmpty())
-                    editable.toString().toLong()
-                else 0
+                scoreLine[index] = if (editable.isEmpty()) {
+                    0L
+                } else {
+                    val string = editable.toString()
+                    if (string == "-") 0L else string.toLong()
+                }
 
                 game.modifyScoreLineAt(holder.adapterPosition, scoreLine)
                 renderSubTotals()
@@ -101,8 +104,12 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
 
         scoreLine.forEachIndexed { index, score ->
             with(EditText(holder.view.context)) {
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-                inputType = EditorInfo.TYPE_CLASS_NUMBER
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
+                inputType = EditorInfo.TYPE_CLASS_NUMBER or EditorInfo.TYPE_NUMBER_FLAG_SIGNED
                 hint = context.getString(R.string.main_table_score_template, 0)
                 setHorizontallyScrolling(false)
                 maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
