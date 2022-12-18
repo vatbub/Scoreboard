@@ -18,7 +18,11 @@ package com.github.vatbub.scoreboard.data
 
 import java.util.*
 
-class ValueSortedMap<K, V> private constructor(initialMap: MutableMap<K, V>?, comparator: Comparator<in V>?, invertOrder: Boolean) : MutableMap<K, V> {
+class ValueSortedMap<K, V> private constructor(
+    initialMap: MutableMap<K, V>?,
+    comparator: Comparator<in V>?,
+    invertOrder: Boolean
+) : MutableMap<K, V> {
     private val map: MutableMap<K, V>
     private val lookupMap = HashMap<K, V>(3)
 
@@ -85,7 +89,9 @@ class ValueSortedMap<K, V> private constructor(initialMap: MutableMap<K, V>?, co
     override fun toString() = map.toString()
 
 
-    inner class KeyByValueComparator constructor(private val valueComparator: Comparator<in V>) : Comparator<K> {
+    inner class KeyByValueComparator constructor(
+        private val valueComparator: Comparator<in V>
+    ) : Comparator<K> {
 
         constructor(invertOrder: Boolean = false) : this(Comparator { o1: V, o2: V ->
             @Suppress("UNCHECKED_CAST")

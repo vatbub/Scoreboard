@@ -35,7 +35,12 @@ object ViewUtil {
         view.viewTreeObserver.addOnPreDrawListener(preDrawListener)
     }
 
-    fun <T : View> runOnGlobalLayoutChange(activity: Activity, @IdRes viewId: Int, removeListenerPolicy: RemoveListenerPolicy, functionToExecute: ((T) -> Unit)) {
+    fun <T : View> runOnGlobalLayoutChange(
+        activity: Activity,
+        @IdRes viewId: Int,
+        removeListenerPolicy: RemoveListenerPolicy,
+        functionToExecute: ((T) -> Unit)
+    ) {
         val viewTreeObserver = activity.window.decorView.viewTreeObserver
         viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {

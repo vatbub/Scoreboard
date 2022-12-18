@@ -23,15 +23,21 @@ import com.github.vatbub.scoreboard.util.isOdd
 import kotlinx.android.synthetic.main.scoreboard_row.view.*
 import kotlin.properties.Delegates
 
-class GameTableViewHolder(val view: View, var shouldLineColorBeSet: Boolean = false) : RecyclerView.ViewHolder(view) {
+class GameTableViewHolder(
+    val view: View, var shouldLineColorBeSet: Boolean = false
+) : RecyclerView.ViewHolder(view) {
     val scoreHolderLayout = view.main_table_text_view_holder!!
     val lineNumberTextView = view.main_table_line_number!!
     val deleteRowButton = view.main_table_delete_row_button!!
     val subTotalRow = view.main_table_sub_total_row!!
     val subTotalHolderLayout = view.main_table_sub_total_holder!!
     var lineNumber by Delegates.observable(0) { _, _, newValue ->
-        lineNumberTextView.text = String.format(view.context.getString(R.string.main_table_row_number_template), newValue)
-        deleteRowButton.contentDescription = String.format(view.context.getString(R.string.main_table_delete_button_content_description_template), newValue)
+        lineNumberTextView.text =
+            String.format(view.context.getString(R.string.main_table_row_number_template), newValue)
+        deleteRowButton.contentDescription = String.format(
+            view.context.getString(R.string.main_table_delete_button_content_description_template),
+            newValue
+        )
 
         if (!shouldLineColorBeSet) return@observable
 

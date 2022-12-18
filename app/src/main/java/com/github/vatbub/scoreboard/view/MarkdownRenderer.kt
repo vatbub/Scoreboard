@@ -19,6 +19,7 @@ package com.github.vatbub.scoreboard.view
 import android.content.Context
 import android.util.SparseArray
 import androidx.annotation.RawRes
+import com.github.vatbub.scoreboard.view.MarkdownRenderer.ResultStatus.NOT_STARTED
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.commonmark.parser.Parser
@@ -30,7 +31,6 @@ import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.Reader
-import java.util.*
 
 
 class MarkdownRenderer private constructor(private val context: Context) {
@@ -38,10 +38,12 @@ class MarkdownRenderer private constructor(private val context: Context) {
     private val resultStatusArray = SparseArray<ResultStatus>()
     private val parser: Parser = Markwon.createParser()
     private val spannableConfiguration = SpannableConfiguration.builder(context)
-            .theme(SpannableTheme.builderWithDefaults(context)
-                    .headingBreakHeight(0)
-                    .build())
-            .build()
+        .theme(
+            SpannableTheme.builderWithDefaults(context)
+                .headingBreakHeight(0)
+                .build()
+        )
+        .build()
 
 
     companion object {
@@ -58,11 +60,11 @@ class MarkdownRenderer private constructor(private val context: Context) {
     }
 
     fun getCachedRenderResult(@RawRes markdownFile: Int): CharSequence {
-        if (resultStatusArray.get(markdownFile, ResultStatus.NOT_STARTED) == ResultStatus.NOT_STARTED)
+        if (resultStatusArray.get(markdownFile, NOT_STARTED) == NOT_STARTED)
             return renderSynchronously(markdownFile)
 
 
-        while (resultStatusArray.get(markdownFile, ResultStatus.NOT_STARTED) != ResultStatus.READY)
+        while (resultStatusArray.get(markdownFile, NOT_STARTED) != ResultStatus.READY)
             println("Waiting for rendering to finish...")
 
         return results.get(markdownFile)

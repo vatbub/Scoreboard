@@ -31,10 +31,16 @@ import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.util.toPx
-import java.util.*
 import kotlin.properties.Delegates
 
-class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: Game, val mainActivity: MainActivity, showSubTotal: Boolean, onShowSubTotalChange: ((Boolean) -> Unit)? = null) : RecyclerView.Adapter<GameTableViewHolder>() {
+
+class GameTableRecyclerViewAdapter(
+    private val parent: RecyclerView,
+    val game: Game,
+    val mainActivity: MainActivity,
+    showSubTotal: Boolean,
+    onShowSubTotalChange: ((Boolean) -> Unit)? = null
+) : RecyclerView.Adapter<GameTableViewHolder>() {
     private val mBoundViewHolders = HashSet<GameTableViewHolder>()
     private var lastLineColumnWidth: Int = 0
     var showSubTotal by Delegates.observable(showSubTotal) { _, _, newValue ->
@@ -47,20 +53,29 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
     init {
         registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onItemRangeChanged(positionStart: Int, itemCount: Int) = onDataChanged()
-            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) = onDataChanged()
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int, payload: Any?) =
+                onDataChanged()
+
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) = onDataChanged()
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = onDataChanged()
-            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) = onDataChanged()
+            override fun onItemRangeMoved(fromPosition: Int, toPosition: Int, itemCount: Int) =
+                onDataChanged()
+
             override fun onChanged() = onDataChanged()
         })
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GameTableViewHolder {
-        val rowView = LayoutInflater.from(parent.context).inflate(R.layout.scoreboard_row, parent, false)
+        val rowView =
+            LayoutInflater.from(parent.context).inflate(R.layout.scoreboard_row, parent, false)
         return GameTableViewHolder(rowView, true)
     }
 
-    private inner class CustomTextWatcher(val index: Int, val holder: GameTableViewHolder, val scoreLine: MutableList<Long>) : TextWatcher {
+    private inner class CustomTextWatcher(
+        val index: Int,
+        val holder: GameTableViewHolder,
+        val scoreLine: MutableList<Long>
+    ) : TextWatcher {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
         override fun afterTextChanged(editable: Editable) {
@@ -74,9 +89,20 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
 
                 game.modifyScoreLineAt(holder.adapterPosition, scoreLine)
                 renderSubTotals()
-                mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
+                mainActivity.redraw(
+                    refreshGameData = false,
+                    redrawHeaderRow = false,
+                    notifyDataSetChanged = false,
+                    redrawSumRow = true,
+                    redrawLeaderBoard = true,
+                    updateFabButtonHint = true
+                )
             } catch (e: NumberFormatException) {
-                Toast.makeText(holder.view.context, R.string.max_input_length_reached_toast, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    holder.view.context,
+                    R.string.max_input_length_reached_toast,
+                    Toast.LENGTH_LONG
+                ).show()
                 editable.delete(editable.length - 1, editable.length)
             }
         }
@@ -94,7 +120,14 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
                 return@setOnClickListener
             game.removeScoreLineAt(holder.adapterPosition)
             mainActivity.updateLineNumberWidth()
-            mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
+            mainActivity.redraw(
+                refreshGameData = false,
+                redrawHeaderRow = false,
+                notifyDataSetChanged = false,
+                redrawSumRow = true,
+                redrawLeaderBoard = true,
+                updateFabButtonHint = true
+            )
             notifyItemRemoved(holder.adapterPosition)
         }
 
@@ -113,7 +146,8 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
                 hint = context.getString(R.string.main_table_score_template, 0)
                 setHorizontallyScrolling(false)
                 maxLines = resources.getInteger(R.integer.max_lines_for_enter_text)
-                if (score != 0L) setText(context.getString(R.string.main_table_score_template, score))
+                if (score != 0L)
+                    setText(context.getString(R.string.main_table_score_template, score))
                 addTextChangedListener(CustomTextWatcher(index, holder, scoreLineCopy))
                 holder.scoreHolderLayout.addView(this)
             }
@@ -128,7 +162,14 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
     private fun onDataChanged() {
         updateLineNumbers()
         renderSubTotals()
-        mainActivity.redraw(refreshGameData = false, redrawHeaderRow = false, notifyDataSetChanged = false, redrawSumRow = true, redrawLeaderBoard = true, updateFabButtonHint = true)
+        mainActivity.redraw(
+            refreshGameData = false,
+            redrawHeaderRow = false,
+            notifyDataSetChanged = false,
+            redrawSumRow = true,
+            redrawLeaderBoard = true,
+            updateFabButtonHint = true
+        )
     }
 
     private fun updateLineNumbers() {
@@ -144,18 +185,24 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
         mBoundViewHolders.forEach { it.lineNumberTextView.width = columnWidth }
     }
 
-    private fun targetSubTotalVisibility(showSubTotal: Boolean) = if (showSubTotal) View.VISIBLE else View.GONE
+    private fun targetSubTotalVisibility(showSubTotal: Boolean) =
+        if (showSubTotal) View.VISIBLE else View.GONE
 
     private fun renderSubTotals() = mBoundViewHolders.forEach { renderSubTotals(it) }
 
     private fun renderSubTotals(holder: GameTableViewHolder) {
         if (holder.adapterPosition == NO_POSITION) return
-        val subTotals = List(game.players.size) { index -> game.players[index].getSubTotalAt(holder.adapterPosition) }
+        val subTotals =
+            List(game.players.size) { index -> game.players[index].getSubTotalAt(holder.adapterPosition) }
         holder.subTotalHolderLayout.removeAllViews()
 
         subTotals.forEach { subTotal ->
             with(TextView(holder.view.context)) {
-                val layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                val layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1f
+                )
                 layoutParams.marginStart = 2.toPx(holder.view.context)
                 this.layoutParams = layoutParams
                 setHorizontallyScrolling(false)
