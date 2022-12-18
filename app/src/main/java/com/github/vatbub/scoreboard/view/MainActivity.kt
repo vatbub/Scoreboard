@@ -46,7 +46,6 @@ import com.github.vatbub.scoreboard.data.Player
 import com.github.vatbub.scoreboard.util.ResettableLazyProperty
 import com.github.vatbub.scoreboard.util.ViewUtil
 import com.github.vatbub.scoreboard.util.toPx
-import com.github.vatbub.scoreboard.util.transform
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -88,7 +87,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setTheme(R.style.AppTheme_NoActionBar)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
@@ -339,7 +337,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun manageSavedGamesHandler() {
-        val gameNames = Array(gameManager.games.size) { getGameNameOrDummy(gameManager.games[it]) }
+        val gameNames = gameManager.games.map { it.nameOrDummyName }.toTypedArray()
 
         val builder = AlertDialog.Builder(this)
         builder.setTitle(R.string.manage_saved_games_title)
@@ -365,7 +363,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun loadGameHandler() {
-        val gameNames = List(gameManager.games.size) { getGameNameOrDummy(gameManager.games[it]) }
+        val gameNames = gameManager.games.map { it.nameOrDummyName }
         val currentGame = gameManager.currentlyActiveGame
         val inputSelection = if (currentGame == null)
             0
@@ -386,7 +384,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun saveGameHandler() {
         val game = gameManager.currentlyActiveGame ?: return
-        createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = getGameNameOrDummy(game), defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
+        createStringPrompt(this, R.string.save_game_dialog_title, R.string.dialog_ok, R.string.dialog_cancel, defaultText = game.nameOrDummyName, defaultHint = getString(R.string.save_game_dialog_hint), resultHandler = object : StringPromptResultHandler {
             override fun onOk(result: String) {
                 game.name = result
             }
@@ -404,7 +402,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             GameMode.LOW_SCORE -> 1
         }
 
-        val items = GameMode.values().transform { it.getNameString(this) }
+        val items = GameMode.values().map { it.getNameString(this) }.toTypedArray()
 
         with(AlertDialog.Builder(this)) {
             setTitle(R.string.switch_mode_title)
@@ -442,28 +440,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return getString(R.string.player_no_name_template, index)
     }
 
-    private fun verifyGame(game: Game) {
-        if (!gameManager.games.contains(game))
-            throw IllegalArgumentException("Games must be part of the current gameManager.")
-    }
-
-    private fun getGameNameOrDummy(game: Game): String {
-        verifyGame(game)
-        var finalName = game.name
-        if (finalName.replace(" ", "") == "")
-            finalName = getGameDummyName(game)
-        return finalName
-    }
-
-    private fun getGameDummyName(game: Game): String {
-        verifyGame(game)
-        return getString(R.string.game_no_name_template, gameManager.games.indexOf(game) + 1)
-    }
-
-
     private fun removePlayerHandler() {
         val currentGame = gameManager.currentlyActiveGame ?: return
-        val playerNames = currentGame.players.transform { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
+        val playerNames = currentGame.players.map { getPlayerNameOrDummy(currentGame, it) }.toTypedArray()
 
         with(AlertDialog.Builder(this)) {
             setTitle(R.string.delete_player_title)

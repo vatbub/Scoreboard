@@ -19,7 +19,7 @@
             android:name=".view.SyncActivity"
             android:label="@string/title_activity_sync"
             android:parentActivityName=".view.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar.DarkGrayBackground" />
         <activity
             android:name=".view.AboutActivity"
             android:label="@string/activity_about_title"

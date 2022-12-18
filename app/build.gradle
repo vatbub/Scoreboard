@@ -24,6 +24,7 @@ apply plugin: 'com.mikepenz.aboutlibraries.plugin'
 repositories {
     jcenter()
     google()
+    mavenLocal()
     maven { url "https://dl.bintray.com/vatbub/fokprojectsReleases" }
     maven { url 'https://jitpack.io' }
 }
@@ -118,7 +119,8 @@ dependencies {
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "com.mikepenz:aboutlibraries:${latestAboutLibsRelease}"
-    implementation("com.github.vatbub:matchmaking.jvm-client:1.0-alpha-1") {
+    implementation "org.slf4j:slf4j-android:1.7.30"
+    implementation("com.github.vatbub:matchmaking.jvm-client:1.0-SNAPSHOT") {
         exclude group: 'com.github.crykn', module: 'kryonet'
     }
 }

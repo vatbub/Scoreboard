@@ -107,7 +107,7 @@ class GameManagerTest : TestClassWithContext() {
     fun deleteNonExistentGame() {
         val gameManager = GameManager[context]
         assertThat(gameManager.games).isEmpty()
-        val game = Game(gameManager, 1, "game1", GameMode.HIGH_SCORE, listOf())
+        val game = Game(gameManager, 1, "game1", GameMode.HIGH_SCORE, listOf(), null, null)
         assertThat(gameManager.deleteGame(game)).isFalse()
     }
 

@@ -22,10 +22,19 @@ import org.jdom2.input.SAXBuilder
 import org.jdom2.output.Format
 import org.jdom2.output.XMLOutputter
 import java.io.File
+import java.io.StringWriter
 
-object XmlFileUtils {
+object XmlUtils {
     private fun getFileName(fileNameWithoutExtension: String) = "$fileNameWithoutExtension.xml"
     private fun getFile(context: Context, fileNameWithoutExtension: String) = File(context.filesDir, getFileName(fileNameWithoutExtension))
+
+    fun Document.serializeToString(prettify: Boolean = false): String {
+        val outputter = if (prettify) XMLOutputter(Format.getPrettyFormat()) else XMLOutputter(Format.getCompactFormat())
+        StringWriter().use { stringWriter ->
+            outputter.output(document, stringWriter)
+            return stringWriter.toString()
+        }
+    }
 
     fun saveFile(context: Context, filenameWithoutExtension: String, document: Document) {
         val outputter = XMLOutputter(Format.getPrettyFormat())
@@ -54,6 +63,8 @@ object XmlConstants {
         const val XML_GAME_TAG_NAME = "game"
         const val XML_GAME_ID_ATTRIBUTE = "id"
         const val XML_GAME_NAME_ATTRIBUTE = "name"
+        const val XML_GAME_SHARED_ID_ATTRIBUTE = "sharedId"
+        const val XML_GAME_IS_HOST_OF_SHARED_GAME_ATTRIBUTE = "isHostOfSharedGame"
         const val XML_GAME_GAME_MODE_ATTRIBUTE = "mode"
         const val XML_GAME_PLAYERS_TAG_NAME = "players"
     }

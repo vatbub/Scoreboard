@@ -143,7 +143,7 @@ class GameTableRecyclerViewAdapter(private val parent: RecyclerView, val game: G
 
     private fun renderSubTotals(holder: GameTableViewHolder) {
         if (holder.adapterPosition == NO_POSITION) return
-        val subTotals = List(game.players.size) { index -> game.players[index].getSubTotalAt(holder.adapterPosition) }
+        val subTotals = game.players.map { it.getSubTotalAt(holder.adapterPosition) }
         holder.subTotalHolderLayout.removeAllViews()
 
         subTotals.forEach { subTotal ->

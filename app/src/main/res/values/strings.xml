@@ -83,4 +83,12 @@
     <string name="title_activity_sync">Sync scores with a friend</string>
     <string name="tab_host_title">Sync your score with someone else</string>
     <string name="tab_join_title">See someone else\'s score</string>
+    <string name="sync_host_button_share_game_id_content_description">Share your game id</string>
+    <string name="sync_host_graphic_content_description">Graphic demonstrating cloud synchronization</string>
+    <string name="sync_host_label_select_game">Select the game you want to share:</string>
+    <string name="sync_host_label_your_game_id">Your game id:</string>
+    <string name="sync_host_button_start_sharing_select_game">Please select a game first</string>
+    <string name="sync_host_button_start_sharing">Start sharing</string>
+    <string name="sync_host_button_stop_sharing">Stop sharing</string>
+    <string name="sync_host_toast_no_game_selected">Please select a game first!</string>
 </resources>

@@ -19,7 +19,7 @@ package com.github.vatbub.scoreboard.data
 import android.content.Context
 import androidx.annotation.StringRes
 import com.github.vatbub.scoreboard.R
-import com.github.vatbub.scoreboard.util.transform
+import com.github.vatbub.scoreboard.network.networkEventHandler
 import org.jdom2.Attribute
 import org.jdom2.Document
 import org.jdom2.Element
@@ -27,7 +27,7 @@ import org.jdom2.Text
 import java.util.*
 import kotlin.properties.Delegates
 
-class GameManager(private val callingContext: Context) {
+class GameManager(internal val callingContext: Context) {
     companion object {
         private const val gameListPrefKey = "games"
         private val instances = HashMap<Context, GameManager>()
@@ -42,14 +42,8 @@ class GameManager(private val callingContext: Context) {
         operator fun get(callingContext: Context): GameManager = getInstance(callingContext)
 
         @Deprecated(message = "Deprecated syntax", replaceWith = ReplaceWith("GameManager[callingContext]"))
-        fun getInstance(callingContext: Context): GameManager {
-            synchronized(instances) {
-                if (!instances.containsKey(callingContext))
-                    instances[callingContext] = GameManager(callingContext)
-
-                return instances[callingContext]!!
-            }
-        }
+        fun getInstance(callingContext: Context) =
+                instances.getOrPut(callingContext) { GameManager(callingContext) }
 
         /**
          * Resets the GameManagerOld instance for the specified context. Calling [.getInstance] will cause a new instance to be crated.
@@ -127,7 +121,7 @@ class GameManager(private val callingContext: Context) {
      * @return The game that was created.
      */
     fun createGame(gameName: String?): Game {
-        val game = Game(this, nextGameId, gameName, GameMode.HIGH_SCORE, listOf())
+        val game = Game(this, nextGameId, gameName, GameMode.HIGH_SCORE, listOf(), null, null)
         saveGame(game)
         _games.add(game)
         return game
@@ -149,13 +143,15 @@ class GameManager(private val callingContext: Context) {
     fun deleteGame(game: Game): Boolean {
         if (game.isActive)
             activateGame(null)
+        if (game.isShared)
+            game.networkEventHandler.onGameDeleted(game)
         return _games.remove(game)
     }
 
     private fun getGameKey(id: Int): String = "game$id"
 
     internal fun saveGame(game: Game) {
-        XmlFileUtils.saveFile(callingContext, getGameKey(game.id), game.toXml())
+        XmlUtils.saveFile(callingContext, getGameKey(game.id), game.toXml())
     }
 
     private fun saveGameList() {
@@ -165,16 +161,16 @@ class GameManager(private val callingContext: Context) {
             idElement.setContent(Text(it.toString()))
             rootElement.children.add(idElement)
         }
-        XmlFileUtils.saveFile(callingContext, gameListPrefKey, Document(rootElement))
+        XmlUtils.saveFile(callingContext, gameListPrefKey, Document(rootElement))
     }
 
     private fun restoreData(): List<Game> {
         val restoredGames = mutableListOf<Game>()
-        val gameIdsDocument = XmlFileUtils.readFile(callingContext, gameListPrefKey)
+        val gameIdsDocument = XmlUtils.readFile(callingContext, gameListPrefKey)
                 ?: return listOf()
         gameIdsDocument.rootElement.children.forEach {
             val id = it.content[0].value.toInt()
-            val restoredGame = Game.fromXml(this, XmlFileUtils.readFile(callingContext, getGameKey(id))
+            val restoredGame = Game.fromXml(this, XmlUtils.readFile(callingContext, getGameKey(id))
                     ?: return@forEach)
             restoredGames.add(restoredGame)
         }
@@ -188,22 +184,59 @@ enum class GameMode(@StringRes val nameResource: Int) {
     fun getNameString(context: Context): String = context.getString(nameResource)
 }
 
-class Game internal constructor(private var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>) {
+class Game internal constructor(internal var gameManager: GameManager?, val id: Int, name: String?, gameMode: GameMode, players: List<Player>, sharedGameId: String?, isHostOfSharedGame: Boolean?) {
     /**
-     * For GSON only. GSON will overwrite all default values.
+     * Used by GSON and fromXml. GSON will overwrite all default values.
      */
-    @Suppress("unused")
-    private constructor() : this(null, -1, null, GameMode.HIGH_SCORE, listOf())
+    private constructor() : this(null, -1, null, GameMode.HIGH_SCORE, listOf(), null, null)
 
-    var name by Delegates.observable(name ?: "") { _, _, _ -> gameManager?.saveGame(this) }
-    var mode by Delegates.observable(gameMode) { _, _, _ -> gameManager?.saveGame(this) }
+    var name by Delegates.observable(name ?: "") { _, _, newValue ->
+        gameManager?.saveGame(this)
+        if (isShared)
+            this.networkEventHandler.onGameNameChanged(newValue)
+    }
+    val nameOrDummyName: String
+        get() {
+            if (name.replace(" ", "").isNotEmpty()) return name
+            val gameManager = this.gameManager ?: return ""
+            return gameManager.callingContext.getString(R.string.game_no_name_template, gameManager.games.indexOf(this) + 1)
+        }
+    var mode by Delegates.observable(gameMode) { _, _, newValue ->
+        gameManager?.saveGame(this)
+        if (isShared)
+            this.networkEventHandler.onGameModeChanged(newValue)
+    }
     val isActive: Boolean
         get() = gameManager?.currentlyActiveGame == this
     val players = ObservableMutableList(players,
-            { _, _ -> gameManager?.saveGame(this) },
-            { _, _, _ -> gameManager?.saveGame(this) },
-            { _, _ -> gameManager?.saveGame(this) },
-            { gameManager?.saveGame(this) })
+            { newPlayer, _ ->
+                gameManager?.saveGame(this)
+                if (isShared)
+                    networkEventHandler.onPlayerAdded(newPlayer)
+            },
+            { oldPlayer, newPlayer, _ ->
+                gameManager?.saveGame(this)
+                if (isShared) {
+                    with(networkEventHandler) {
+                        onPlayerRemoved(oldPlayer)
+                        onPlayerAdded(newPlayer)
+                    }
+                }
+            },
+            { removedPlayer, _ ->
+                gameManager?.saveGame(this)
+                if (isShared)
+                    networkEventHandler.onPlayerRemoved(removedPlayer)
+            },
+            {
+                gameManager?.saveGame(this)
+                if (isShared)
+                    networkEventHandler.onPlayersCleared()
+            })
+    val isShared: Boolean
+        get() = sharedGameId != null
+    var sharedGameId by Delegates.observable(sharedGameId) { _, _, _ -> gameManager?.saveGame(this) }
+    var isHostOfSharedGame by Delegates.observable(isHostOfSharedGame) { _, _, _ -> gameManager?.saveGame(this) }
 
     private val nextPlayerId: Int
         get() {
@@ -212,7 +245,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
         }
 
     private val playerIDs
-        get() = List(players.size) { players[it].id }
+        get() = players.map { it.id }
 
     /**
      * The number of lines that are currently on the scoreboard
@@ -299,7 +332,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
             return sortedScores
         }
 
-    override fun toString() = name
+    override fun toString() = nameOrDummyName
 
     /**
      * Creates a new player in this game
@@ -307,8 +340,11 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
      * @param playerName The name of the player to create
      * @return The created player
      */
-    fun createPlayer(playerName: String): Player {
-        val player = Player(this, nextPlayerId, playerName, List(scoreCount) { 0L })
+
+    fun createPlayer(playerName: String?) = createPlayer(playerName, nextPlayerId)
+
+    fun createPlayer(playerName: String?, playerId: Int): Player {
+        val player = Player(this, playerId, playerName, List(scoreCount) { 0L })
         players.add(player)
         return player
     }
@@ -321,6 +357,8 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
     fun addScoreLine(scores: List<Long>) {
         assertScoreListLength(scores)
         players.forEachIndexed { index, player -> player.scores.add(scores[index]) }
+        if (isShared)
+            networkEventHandler.onScoreLineAdded(scores)
     }
 
     fun addEmptyScoreLine() =
@@ -335,6 +373,8 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
     fun modifyScoreLineAt(index: Int, scores: List<Long>) {
         assertScoreListLength(scores)
         players.forEachIndexed { playerIndex, player -> player.scores[index] = scores[playerIndex] }
+        if (isShared)
+            networkEventHandler.onScoreLineModified(index, scores)
     }
 
     private fun assertScoreListLength(scores: List<Long>) {
@@ -347,8 +387,11 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
      *
      * @param index The index of the row to remove
      */
-    fun removeScoreLineAt(index: Int) =
-            players.forEach { it.scores.removeAt(index) }
+    fun removeScoreLineAt(index: Int) {
+        players.forEach { it.scores.removeAt(index) }
+        if (isShared)
+            networkEventHandler.onScoreLineRemoved(index)
+    }
 
     /**
      * Returns the specified score line
@@ -356,7 +399,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
      * @param index The row index of the line to return
      * @return The score line at the specified index
      */
-    fun getScoreLineAt(index: Int) = players.transform { it.scores[index] }
+    fun getScoreLineAt(index: Int) = players.map { it.scores[index] }
 
     internal fun savePlayer() = gameManager?.saveGame(this)
 
@@ -365,6 +408,10 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_ID_ATTRIBUTE, id.toString()))
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE, name))
         rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE, mode.toString()))
+        if (sharedGameId != null)
+            rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_SHARED_ID_ATTRIBUTE, sharedGameId))
+        if (isHostOfSharedGame != null)
+            rootElement.attributes.add(Attribute(XmlConstants.Game.XML_GAME_IS_HOST_OF_SHARED_GAME_ATTRIBUTE, isHostOfSharedGame.toString()))
 
         val playersElement = Element(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
         rootElement.children.add(playersElement)
@@ -372,6 +419,21 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
         players.forEach { playersElement.children.add(it.toXml()) }
 
         return Document(rootElement)
+    }
+
+    fun updateFromXml(document: Document) {
+        val root = document.rootElement
+        this.sharedGameId = root.getAttribute(XmlConstants.Game.XML_GAME_SHARED_ID_ATTRIBUTE)?.value
+        this.isHostOfSharedGame = root.getAttribute(XmlConstants.Game.XML_GAME_IS_HOST_OF_SHARED_GAME_ATTRIBUTE)?.booleanValue
+        this.name = root.getAttribute(XmlConstants.Game.XML_GAME_NAME_ATTRIBUTE).value
+        this.mode = GameMode.valueOf(root.getAttribute(XmlConstants.Game.XML_GAME_GAME_MODE_ATTRIBUTE).value)
+
+        val playersElement = root.getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
+        players.clear()
+        players.addAll(playersElement.children.map {
+            Player.fromXml(it)
+                    .also { player -> player.parentGame = this }
+        })
     }
 
     companion object {
@@ -384,7 +446,7 @@ class Game internal constructor(private var gameManager: GameManager?, val id: I
                 val playersElement = getChild(XmlConstants.Game.XML_GAME_PLAYERS_TAG_NAME)
                 val players = List(playersElement.children.size) { Player.fromXml(playersElement.children[it]) }
 
-                val game = Game(gameManager, id, name, gameMode, players)
+                val game = Game(gameManager, id, name, gameMode, players, null, null)
                 players.forEach { it.parentGame = game }
                 return game
             }
@@ -412,7 +474,11 @@ class Player(var parentGame: Game?, val id: Int, name: String?, scores: List<Lon
     @Suppress("unused")
     private constructor() : this(null, -1, null, listOf())
 
-    var name: String? by Delegates.observable(name) { _, _, _ -> parentGame?.savePlayer() }
+    var name: String? by Delegates.observable(name) { _, _, newValue ->
+        parentGame?.savePlayer()
+        if (parentGame?.isShared == true)
+            parentGame?.networkEventHandler?.onPlayerNameChanged(id, newValue)
+    }
     val scores = ObservableMutableList(scores,
             { _, _ -> parentGame?.savePlayer() },
             { _, _, _ -> parentGame?.savePlayer() },

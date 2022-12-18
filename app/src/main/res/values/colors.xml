@@ -33,4 +33,6 @@
     <color name="headerRowBackgroundColor">#e0e0e0</color>
 
     <color name="textColorPrimary">@android:color/black</color>
+
+    <color name="darkGrayWindowBackground">#292929</color>
 </resources>
