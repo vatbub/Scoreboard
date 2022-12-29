@@ -8,9 +8,9 @@ the source code on [GitHub](http://github.com/vatbub/Scoreboard).
 Information in accordance with $ 5 TMG
 
 Frederik Kammel  
-Fasanenstraße 36  
-85591 Vaterstetten  
-Germany  
+Adlerstraße 19  
+79098 Freiburg (Breisgau)  
+Germany
 
 ## Contact
 Telephone: 0177-57 977 12  

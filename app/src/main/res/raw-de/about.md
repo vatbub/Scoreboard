@@ -9,8 +9,8 @@ wir Sie herzlich dazu ein, sich den Quellcode dieser App auf
 Angaben gemäß § 5 TMG
 
 Frederik Kammel  
-Fasanenstraße 36  
-85591 Vaterstetten  
+Adlerstraße 19  
+79098 Freiburg (Breisgau)
 
 ## Kontakt
 Telefon: 0177-57 977 12  
