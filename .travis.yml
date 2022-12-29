@@ -10,7 +10,7 @@ android:
   - platform-tools
   - tools
 before_install:
-- yes | sdkmanager "build-tools;28.0.3"
+  - yes | sdkmanager "build-tools;30.0.3"
 - gem install fastlane --silent
 # - yes | sdkmanager "platforms;android-27"
 - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
