@@ -8,7 +8,8 @@ the source code on [GitHub](http://github.com/vatbub/Scoreboard).
 Information in accordance with $ 5 TMG
 
 Frederik Kammel  
-Adlerstraße 19 79098 Freiburg (Breisgau)
+Adlerstraße 19  
+79098 Freiburg (Breisgau)  
 Germany
 
 ## Contact
