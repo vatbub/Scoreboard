@@ -5,14 +5,20 @@ branches:
     - master
 git:
   depth: false
-android:
-  components:
-    - android-33
-    - platform-tools
-    - tools
+env:
+  global:
+    - TARGET_VERSION=33
+    - ANDROID_BUILD_TOOLS_VERSION=30.0.2
+    - ANDROID_HOME=/usr/local/android-sdk
 before_install:
   - rvm install 2.7.2
-  - yes | sdkmanager "build-tools;30.0.3"
+  - touch $HOME/.android/repositories.cfg
+  - wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
+  - unzip commandlinetools.zip -d $ANDROID_HOME/
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${TARGET_VERSION}"
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platform-tools"
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "tools"
+  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;30.0.3"
   - gem install fastlane --silent
   # - yes | sdkmanager "platforms;android-27"
   - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
