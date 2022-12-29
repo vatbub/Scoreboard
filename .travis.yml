@@ -21,6 +21,8 @@ before_install:
   - mv $ANDROID_HOME/cmdline-tools/lib $ANDROID_HOME/cmdline-tools/latest/lib
   - mv $ANDROID_HOME/cmdline-tools/NOTICE.txt $ANDROID_HOME/cmdline-tools/latest/NOTICE.txt
   - mv $ANDROID_HOME/cmdline-tools/source.properties $ANDROID_HOME/cmdline-tools/latest/source.properties
+  - which sdkmanager
+  - sdkmanager --version
   - yes | sdkmanager "platforms;android-${TARGET_VERSION}"
   - yes | sdkmanager "platform-tools"
   - yes | sdkmanager "tools"
