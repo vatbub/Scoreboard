@@ -10,6 +10,7 @@ android:
     - platform-tools
     - tools
 before_install:
+  - rvm install 3.2.0
   - yes | sdkmanager "build-tools;30.0.3"
   - gem install fastlane
   # - yes | sdkmanager "platforms;android-27"
