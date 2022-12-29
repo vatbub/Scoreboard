@@ -87,7 +87,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'commons-io:commons-io:2.11.0'
-    implementation 'org.jdom:jdom2:2.0.6'
+    implementation 'org.jdom:jdom2:2.0.6.1'
     implementation 'ru.noties:markwon:2.0.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation "androidx.cardview:cardview:1.0.0"
