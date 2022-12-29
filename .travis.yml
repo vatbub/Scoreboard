@@ -16,6 +16,7 @@ before_install:
   - wget "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip" -O commandlinetools.zip
   - unzip commandlinetools.zip -d $ANDROID_HOME/
   - rm -rf $ANDROID_HOME/cmdline-tools/latest
+  - mkdir $ANDROID_HOME/cmdline-tools/latest
   - mv $ANDROID_HOME/cmdline-tools/bin $ANDROID_HOME/cmdline-tools/latest/bin
   - mv $ANDROID_HOME/cmdline-tools/lib $ANDROID_HOME/cmdline-tools/latest/lib
   - mv $ANDROID_HOME/cmdline-tools/NOTICE.txt $ANDROID_HOME/cmdline-tools/latest/NOTICE.txt
