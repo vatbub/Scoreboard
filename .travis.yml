@@ -1,19 +1,35 @@
 language: android
+jdk: openjdk11
 branches:
   only:
-  - master
+    - master
 git:
   depth: false
-android:
-  components:
-  - android-26
-  - platform-tools
-  - tools
+env:
+  global:
+    - TARGET_VERSION=33
+    - ANDROID_BUILD_TOOLS_VERSION=30.0.2
+    - ANDROID_HOME=/usr/local/android-sdk
 before_install:
-- yes | sdkmanager "build-tools;28.0.3"
-- gem install fastlane --silent
-# - yes | sdkmanager "platforms;android-27"
-- openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
+  - rvm install 2.7.2
+  - touch $HOME/.android/repositories.cfg
+  - wget --no-verbose "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip" -O commandlinetools.zip
+  - unzip -q commandlinetools.zip -d $ANDROID_HOME/
+  - rm -rf $ANDROID_HOME/cmdline-tools/latest
+  - mkdir $ANDROID_HOME/cmdline-tools/latest
+  - mv $ANDROID_HOME/cmdline-tools/bin $ANDROID_HOME/cmdline-tools/latest/bin
+  - mv $ANDROID_HOME/cmdline-tools/lib $ANDROID_HOME/cmdline-tools/latest/lib
+  - mv $ANDROID_HOME/cmdline-tools/NOTICE.txt $ANDROID_HOME/cmdline-tools/latest/NOTICE.txt
+  - mv $ANDROID_HOME/cmdline-tools/source.properties $ANDROID_HOME/cmdline-tools/latest/source.properties
+  - which sdkmanager
+  - $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --version
+  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-${TARGET_VERSION}"
+  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
+  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "tools"
+  - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.3"
+  - gem install fastlane --silent
+  # - yes | sdkmanager "platforms;android-27"
+  - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
 # - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 # - tar xf google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
 # - echo "y" | ./google-cloud-sdk/bin/gcloud components update
@@ -23,17 +39,17 @@ script:
   # - mkdir -p /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
   # - cp trove4j/trove4j-20160824.pom /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
   # - cp trove4j/trove4j-20160824.jar /usr/local/android-sdk/extras/m2repository/org/jetbrains/trove4j/trove4j/20160824/
-- chmod +x ./gradlew
-- cp ci.local.properties local.properties
-- if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" = "master" ] ; then bundle exec fastlane internal; else bundle exec fastlane assembleRelease; fi
+  - chmod +x ./gradlew
+  - cp ci.local.properties local.properties
+  - if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_BRANCH" = "master" ] ; then bundle exec fastlane internal; else bundle exec fastlane assembleRelease; fi
 # - ./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation --app ./app/build/outputs/apk/debug/app-debug.apk --test ./app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk --device model=Nexus10,version=21,locale=en,orientation=portrait --device model=Nexus5,version=23,locale=en,orientation=portrait --device model=Nexus6P,version=27,locale=en,orientation=portrait
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
-  - "$HOME/.gradle/wrapper/"
-  - "$HOME/.android/build-cache"
-  - "$HOME/.rvm/gems/ruby-2.4.1"
-  - "$HOME/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0"
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+    - "$HOME/.android/build-cache"
+    - "$HOME/.rvm/gems/ruby-2.4.1"
+    - "$HOME/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0"
