@@ -15,10 +15,15 @@ before_install:
   - touch $HOME/.android/repositories.cfg
   - wget "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O commandlinetools.zip
   - unzip commandlinetools.zip -d $ANDROID_HOME/
-  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platforms;android-${TARGET_VERSION}"
-  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "platform-tools"
-  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "tools"
-  - yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager "build-tools;30.0.3"
+  - rm -rf $ANDROID_HOME/cmdline-tools/latest
+  - mv $ANDROID_HOME/cmdline-tools/bin $ANDROID_HOME/cmdline-tools/latest/bin
+  - mv $ANDROID_HOME/cmdline-tools/lib $ANDROID_HOME/cmdline-tools/latest/lib
+  - mv $ANDROID_HOME/cmdline-tools/NOTICE.txt $ANDROID_HOME/cmdline-tools/latest/NOTICE.txt
+  - mv $ANDROID_HOME/cmdline-tools/source.properties $ANDROID_HOME/cmdline-tools/latest/source.properties
+  - yes | sdkmanager "platforms;android-${TARGET_VERSION}"
+  - yes | sdkmanager "platform-tools"
+  - yes | sdkmanager "tools"
+  - yes | sdkmanager "build-tools;30.0.3"
   - gem install fastlane --silent
   # - yes | sdkmanager "platforms;android-27"
   - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
