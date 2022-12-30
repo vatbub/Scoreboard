@@ -1,6 +1,7 @@
 29.12.2022:
 - Fix: Negative Einträge sind nun möglich
 - Impressum aktualisiert
+- Kleinere technische Verbesserungen
 
 09.03.2020:
 - Fix: [Issue #19] Bei mehreren gespeicherten Spielständen wurde immer der erste wieder geladen, wenn der Bildschirm gedreht wurde
