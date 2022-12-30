@@ -17,14 +17,16 @@
 package com.github.vatbub.scoreboard.view
 
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.Space
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vatbub.scoreboard.R
-import kotlinx.android.synthetic.main.sum_row_layout.view.*
 
 class GameTableViewHolderWithPlaceholders(val view: View) : RecyclerView.ViewHolder(view) {
-    val scoreHolderLayout = view.main_table_text_view_holder!!
-    val lineNumberTextView = view.main_table_line_number_placeholder!!
-    val deleteRowButton = view.main_table_delete_row_button_placeholder!!
+    val scoreHolderLayout = view.findViewById<LinearLayout>(R.id.main_table_text_view_holder)!!
+    val lineNumberTextView = view.findViewById<TextView>(R.id.main_table_line_number_placeholder)!!
+    val deleteRowButton = view.findViewById<Space>(R.id.main_table_delete_row_button_placeholder)!!
 
     fun setLineNumber(lineNumber: Int) {
         lineNumberTextView.text =

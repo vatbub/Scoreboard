@@ -23,12 +23,14 @@ import androidx.annotation.RawRes
 import androidx.appcompat.app.AppCompatActivity
 import com.github.vatbub.scoreboard.BuildConfig
 import com.github.vatbub.scoreboard.R
+import com.github.vatbub.scoreboard.databinding.ActivityAboutBinding
 import com.mikepenz.aboutlibraries.LibsBuilder
-import kotlinx.android.synthetic.main.activity_about.*
 import ru.noties.markwon.Markwon
 
 
 class AboutActivity : AppCompatActivity() {
+    private lateinit var bindings: ActivityAboutBinding
+
     private val textColor by lazy {
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -39,8 +41,9 @@ class AboutActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
-        setSupportActionBar(about_toolbar)
+        bindings = ActivityAboutBinding.inflate(layoutInflater)
+        setContentView(bindings.root)
+        setSupportActionBar(bindings.aboutToolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         displayMarkdown(R.raw.about)
         setButtonListenersUp()
@@ -48,30 +51,30 @@ class AboutActivity : AppCompatActivity() {
     }
 
     private fun setVersionLabelUp() {
-        activity_about_version_label.text = getString(
+        bindings.activityAboutVersionLabel.text = getString(
             R.string.version_label_template,
             BuildConfig.VERSION_NAME,
             BuildConfig.GitHash
         )
-        activity_about_version_label.setTextColor(textColor)
+        bindings.activityAboutVersionLabel.setTextColor(textColor)
     }
 
     private fun setButtonListenersUp() {
-        imprint_button_open_source_licenses.setOnClickListener { showOpenSourceLicenses() }
+        bindings.imprintButtonOpenSourceLicenses.setOnClickListener { showOpenSourceLicenses() }
     }
 
     private fun displayMarkdown(@RawRes markdownFile: Int) {
-        activity_about_markdown_view.movementMethod = LinkMovementMethod.getInstance()
-        Markwon.unscheduleDrawables(activity_about_markdown_view)
-        Markwon.unscheduleTableRows(activity_about_markdown_view)
+        bindings.activityAboutMarkdownView.movementMethod = LinkMovementMethod.getInstance()
+        Markwon.unscheduleDrawables(bindings.activityAboutMarkdownView)
+        Markwon.unscheduleTableRows(bindings.activityAboutMarkdownView)
 
-        activity_about_markdown_view.text =
+        bindings.activityAboutMarkdownView.text =
             MarkdownRenderer[this].getCachedRenderResult(markdownFile)
 
-        activity_about_markdown_view.setTextColor(textColor)
+        bindings.activityAboutMarkdownView.setTextColor(textColor)
 
-        Markwon.scheduleDrawables(activity_about_markdown_view)
-        Markwon.scheduleTableRows(activity_about_markdown_view)
+        Markwon.scheduleDrawables(bindings.activityAboutMarkdownView)
+        Markwon.scheduleTableRows(bindings.activityAboutMarkdownView)
     }
 
     override fun onSupportNavigateUp(): Boolean {
