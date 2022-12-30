@@ -24,12 +24,18 @@ import org.jdom2.output.XMLOutputter
 import java.io.File
 
 object XmlFileUtils {
+    private val outputter by lazy { XMLOutputter(Format.getPrettyFormat()) }
+    private val saxBuilder by lazy {
+        SAXBuilder().apply {
+            setFeature("http://xml.org/sax/features/external-general-entities", false)
+        }
+    }
+
     private fun getFileName(fileNameWithoutExtension: String) = "$fileNameWithoutExtension.xml"
     private fun getFile(context: Context, fileNameWithoutExtension: String) =
         File(context.filesDir, getFileName(fileNameWithoutExtension))
 
     fun saveFile(context: Context, filenameWithoutExtension: String, document: Document) {
-        val outputter = XMLOutputter(Format.getPrettyFormat())
         context.openFileOutput(getFileName(filenameWithoutExtension), Context.MODE_PRIVATE).use {
             outputter.output(document, it)
         }
@@ -37,10 +43,9 @@ object XmlFileUtils {
 
     fun readFile(context: Context, fileNameWithoutExtension: String): Document? {
         val file = getFile(context, fileNameWithoutExtension)
-        if (!file.exists())
-            return null
+        if (!file.exists()) return null
 
-        return SAXBuilder().build(file)
+        return saxBuilder.build(file)
     }
 }
 
