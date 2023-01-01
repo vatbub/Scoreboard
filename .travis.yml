@@ -53,3 +53,8 @@ cache:
     - "$HOME/.android/build-cache"
     - "$HOME/.rvm/gems/ruby-2.4.1"
     - "$HOME/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0"
+deploy:
+  provider: releases
+  file: app/build/outputs/apk/release/app-release.apk
+  edge: true # opt in to dpl v2
+  draft: true
