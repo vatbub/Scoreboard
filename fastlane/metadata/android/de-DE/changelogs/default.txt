@@ -1,3 +1,6 @@
+01.01.2023:
+- Veröffentlichung der App auf F-Droid vorbereitet
+
 29.12.2022:
 - Fix: Negative Einträge sind nun möglich
 - Impressum aktualisiert

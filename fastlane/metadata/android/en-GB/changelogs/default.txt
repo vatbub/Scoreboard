@@ -1,3 +1,6 @@
+01.01.2023:
+- Prepared release on F-Droid
+
 29.12.2022:
 - Fix: Negative scores are now possible
 - Updated the imprint
