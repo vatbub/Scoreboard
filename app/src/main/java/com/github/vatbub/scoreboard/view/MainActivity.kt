@@ -43,15 +43,15 @@ import com.github.vatbub.scoreboard.data.Game
 import com.github.vatbub.scoreboard.data.GameManager
 import com.github.vatbub.scoreboard.data.GameMode
 import com.github.vatbub.scoreboard.data.Player
+import com.github.vatbub.scoreboard.databinding.ActivityMainBinding
+import com.github.vatbub.scoreboard.databinding.AppBarMainBinding
+import com.github.vatbub.scoreboard.databinding.ContentMainBinding
 import com.github.vatbub.scoreboard.util.ResettableLazyProperty
 import com.github.vatbub.scoreboard.util.ViewUtil
 import com.github.vatbub.scoreboard.util.toPx
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
-import kotlinx.android.synthetic.main.content_main.*
 import net.steamcrafted.materialiconlib.MaterialDrawableBuilder
 import net.steamcrafted.materialiconlib.MaterialIconView
 import net.steamcrafted.materialiconlib.MaterialMenuInflater
@@ -60,6 +60,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var mainActivityBinding: ActivityMainBinding
+    private val appBarBinding: AppBarMainBinding by lazy { mainActivityBinding.appBar }
+    private val contentBinding: ContentMainBinding by lazy { appBarBinding.content }
+
     private val showSubTotalsDefaultValue = false
     private val showSubTotalsKey = "showSubTotals"
     private val sharedPreferencesName = "MainActivityPrefs"
@@ -76,7 +80,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val mainTableAdapter = ResettableLazyProperty {
         GameTableRecyclerViewAdapter(
-            main_table_recycler_view,
+            contentBinding.mainTableRecyclerView,
             gameManager.currentlyActiveGame!!,
             this,
             showSubtotals
@@ -86,9 +90,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private val headerRowViewHolder by lazy { GameTableViewHolder(header_row, false) }
-    private val sumRowViewHolder by lazy { GameTableViewHolderWithPlaceholders(sum_row) }
-    private val mBottomSheetBehavior by lazy { BottomSheetBehavior.from(sum_bottom_sheet) }
+    private val headerRowViewHolder by lazy {
+        GameTableViewHolder(
+            contentBinding.headerRow.root,
+            false
+        )
+    }
+    private val sumRowViewHolder by lazy { GameTableViewHolderWithPlaceholders(contentBinding.sumRow.root) }
+    private val mBottomSheetBehavior by lazy { BottomSheetBehavior.from(contentBinding.sumBottomSheet) }
 
     private var optionsMenu: Menu? = null
     private var lastAddPlayerActionBarCenterX = -1f
@@ -98,9 +107,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        mainActivityBinding = ActivityMainBinding.inflate(layoutInflater)
+
         setTheme(R.style.AppTheme_NoActionBar)
-        setContentView(R.layout.activity_main)
-        setSupportActionBar(toolbar)
+        setContentView(mainActivityBinding.root)
+        setSupportActionBar(appBarBinding.toolbar)
 
         gameManager.createGameIfEmptyAndActivateTheLastActivatedGame()
 
@@ -117,18 +128,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setAddPlayerHintLayoutListenerUp()
         setFabListenerUp()
         setNavigationDrawerUp()
-        nav_view.setNavigationItemSelectedListener(this)
+        mainActivityBinding.navView.setNavigationItemSelectedListener(this)
     }
 
     private fun setAddPlayerHintLayoutListenerUp() {
-        // add_player_hint_arrow.layoutParams.width
-        add_player_hint_arrow.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+        // contentBinding.addPlayerHintArrow.layoutParams.width
+        contentBinding.addPlayerHintArrow.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
             val oldWidth = abs(oldRight - oldLeft)
             lastAddPlayerArrowWidth = abs(right - left)
             if (oldWidth != lastAddPlayerArrowWidth)
                 informAddPlayerButtonLocation()
         }
-        add_player_hint.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
+        contentBinding.addPlayerHint.addOnLayoutChangeListener { _, left, _, right, _, oldLeft, _, oldRight, _ ->
             val oldWidth = abs(oldRight - oldLeft)
             lastAddPlayerHintWidth = abs(right - left)
             if (oldWidth != lastAddPlayerHintWidth)
@@ -137,7 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setFabListenerUp() {
-        fab.setOnClickListener {
+        contentBinding.fab.setOnClickListener {
             val game = gameManager.currentlyActiveGame
             if (game == null) {
                 Toast.makeText(this, R.string.no_game_active_toast, Toast.LENGTH_LONG).show()
@@ -152,7 +163,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun focusOnLastRow(game: Game) {
-        main_table_recycler_view.smoothScrollToPosition(game.scoreCount)
+        contentBinding.mainTableRecyclerView.smoothScrollToPosition(game.scoreCount)
         focusOnLastRowSecondStep(game)
     }
 
@@ -163,7 +174,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ViewUtil.RemoveListenerPolicy.Always
         ) {
             val viewHolder =
-                main_table_recycler_view.findViewHolderForAdapterPosition(game.scoreCount - 1)
+                contentBinding.mainTableRecyclerView.findViewHolderForAdapterPosition(game.scoreCount - 1)
             if (viewHolder == null) {
                 // Layout not yet complete, reschedule the action
                 focusOnLastRowSecondStep(game)
@@ -178,24 +189,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun setNavigationDrawerUp() {
         val toggle = ActionBarDrawerToggle(
             this,
-            drawer_layout,
-            toolbar,
+            mainActivityBinding.drawerLayout,
+            appBarBinding.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
         )
-        drawer_layout.addDrawerListener(toggle)
+        mainActivityBinding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
     }
 
     private fun setRecyclerViewUp() {
-        main_table_recycler_view.layoutManager = LinearLayoutManager(this)
-        main_table_recycler_view.adapter = mainTableAdapter.value
-        main_table_recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        contentBinding.mainTableRecyclerView.layoutManager = LinearLayoutManager(this)
+        contentBinding.mainTableRecyclerView.adapter = mainTableAdapter.value
+        contentBinding.mainTableRecyclerView.addOnScrollListener(object :
+            RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val scrollPosition = recyclerView.computeVerticalScrollOffset()
                 val maxScrollPosition = 31
-                header_row_shadow_view.alpha =
+                contentBinding.headerRowShadowView.alpha =
                     min(1.0f, (1.0f / maxScrollPosition) * scrollPosition)
             }
         })
@@ -211,14 +223,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun setSumBottomSheetUp() {
-        ViewUtil.runJustBeforeBeingDrawn(sum_row) { mBottomSheetBehavior.peekHeight = it.height }
+        ViewUtil.runJustBeforeBeingDrawn(contentBinding.sumRow.root) {
+            mBottomSheetBehavior.peekHeight = it.height
+        }
         mBottomSheetBehavior.addBottomSheetCallback(
             object : BottomSheetBehavior.BottomSheetCallback() {
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {
-                    val layoutParams = sum_bottom_sheet_scroll_space.layoutParams
+                    val layoutParams = contentBinding.sumBottomSheetScrollSpace.layoutParams
                     layoutParams.height =
                         calculateBottomSheetHeightFromOffset(bottomSheet, slideOffset)
-                    sum_bottom_sheet_scroll_space.layoutParams = layoutParams
+                    contentBinding.sumBottomSheetScrollSpace.layoutParams = layoutParams
                 }
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
@@ -257,9 +271,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             menuItem.contentDescription = menuItem.title
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (drawer_layout.isDrawerOpen(GravityCompat.START))
-            drawer_layout.closeDrawer(GravityCompat.START)
+        if (mainActivityBinding.drawerLayout.isDrawerOpen(GravityCompat.START))
+            mainActivityBinding.drawerLayout.closeDrawer(GravityCompat.START)
         else super.onBackPressed()
     }
 
@@ -361,7 +377,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             builder.setNegativeButton(R.string.no) { _, _ ->
                 Snackbar.make(
-                    root_node,
+                    mainActivityBinding.root,
                     R.string.snackbar_new_game_manage_games_hint,
                     Snackbar.LENGTH_LONG
                 ).show()
@@ -590,7 +606,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_github -> startURLIntent(R.string.github_url)
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        mainActivityBinding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
@@ -649,14 +665,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (lastAddPlayerActionBarCenterX < 0) return
         if (lastAddPlayerArrowWidth < 0) return
         if (lastAddPlayerHintWidth < 0) return
-        add_player_hint_arrow.x = lastAddPlayerActionBarCenterX - lastAddPlayerArrowWidth / 2f
+        contentBinding.addPlayerHintArrow.x =
+            lastAddPlayerActionBarCenterX - lastAddPlayerArrowWidth / 2f
 
         val displayMetrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(displayMetrics)
         val screenWidth = displayMetrics.widthPixels
         val maxHintLeft = screenWidth - lastAddPlayerHintWidth
         val desiredHintLeft = lastAddPlayerActionBarCenterX - lastAddPlayerHintWidth / 2f
-        add_player_hint.x = max(0f, min(maxHintLeft.toFloat(), desiredHintLeft))
+        contentBinding.addPlayerHint.x = max(0f, min(maxHintLeft.toFloat(), desiredHintLeft))
     }
 
     private fun updateAddPlayerHint() {
@@ -667,19 +684,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val targetHeaderRowAlpha = 1f - targetArrowAlpha
 
         val animationDuration = 150L
-        add_player_hint_arrow.animate()
+        contentBinding.addPlayerHintArrow.animate()
             .alpha(targetArrowAlpha)
             .setDuration(animationDuration)
             .start()
-        add_player_hint.animate()
+        contentBinding.addPlayerHint.animate()
             .alpha(targetArrowAlpha)
             .setDuration(animationDuration)
             .start()
-        header_row.animate()
+        contentBinding.headerRow.root.animate()
             .alpha(targetHeaderRowAlpha)
             .setDuration(animationDuration)
             .start()
-        header_row_shadow_view.animate()
+        contentBinding.headerRowShadowView.animate()
             .alpha(targetHeaderRowAlpha)
             .setDuration(animationDuration)
             .start()
@@ -693,7 +710,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             currentGame.scoreCount > 0 -> 0f
             else -> 1f
         }
-        fab_hint.animate()
+        contentBinding.fabHint.animate()
             .alpha(targetAlpha)
             .setDuration(250)
             .start()
@@ -790,7 +807,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun renderLeaderBoard() {
-        leaderboard_table.removeAllViews()
+        contentBinding.leaderboardTable.removeAllViews()
         val textColor = Color.WHITE
 
         val game = gameManager.currentlyActiveGame
@@ -800,7 +817,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             emptyLabel.setText(R.string.leaderboard_empty)
             emptyLabel.setTextColor(textColor)
             emptyRow.addView(emptyLabel)
-            leaderboard_table.addView(emptyRow)
+            contentBinding.leaderboardTable.addView(emptyRow)
             return
         }
 
@@ -834,7 +851,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 addView(rankTextView)
                 addView(playerNameTextView)
                 addView(scoreTextView)
-                leaderboard_table.addView(this)
+                contentBinding.leaderboardTable.addView(this)
             }
             i++
         }

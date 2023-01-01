@@ -17,20 +17,23 @@
 package com.github.vatbub.scoreboard.view
 
 import android.view.View
+import android.widget.ImageButton
+import android.widget.LinearLayout
+import android.widget.TableRow
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vatbub.scoreboard.R
 import com.github.vatbub.scoreboard.util.isOdd
-import kotlinx.android.synthetic.main.scoreboard_row.view.*
 import kotlin.properties.Delegates
 
 class GameTableViewHolder(
     val view: View, var shouldLineColorBeSet: Boolean = false
 ) : RecyclerView.ViewHolder(view) {
-    val scoreHolderLayout = view.main_table_text_view_holder!!
-    val lineNumberTextView = view.main_table_line_number!!
-    val deleteRowButton = view.main_table_delete_row_button!!
-    val subTotalRow = view.main_table_sub_total_row!!
-    val subTotalHolderLayout = view.main_table_sub_total_holder!!
+    val scoreHolderLayout = view.findViewById<LinearLayout>(R.id.main_table_text_view_holder)!!
+    val lineNumberTextView = view.findViewById<TextView>(R.id.main_table_line_number)!!
+    val deleteRowButton = view.findViewById<ImageButton>(R.id.main_table_delete_row_button)!!
+    val subTotalRow = view.findViewById<TableRow>(R.id.main_table_sub_total_row)!!
+    val subTotalHolderLayout = view.findViewById<LinearLayout>(R.id.main_table_sub_total_holder)!!
     var lineNumber by Delegates.observable(0) { _, _, newValue ->
         lineNumberTextView.text =
             String.format(view.context.getString(R.string.main_table_row_number_template), newValue)

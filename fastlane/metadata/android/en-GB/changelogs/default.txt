@@ -1,5 +1,7 @@
 29.12.2022:
 - Fix: Negative scores are now possible
+- Updated the imprint
+- Minor technical improvements
 
 09.03.2020:
 - Fix: [Issue #19] When having multiple saved games, the first game was loaded when rotating the device
