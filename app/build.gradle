@@ -36,8 +36,8 @@ android {
         applicationId "com.github.vatbub.scoreboard"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 243
-        versionName "1.0-243"
+        versionCode 244
+        versionName "1.0-244"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "GitHash", "\"$GIT_COMMIT_HASH\""
         buildConfigField "String", "GitFullHash", "\"$GIT_COMMIT_HASH_LONG\""
@@ -98,4 +98,32 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.mikepenz:aboutlibraries-core:${latestAboutLibsRelease}"
     implementation "com.mikepenz:aboutlibraries:${latestAboutLibsRelease}"
+}
+
+task("bumpVersionCode") {
+    doLast {
+        File scriptFileLocation = buildscript.sourceFile
+        println("Bumping versionCode in ${scriptFileLocation.absolutePath}")
+        List<String> scriptContents = scriptFileLocation.readLines()
+        int currentVersionCode = scriptContents
+                .find { it.contains("versionCode") }
+                .trim()
+                .split(" ")
+                .last()
+                .toInteger()
+        int newVersionCode = currentVersionCode + 1
+
+        println("The current version code is $currentVersionCode. The new version code will be $newVersionCode.")
+
+        String newScriptContents = scriptContents.stream()
+                .map {
+                    if (it.contains("versionCode") || it.contains("versionName"))
+                        it.replace(currentVersionCode.toString(), newVersionCode.toString())
+                    else it
+                }
+                .toList()
+                .join("\n")
+
+        scriptFileLocation.write(newScriptContents)
+    }
 }
