@@ -1,0 +1,1 @@
+A simple app to keep track of player scores during any card game (or similar).
