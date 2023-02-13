@@ -1,5 +1,5 @@
-01.01.2023:
-- Prepared release on F-Droid
+13.02.2023:
+- More preparations for the release on F-Droid
 
 29.12.2022:
 - Fix: Negative scores are now possible

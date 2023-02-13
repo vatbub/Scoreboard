@@ -1,3 +1,6 @@
+13.02.2023:
+- Mehr Vorbereitungen für die Veröffentlichung auf F-Droid
+
 01.01.2023:
 - Veröffentlichung der App auf F-Droid vorbereitet
 

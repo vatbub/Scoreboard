@@ -1,3 +1,6 @@
+13.02.2023:
+- More preparations for the release on F-Droid
+
 01.01.2023:
 - Prepared release on F-Droid
 
