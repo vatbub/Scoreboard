@@ -97,7 +97,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.16.1'
     implementation 'org.jdom:jdom2:2.0.6.1'
     implementation 'ru.noties:markwon:2.0.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
     implementation "androidx.cardview:cardview:1.0.0"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation "com.mikepenz:aboutlibraries-core:${latestAboutLibsRelease}"
