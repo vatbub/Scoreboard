@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.12.0'
     implementation 'org.jdom:jdom2:2.0.6.1'
     implementation 'ru.noties:markwon:2.0.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
