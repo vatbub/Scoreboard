@@ -40,8 +40,8 @@ android {
         applicationId "com.github.vatbub.scoreboard"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 250
-        versionName "1.0-250"
+        versionCode 251
+        versionName "1.0-251"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "GitHash", "\"$GIT_COMMIT_HASH\""
         buildConfigField "String", "GitFullHash", "\"$GIT_COMMIT_HASH_LONG\""
@@ -94,7 +94,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-io:commons-io:2.16.1'
     implementation 'org.jdom:jdom2:2.0.6.1'
     implementation 'ru.noties:markwon:2.0.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
