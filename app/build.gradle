@@ -40,8 +40,8 @@ android {
         applicationId "com.github.vatbub.scoreboard"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 250
-        versionName "1.0-250"
+        versionCode 251
+        versionName "1.0-251"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "GitHash", "\"$GIT_COMMIT_HASH\""
         buildConfigField "String", "GitFullHash", "\"$GIT_COMMIT_HASH_LONG\""
