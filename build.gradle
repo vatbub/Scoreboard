@@ -20,7 +20,7 @@ import org.apache.commons.lang3.SystemUtils
 
 buildscript {
     ext.latestAboutLibsRelease = "10.6.3"
-    ext.kotlin_version = '1.8.10'
+    ext.kotlin_version = '2.0.0'
 
     repositories {
         google()
