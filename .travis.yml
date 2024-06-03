@@ -55,6 +55,7 @@ cache:
     - "$HOME/.rvm/rubies/ruby-2.4.1/lib/ruby/gems/2.4.0"
 deploy:
   provider: releases
+  api_key: $GITHUB_DEPLOY_TOKEN
   file: app/build/outputs/apk/release/app-release.apk
   edge:
     branch: v2.0.3-beta.4
