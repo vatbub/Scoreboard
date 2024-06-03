@@ -1,17 +1,2 @@
-01.06.2024:
+03.06.2024:
 - Dependency updates
-
-13.02.2023:
-- More preparations for the release on F-Droid
-
-29.12.2022:
-- Fix: Negative scores are now possible
-- Updated the imprint
-- Minor technical improvements
-
-09.03.2020:
-- Fix: [Issue #19] When having multiple saved games, the first game was loaded when rotating the device
-
-10.02.2020:
-- Reworked the open-source licenses screen
-- Added support for dark mode
