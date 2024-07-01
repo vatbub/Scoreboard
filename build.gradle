@@ -19,7 +19,7 @@ import org.apache.commons.lang3.SystemUtils
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.latestAboutLibsRelease = "10.6.3"
+    ext.latestAboutLibsRelease = "11.2.2"
     ext.kotlin_version = '1.8.10'
 
     repositories {
