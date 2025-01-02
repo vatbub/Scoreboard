@@ -11,7 +11,10 @@ env:
     - ANDROID_BUILD_TOOLS_VERSION=30.0.2
     - ANDROID_HOME=/usr/local/android-sdk
 before_install:
-  - rvm install 2.7.2
+  - \curl -sSL https://get.rvm.io | bash -s stable
+  - rvm reload
+  - rvm list known
+  - rvm install 3.0.3
   - touch $HOME/.android/repositories.cfg
   - wget --no-verbose "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip" -O commandlinetools.zip
   - unzip -q commandlinetools.zip -d $ANDROID_HOME/
@@ -27,7 +30,7 @@ before_install:
   - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools"
   - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "tools"
   - yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;30.0.3"
-  - gem install fastlane --silent
+  - gem install fastlane
   # - yes | sdkmanager "platforms;android-27"
   - openssl aes-256-cbc -K $encrypted_82e25a156e7c_key -iv $encrypted_82e25a156e7c_iv -in api-6021417281981797838-573362-3471c8228657.json.enc -out api-6021417281981797838-573362-3471c8228657.json -d
 # - wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-127.0.0-linux-x86_64.tar.gz
