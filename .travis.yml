@@ -11,6 +11,8 @@ env:
     - ANDROID_BUILD_TOOLS_VERSION=30.0.2
     - ANDROID_HOME=/usr/local/android-sdk
 before_install:
+  - \curl -sSL https://get.rvm.io | bash -s stable
+  - rvm reload
   - rvm list known
   - rvm install 3.0.3
   - touch $HOME/.android/repositories.cfg
