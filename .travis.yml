@@ -11,7 +11,7 @@ env:
     - ANDROID_BUILD_TOOLS_VERSION=30.0.2
     - ANDROID_HOME=/usr/local/android-sdk
 before_install:
-  - rvm install 2.7.2
+  - rvm install 3.0
   - touch $HOME/.android/repositories.cfg
   - wget --no-verbose "https://dl.google.com/android/repository/commandlinetools-linux-9123335_latest.zip" -O commandlinetools.zip
   - unzip -q commandlinetools.zip -d $ANDROID_HOME/
